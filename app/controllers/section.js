@@ -20,7 +20,10 @@ exports.get = async (req, res) => {
       views.map(async (view) => {
         view["problems"] = await Problem.findAll({
           where: {
-            vid: view["vid"],
+            sid: req.params.sid,
+            icon_index: {
+              [Op.between]: [view["index_start"], view["index_end"]],
+            },
           },
           raw: true,
         });

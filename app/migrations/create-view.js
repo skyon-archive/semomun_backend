@@ -27,6 +27,9 @@ module.exports = {
       material: {
         type: Sequelize.STRING(256),
       },
+      record: {
+        type: Sequelize.STRING(256),
+      },
     });
   },
   down: async (queryInterface, Sequelize) => {

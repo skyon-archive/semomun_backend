@@ -28,7 +28,7 @@ module.exports = {
         type: Sequelize.STRING(256),
       },
       cutoff: {
-        type: Sequelize.TEXT,
+        type: Sequelize.JSON,
         allowNull: false,
       },
     });

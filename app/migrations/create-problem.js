@@ -8,10 +8,6 @@ module.exports = {
         primaryKey: true,
         autoIncrement: true,
       },
-      vid: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-      },
       sid: {
         type: Sequelize.INTEGER,
         allowNull: false,

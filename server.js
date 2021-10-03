@@ -42,6 +42,7 @@ app.get("/", (req, res) => {
 
 require("./app/routes/workbooks")(app);
 require("./app/routes/sections")(app);
+require("./app/routes/upload")(app);
 
 /*
 const fs = require('fs');
