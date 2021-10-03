@@ -1,4 +1,4 @@
-module.exports = app => {
+module.exports = (app) => {
   const workbooks = require("../controllers/workbook.js");
 
   var router = require("express").Router();
@@ -7,5 +7,5 @@ module.exports = app => {
   router.get("/", workbooks.create);
   router.get("/:wid", workbooks.get);
 
-  app.use('/workbooks', router);
+  app.use("/workbooks", router);
 };

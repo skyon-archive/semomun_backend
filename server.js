@@ -1,35 +1,39 @@
 const express = require("express");
-const responseTime = require('response-time')
+const responseTime = require("response-time");
 // const bodyParser = require("body-parser"); /* deprecated */
 const cors = require("cors");
 
 const app = express();
 
 var corsOptions = {
-  origin: "http://localhost:8081"
+  origin: "http://localhost:8081",
 };
 
 app.use(cors(corsOptions));
 
 // parse requests of content-type - application/json
-app.use(express.json());  /* bodyParser.json() is deprecated */
+app.use(express.json()); /* bodyParser.json() is deprecated */
 
 // parse requests of content-type - application/x-www-form-urlencoded
-app.use(express.urlencoded({ extended: true }));   /* bodyParser.urlencoded() is deprecated */
+app.use(
+  express.urlencoded({ extended: true })
+); /* bodyParser.urlencoded() is deprecated */
 
 const db = require("./app/models/index");
 
 //db.sequelize.sync();
- // drop the table if it already exists
+// drop the table if it already exists
 db.sequelize.sync({ force: true }).then(() => {
-   console.log("Drop and re-sync db.");
+  console.log("Drop and re-sync db.");
 });
 
-app.use(express.static('public'));
+app.use(express.static("public"));
 
-app.use(responseTime((req, res, time) => {
-  console.log(`${req.method} ${req.url} ${time}`);
-}))
+app.use(
+  responseTime((req, res, time) => {
+    console.log(`${req.method} ${req.url} ${time}`);
+  })
+);
 
 // simple route
 app.get("/", (req, res) => {
