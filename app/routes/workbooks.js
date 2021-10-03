@@ -1,4 +1,4 @@
-module.exports = async app => {
+module.exports = app => {
   const workbooks = require("../controllers/workbook.js");
 
   var router = require("express").Router();
