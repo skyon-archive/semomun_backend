@@ -28,7 +28,7 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: false,
       },
-      image: {
+      bookcover: {
         type: Sequelize.STRING(256),
       },
       sales: {

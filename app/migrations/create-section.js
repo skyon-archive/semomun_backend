@@ -24,12 +24,11 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: false,
       },
-      image: {
+      sectioncover: {
         type: Sequelize.STRING(256),
       },
       cutoff: {
         type: Sequelize.JSON,
-        allowNull: false,
       },
     });
   },
