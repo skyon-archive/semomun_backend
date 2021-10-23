@@ -27,7 +27,7 @@ db.sequelize.sync({ force: true }).then(() => {
   console.log("Drop and re-sync db.");
 });
 
-app.use(express.static("public"));
+app.use(express.static("/home/a/tmp"));
 
 app.use(
   responseTime((req, res, time) => {

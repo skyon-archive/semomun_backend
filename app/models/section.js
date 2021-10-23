@@ -32,6 +32,7 @@ module.exports = (sequelize, Sequelize) => {
       },
     },
     {
+      charset: 'utf8',
       timestamps: false,
     }
   );

@@ -39,7 +39,7 @@ exports.create = (req, res) => {
       category: "수능 모의고사",
       subject: subjects[i % 4],
       grade: 12,
-      image: "A" + (300 + i) + ".jpeg",
+      bookcover: "A" + (300 + i) + ".jpeg",
     };
     workbooks.push(workbook);
   }
@@ -63,7 +63,7 @@ exports.create = (req, res) => {
         index: j,
         detail: "",
         cutoff: "",
-        image: "A" + (300 + i) + ".jpeg",
+        sectioncover: "A" + (300 + i) + ".jpeg",
       };
       sections.push(section);
     }
@@ -134,7 +134,7 @@ exports.preview = (req, res) => {
 
   Workbook.findAll({
     where,
-    attributes: ["wid", "title", "image"],
+    attributes: ["wid", "title", "bookcover"],
   })
     .then((data) => {
       res.send({ count: data.length, workbooks: data });
