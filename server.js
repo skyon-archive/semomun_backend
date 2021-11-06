@@ -21,13 +21,14 @@ app.use(
 
 const db = require("./app/models/index");
 
-//db.sequelize.sync();
-// drop the table if it already exists
+db.sequelize.sync();
+/* drop the table if it already exists
 db.sequelize.sync({ force: true }).then(() => {
   console.log("Drop and re-sync db.");
 });
+*/
 
-app.use(express.static("public"));
+app.use(express.static(__dirname + "/../tmp/public"));
 
 app.use(
   responseTime((req, res, time) => {

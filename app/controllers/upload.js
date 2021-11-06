@@ -11,34 +11,43 @@ const Problem = db.problems;
 const Op = db.Sequelize.Op;
 
 function resizer(src, folder, file, width) {
-  const tmpdir = require("os").homedir() + "/tmp";
-  fs.readFile(src, (err, data) => {
-    sharp(data)
-      .resize({ width: width })
-      .toFormat("jpeg")
-      .toFile(
-        tmpdir +
-          "/public/images/" +
-          folder +
-          "/" +
-          width +
-          "x" +
-          width +
-          "/" +
-          file
-      );
-  });
+  if (width == 0) {
+    const dest =
+      require("os").homedir() + "/tmp/public/images/" + folder + "/" + file;
+
+    fs.copyFile(src, dest, (err) => {
+      if (err) throw err;
+      console.log("source.txt was copied to destination.txt");
+    });
+  } else {
+    const dest =
+      require("os").homedir() +
+      "/tmp/public/images/" +
+      folder +
+      "/" +
+      width +
+      "x" +
+      width +
+      "/" +
+      file;
+
+    fs.readFile(src, (err, data) => {
+      sharp(data).resize({ width: width }).toFormat("jpeg").toFile(dest);
+    });
+  }
 }
 
 exports.upload = async (req, res) => {
   try {
     const tmpdir = require("os").homedir() + "/tmp";
-    const dir = tmpdir + "/file";
-    const doc = yaml.load(fs.readFileSync("./config_example.yaml", "utf8"));
+    const dir =
+      tmpdir +
+      "/2021학년도 대학수학능력시험 3월 모의평가 수학(확률과통계)영역";
+    const doc = yaml.load(fs.readFileSync(dir + "/config.yaml", "utf8"));
     var workbook = doc["workbook"];
     if (workbook["bookcover"] != undefined) {
       const imagedir = dir + "/" + workbook["bookcover"];
-      workbook["bookcover"] = uuidv4();
+      workbook["bookcover"] = uuidv4() + ".jpeg";
       resizer(imagedir, "bookcover", workbook["bookcover"], 256);
       resizer(imagedir, "bookcover", workbook["bookcover"], 128);
       resizer(imagedir, "bookcover", workbook["bookcover"], 64);
@@ -51,7 +60,7 @@ exports.upload = async (req, res) => {
       section["wid"] = wid;
       if (section["sectioncover"] != undefined) {
         const imagedir = dir + "/" + section["sectioncover"];
-        section["sectioncover"] = uuidv4();
+        section["sectioncover"] = uuidv4() + ".jpeg";
         resizer(imagedir, "sectioncover", section["sectioncover"], 256);
         resizer(imagedir, "sectioncover", section["sectioncover"], 128);
         resizer(imagedir, "sectioncover", section["sectioncover"], 64);
@@ -70,10 +79,8 @@ exports.upload = async (req, res) => {
           view["index_end"] = cur + cnt;
           if (view["material"] != undefined) {
             const imagedir = dir + "/" + view["material"];
-            view["material"] = uuidv4();
-            resizer(imagedir, "material", view["material"], 256);
-            resizer(imagedir, "material", view["material"], 128);
-            resizer(imagedir, "material", view["material"], 64);
+            view["material"] = uuidv4() + ".jpeg";
+            resizer(imagedir, "material", view["material"], 0);
           }
           cur += cnt;
           for (var j = 0; j < cnt; j++) {
@@ -84,10 +91,13 @@ exports.upload = async (req, res) => {
             problem["sid"] = sid;
             if (problem["content"] != undefined) {
               const imagedir = dir + "/" + problem["content"];
-              problem["content"] = uuidv4();
-              resizer(imagedir, "content", problem["content"], 256);
-              resizer(imagedir, "content", problem["content"], 128);
-              resizer(imagedir, "content", problem["content"], 64);
+              problem["content"] = uuidv4() + ".jpeg";
+              resizer(imagedir, "content", problem["content"], 0);
+            }
+            if (problem["explanation"] != undefined) {
+              const imagedir = dir + "/" + problem["explanation"];
+              problem["explanation"] = uuidv4() + ".jpeg";
+              resizer(imagedir, "explanation", problem["explanation"], 0);
             }
             await Problem.create(problem);
           }
