@@ -32,6 +32,11 @@ module.exports = {
       explanation: {
         type: Sequelize.STRING(256),
       },
+      score: {
+        type: Sequelize.TINYINT,
+        allowNull: false,
+        defaultValue: 0,
+      },
       attempt_total: {
         type: Sequelize.INT,
         allowNull: false,

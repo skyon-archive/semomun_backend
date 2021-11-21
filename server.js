@@ -21,12 +21,11 @@ app.use(
 
 const db = require("./app/models/index");
 
-db.sequelize.sync();
-/* drop the table if it already exists
+//db.sequelize.sync();
+// drop the table if it already exists
 db.sequelize.sync({ force: true }).then(() => {
   console.log("Drop and re-sync db.");
 });
-*/
 
 app.use(express.static(__dirname + "/../tmp/public"));
 
@@ -44,6 +43,7 @@ app.get("/", (req, res) => {
 require("./app/routes/workbooks")(app);
 require("./app/routes/sections")(app);
 require("./app/routes/upload")(app);
+require("./app/routes/verify")(app);
 
 /*
 const fs = require('fs');
