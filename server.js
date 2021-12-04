@@ -43,7 +43,7 @@ app.get("/", (req, res) => {
 require("./app/routes/workbooks")(app);
 require("./app/routes/sections")(app);
 require("./app/routes/upload")(app);
-require("./app/routes/verify")(app);
+require("./app/routes/auth")(app);
 
 /*
 const fs = require('fs');
