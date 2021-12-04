@@ -147,9 +147,9 @@ exports.preview = (req, res) => {
     });
 };
 
-exports.get = (req, res) => {
+exports.get = async (req, res) => {
   var sections;
-  Section.findAll({
+  await Section.findAll({
     where: {
       wid: req.params.wid,
     },
