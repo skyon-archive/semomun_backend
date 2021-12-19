@@ -27,7 +27,7 @@ db.sequelize.sync({ force: true }).then(() => {
   console.log("Drop and re-sync db.");
 });
 
-app.use(express.static(__dirname + "/../tmp/public"));
+app.use(express.static(__dirname + "/../data/"));
 
 app.use(
   responseTime((req, res, time) => {
@@ -44,6 +44,7 @@ require("./app/routes/workbooks")(app);
 require("./app/routes/sections")(app);
 require("./app/routes/upload")(app);
 require("./app/routes/auth")(app);
+require("./app/routes/login")(app);
 
 /*
 const fs = require('fs');

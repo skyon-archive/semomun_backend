@@ -17,7 +17,7 @@ function resizer(src, folder, file, width) {
   }
   if (width == 0) {
     const dest =
-      require("os").homedir() + "/tmp/public/images/" + folder + "/" + file;
+      require("os").homedir() + "/data/images/" + folder + "/" + file;
 
     fs.copyFile(src, dest, (err) => {
       if (err) throw err;
@@ -25,7 +25,7 @@ function resizer(src, folder, file, width) {
   } else {
     const dest =
       require("os").homedir() +
-      "/tmp/public/images/" +
+      "/data/images/" +
       folder +
       "/" +
       width +
@@ -36,14 +36,18 @@ function resizer(src, folder, file, width) {
 
     fs.readFile(src, (err, data) => {
       sharp(data).resize({ width: width }).toFormat("png").toFile(dest);
+      if(err) throw err;
     });
   }
 }
 
-async function uploader(file) {
-  const dir = require("os").homedir() + "/tmp/" + file;
+async function uploader(dir) {
   const doc = yaml.load(fs.readFileSync(dir + "/config.yaml", "utf8"));
   var workbook = doc["workbook"];
+  if (!workbook) { 
+    console.log(dir + " does not have workbook");
+    return;
+  }
   if (workbook["bookcover"] != undefined) {
     const imagedir = dir + "/" + workbook["bookcover"];
     workbook["bookcover"] = uuidv4() + ".png";
@@ -53,9 +57,17 @@ async function uploader(file) {
   }
   const wid = (await Workbook.create(workbook)).wid;
   var sections = doc["sections"];
+  if (!sections) { 
+    console.log(dir + " does not have sections");
+    return;
+  }
   const size = sections.length;
   for (var i = 0; i < size; i++) {
     var section = sections[i];
+    if (!section) { 
+      console.log(dir + " does not have section");
+      return;
+    }
     section["wid"] = wid;
     if (section["sectioncover"] != undefined) {
       const imagedir = dir + "/" + section["sectioncover"];
@@ -65,6 +77,10 @@ async function uploader(file) {
       resizer(imagedir, "sectioncover", section["sectioncover"], 64);
     }
     var views = section["views"];
+    if (!views) { 
+      console.log(dir + " does not have views");
+      return;
+    }
     delete section["views"];
     const sid = (await Section.create(section)).sid;
 
@@ -73,6 +89,9 @@ async function uploader(file) {
       views.map(async (view) => {
         view["sid"] = sid;
         var problems = view["problems"];
+        if (!problems) { 
+          throw dir + " does not have problems";
+        }
         var cnt = problems.length;
         view["index_start"] = cur + 1;
         view["index_end"] = cur + cnt;
@@ -85,7 +104,7 @@ async function uploader(file) {
         for (var j = 0; j < cnt; j++) {
           var problem = problems[j];
           if (problem["icon_index"] != view["index_start"] + j) {
-            console.log("fuck");
+            throw "fuck";
           }
           problem["sid"] = sid;
           if (problem["content"] != undefined) {
@@ -101,9 +120,9 @@ async function uploader(file) {
           await Problem.create(problem);
         }
       })
-    );
-
-    const vids = (await View.bulkCreate(views)).map(
+    ).catch(e => {console.log(e); return;});
+    console.log(sid);
+    const vids = (await View.bulkCreate(views).catch(e => {console.log(dir + " is fuck"); throw e;})).map(
       (view) => view.dataValues.vid
     );
   }
@@ -111,16 +130,19 @@ async function uploader(file) {
 
 exports.upload = async (req, res) => {
   try {
-    fs.readdirSync(require("os").homedir() + "/tmp").forEach((file) => {
-      if (
-        fs.existsSync(require("os").homedir() + "/tmp/" + file + "/config.yaml")
-      ) {
-        console.log(file);
-        uploader(file);
-      }
+    fs.readdirSync(require("os").homedir() + "/tmp").forEach((folder) => {
+      fs.readdirSync(require("os").homedir() + "/tmp/" + folder).forEach((file) => {
+        const dir = require("os").homedir() + "/tmp/" + folder + "/" + file;
+        if (
+          fs.existsSync(dir + "/config.yaml")
+        ) {
+          //console.log(file);
+          uploader(dir);
+        }
+      });
     });
     res.send("done");
   } catch (e) {
-    //console.log(e);
+    console.log(e);
   }
 };
