@@ -1,7 +1,7 @@
 { 
-    "client_id": "",
-    "team_id": "",
-    "key_id": "",
-    "redirect_uri": "",
-    "private_key_path": ""
-}
+    "client_id": "com.semomun.authenticate",
+    "team_id": "4K9NF6L78D",
+    "key_id": "P48745YWQT",
+    "redirect_uri": "https://saemomoon.com/auth/",
+    "private_key_path": "AuthKey_P48745YWQT.p8"
+}   
