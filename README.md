@@ -226,11 +226,7 @@ ex3) title = 2021 시나공 정보처리기사 실기, category = 자격증, sub
 ex4) title = 해커스 토익 실전 1000제 1 LISTENING 문제집, category = 자격증, subject = 토익
 ```
 
-http://gdimg.gmarket.co.kr/1467181503/still/160
 
-https://static.solved.ac/uploads/profile/64x64/easrui-picture-1631153671966.png
-
-http://gdimg.gmarket.co.kr/2206532134/still/160
 
 ## 목록
 
@@ -267,38 +263,85 @@ Semomun에서 사용자의 입력은 다음 세 가지 중 하나의 형태로 �
 
 실제 반환값의 예시로는 `{"a":1,"b":[{"c":2},{"c":3}]}` 이 가능합니다.
 
-### GET /workbooks
+### GET /workbooks (workbook.js - fetch_workbooks)
 
 요청한 사용자가 해당 문제의 열람 권한이 있는 문제들 중, 주어진 조건에 맞는 문제의 목록을 반환합니다.
 
 - query: 문제 검색 쿼리입니다. 다음과 같은 url query가 가능합니다.
 
-  - { c(ategory), s(ubject), g(rade), y(ear), m(onth), t(itle) }
+  - { s(ubject), c(ategory), g(rade), y(ear), m(onth) }
 
-- sort: 문제를 정렬할 기준입니다.
+- ~~sort: 문제를 정렬할 기준입니다.~~
 
 - page: 페이지의 번호입니다.
 
-정렬 기준은 현재는 다음과 같습니다.
+정렬 기준은 다음과 같습니다. 
 
-- lexicographical (사전순)
+- ~~lexicographical (사전순)~~
 
 성공 시 반환값은 JSON이며, 다음과 같은 객체입니다.
 
 - { count, workbooks }
   - count: 주어진 조건에 맞는 문제집의 개수입니다. sort 혹은 page에 영향을 받지 **않습니다**.
-  - workbooks: 문제집 정보들을 sort에 따라 정렬했을 때, [25 _ (page - 1), 25 _ page) 구간 배열입니다. 문제집 정보는 다음과 같은 객체입니다.
-    - { wid, title, image }
+  - workbooks: 문제집 정보들을 sort에 따라 정렬했을 때, [25 * (page - 1), 25 * page) 구간 배열입니다. 문제집 정보는 다음과 같은 객체입니다.
+    - { wid, title, bookcover }
 
-### GET /workbooks/:wid
 
-요청한 사용자가 해당 문제집의 열람 권한이 있는 경우, 해당 문제집을 반환합니다.
 
-성공 시 반환값은 JSON이며, 다음과 같은 객체입니다.
+### POST /register (register.js - create_user)
 
-- { wid, title, year, month, price, detail, image, sales, publisher, category, subject, grade, sections }
-  - sections: 문제집에 포함된 섹션의 배열입니다. 섹션 정보는 다음과 같은 객체입니다.
-    - { sid, index, title, detail, image, cutoff }
+사용자의 정보를 받아 가입시킵니다
+
+- info: 사용자 초기 정보입니다. 다음과 같은 객체입니다.
+  - { name, nickname, gender, phone, school, major, majorDetail, favoriteCategory, graduationStatus }
+- token: 사용자 식별 토큰입니다.
+
+성공 시 반환값은 JSON이며, 빈 객체입니다.
+
+실패 시 처리는 다음과 같습니다.
+
+- 400 Bad Request: 토큰이 유효하지 않은 경우입니다.
+- 409 Conflict: 이미 사용중인 닉네임인 경우입니다. 반환값은 `NICKNAME_NOT_AVAILABLE` 입니다.
+- 409 Conflict: 이미 사용중인 전화번호인 경우입니다. 반환값은 `PHONE_NOT_AVAILABLE` 입니다.
+
+
+
+### POST /register/auth (register.js - send_code)
+
+사용자의 전화번호를 받고, ~~올바른 전화번호인지 확인한 후~~ 해당 번호로 인증 코드를 전송합니다.
+
+~~IP와 전화번호 각각에 요청 횟수에 제한이 있으며, 둘 중 하나라도 요청 횟수가 5번을 초과한다면 즉시 429 상태 코드를 반환합니다.~~
+
+해당 전화번호에 이미 인증 코드가 DB에 있는 경우(즉, 사용자가 인증을 재요청한 경우) 새로 생성한 인증 코드로 대체하고 다시 전송합니다.
+
+인증 코드는 5분, 요청 횟수 제한은 생성되고 하루가 지나면 완전히 삭제됩니다.
+
+- phone: 사용자의 전화번호입니다.
+
+성공 시 반환값은 JSON이며, 빈 객체입니다.
+
+실패 시 처리는 다음과 같습니다.
+
+- ~~400 Bad Request: 사용할 수 없는 전화번호입니다. 반환값은 `PHONE_NOT_ALLOWED` 입니다.~~
+- ~~409 Conflict: 이미 사용중인 전화번호인 경우입니다. 반환값은 `PHONE_NOT_AVAILABLE` 입니다~~.
+- ~~429: 인증 요청 횟수가 제한을 초과한 경우입니다. 반환값은 `AUTHPHONE_QUOTA_EXCEEDED` 입니다.~~
+- 500: 해당 이메일로 코드를 전송하는데 실패한 경우입니다. 반환값은 `AUTHPHONE_SEND_FAILED` 입니다.
+
+
+
+### POST /register/verify (register.js - check_code)
+
+사용자의 전화번호와 인증 코드를 받아 DB와 대조한 후 인증 여부를 판단합니다.
+
+- { phone, code }
+
+성공 시 반환값은 JSON이며, 빈 객체입니다.
+
+실패 시 처리는 다음과 같습니다.
+
+- 400 Bad Request: 해당 전화번호가 존재하지 않거나, `POST /register/auth` 를 통해 전송한 코드와 사용자의 입력이 일치하지 않는 경우입니다.
+
+
 
 ### GET /sections/:sid
 
@@ -312,57 +355,9 @@ Semomun에서 사용자의 입력은 다음 세 가지 중 하나의 형태로 �
       - problems: 뷰어에 포함된 문제의 배열입니다. 문제 정보는 다음과 같은 객체입니다.
         - { pid, icon_index, icon_name, type, answer, content, explanation, attempt_total, attempt_correct, rate, elapsed_total}
 
-### PUT /workbooks
 
-요청한 사용자가 문제집 생성 권한이 있는 경우, 주어진 문제집을 새로 추가합니다.
 
-- { wid, title, year, month, price, detail, sales, publisher, category, subject, grade, sections }
-
-성공 시 반환값은 JSON이며, 다음과 같은 객체입니다.
-
-- { wid }
-  - wid: 추가된 문제집의 wid입니다.
-
-실패 시 처리는 다음과 같습니다.
-
-- 401: 로그인을 하지 않은 경우입니다. 반환값은 빈 문자열입니다.
-- 403: 요청한 사용자가 문제집 생성 권한이 없는 경우입니다. 반환값은 빈 문자열입니다.
-
-### PUT /workbooks/:wid/image
-
-요청한 사용자가 해당 문제집의 편집 권한이 있는 경우, 해당 문제집에 표지 이미지를 업로드합니다. 만약 기존에 이미 해당 문제에 업로드된 표지 이미지가 있다면, 기존 파일을 새로 업로드된 파일로 바꿉니다. **이미지 파일의 형식은 jpg 또는 png여야 합니다.**
-
-- 파일은 Raw Body로 들어옵니다. **Content-Type은 무시합니다**. `application/json` 이 아니더라도 정상적으로 요청을 받아야 합니다.
-
-성공 시 반환값은 JSON이며, 빈 객체입니다.
-
-실패 시 처리는 다음과 같습니다.
-
-- 400: 사용자가 전송한 파일이 jpg 또는 png 파일이 아닌 경우입니다. 반환값은 빈 문자열입니다.
-- 401: 로그인을 하지 않은 경우입니다. 반환값은 빈 문자열입니다.
-- 403: 요청한 사용자가 문제집 생성 권한이 없는 경우입니다. 반환값은 빈 문자열입니다.
-
-### PUT /workbooks/:wid/section
-
-요청한 사용자가 문제집 생성 권한이 있는 경우, 주어진 문제집에 섹션을 새로 추가합니다.
-
-- { index, title, detail, cutoff, views, problems }
-  - views: 섹션에 포함된 뷰어의 배열입니다. 뷰어 정보는 다음과 같은 객체입니다.
-    - { index_start, index_end, form }
-  - problems: 뷰어에 포함된 문제의 배열입니다. 문제 정보는 다음과 같은 객체입니다.
-    - { icon_index, icon_name, type, answer, rate}
-
-성공 시 반환값은 JSON이며, 다음과 같은 객체입니다.
-
-- { sid }
-  - sid: 추가된 섹션의 sid입니다.
-
-실패 시 처리는 다음과 같습니다.
-
-- 401: 로그인을 하지 않은 경우입니다. 반환값은 빈 문자열입니다.
-- 403: 요청한 사용자가 문제집 생성 권한이 없는 경우입니다. 반환값은 빈 문자열입니다.
-
-### GET /login/info/category
+### GET /info/category
 
 문제집이 속한 카테고리의 목록을 반환합니다.
 
@@ -371,30 +366,26 @@ Semomun에서 사용자의 입력은 다음 세 가지 중 하나의 형태로 �
 성공 시 반환값은 JSON이며, 다음과 같은 객체입니다.
 
 - { category }
-  - category: 카테고리의 배열입니다. 
+  - category: 카테고리의 배열입니다. 카테고리 정보는 다음과 같은 객체입니다.
+    - { title, queryParamKey, queryParamValues }
+      - queryParamValues: 카테고리에 포함된 subject의 목록입니다.
 
-### GET /login/info/major
 
-사용자에게 제공하기 위한 계열 및 분야의 목록을 반환합니다.
 
-정렬 기준은 현재는 무작위입니다.
+### GET /info/major
 
-성공 시 반환값은 JSON이며, 다음과 같은 객체입니다.
+회원 가입 시 요구되는 계열 및 전공의 목록입니다.
 
 - { major }
-  - major: 전공 및 계열의 배열입니다. 계열 정보는 다음과 같은 객체입니다.
-    - {  }
+  - major: 계열의 목록입니다. 각 계열은 다음과 같이 구성되어 있습니다.
+    - { majorName: majorDetail }
+      - majorDetail: 세부 전공의 목록입니다.
 
-## 환경설정
+현재는 아래와 같은 json이 항상 반환됩니다.
 
-### DB (Mac)
+```json
+{ major: [{ '문과 계열': ['인문', '상경', '사회', '교육', '기타'] }, { '이과 계열': ['공학', '자연', '의약', '생활과학', '기타'] }, { 예체능계열: ['미술', '음악', '체육', '기타'] }] }
+```
 
-`mysql.server start`
 
-### Setup
 
-`npm install`
-
-### Run
-
-`node server.js`

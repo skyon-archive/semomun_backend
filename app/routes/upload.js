@@ -1,9 +1,9 @@
 module.exports = (app) => {
-  const uploader = require("../controllers/upload.js");
+  const uploader = require('../controllers/upload.js')
 
-  var router = require("express").Router();
+  const router = require('express').Router()
 
-  router.get("/", uploader.upload);
+  router.get('/:title', uploader.upload)
 
-  app.use("/upload", router);
-};
+  app.use('/upload', router)
+}

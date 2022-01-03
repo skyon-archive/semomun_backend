@@ -1,9 +1,9 @@
 module.exports = (app) => {
-  const sections = require("../controllers/section.js");
+  const sections = require('../controllers/section.js')
 
-  var router = require("express").Router();
+  const router = require('express').Router()
 
-  router.get("/:sid", sections.get);
+  router.get('/:sid', sections.get)
 
-  app.use("/sections", router);
-};
+  app.use('/sections', router)
+}

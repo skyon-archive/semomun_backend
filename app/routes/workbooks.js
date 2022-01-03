@@ -1,11 +1,9 @@
 module.exports = (app) => {
-  const workbooks = require("../controllers/workbook.js");
+  const workbooks = require('../controllers/workbook.js')
 
-  var router = require("express").Router();
+  const router = require('express').Router()
 
-  router.get("/preview", workbooks.preview);
-  router.get("/", workbooks.create);
-  router.get("/:wid", workbooks.get);
+  router.get('/', workbooks.fetch_workbooks)
 
-  app.use("/workbooks", router);
-};
+  app.use('/workbooks', router)
+}

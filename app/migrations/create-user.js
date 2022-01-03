@@ -1,51 +1,66 @@
-"use strict";
+'use strict'
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable("Users", {
+    await queryInterface.createTable('Users', {
       uid: {
         type: Sequelize.INTEGER,
         allowNull: false,
         primaryKey: true,
-        autoIncrement: true,
-      },
-      googleId: {
-        type: Sequelize.STRING(256),
-        unique: true,
-      },
-      appleId: {
-        type: Sequelize.STRING(256),
-        unique: true,
-      },
-      auth: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
+        autoIncrement: true
       },
       name: {
         type: Sequelize.STRING(32),
-        allowNull: false,
+        allowNull: false
       },
       nickname: {
         type: Sequelize.STRING(32),
-        allowNull: false,
+        allowNull: false
       },
-      profile_image: {
-        type: Sequelize.STRING(256),
+      gender: {
+        type: Sequelize.STRING(32),
+        allowNull: false
+      },
+      phone: {
+        type: Sequelize.STRING(32),
+        allowNull: false
       },
       school: {
         type: Sequelize.STRING(256),
-        allowNull: false,
+        allowNull: false
       },
-      grade: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
+      major: {
+        type: Sequelize.STRING(32),
+        allowNull: false
       },
-      info: {
-        type: Sequelize.JSON,
-        allowNull: false,
+      majorDetail: {
+        type: Sequelize.STRING(32),
+        allowNull: false
       },
-    });
+      favoriteCategory: {
+        type: Sequelize.STRING(32),
+        allowNull: false
+      },
+      graduationStatus: {
+        type: Sequelize.STRING(32),
+        allowNull: false
+      },
+      profileImage: {
+        type: Sequelize.STRING(256)
+      },
+      googleId: {
+        type: Sequelize.STRING(256),
+        unique: true
+      },
+      appleId: {
+        type: Sequelize.STRING(256),
+        unique: true
+      },
+      auth: {
+        type: Sequelize.INTEGER
+      }
+    })
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable("Users");
-  },
-};
+    await queryInterface.dropTable('Users')
+  }
+}

@@ -1,40 +1,40 @@
 module.exports = (sequelize, Sequelize) => {
   const Submission = sequelize.define(
-    "Submissions",
+    'Submissions',
     {
       uid: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        primaryKey: true,
+        primaryKey: true
       },
       pid: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        primaryKey: true,
+        primaryKey: true
       },
       elapsed: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: false
       },
       recent_time: {
         type: Sequelize.STRING(256),
-        allowNull: false,
+        allowNull: false
       },
-      user_anwer: {
-        type: Sequelize.STRING(256),
+      user_answer: {
+        type: Sequelize.STRING(256)
       },
       correct: {
-        type: Sequelize.BOOLEAN,
+        type: Sequelize.BOOLEAN
       },
       note: {
-        type: Sequelize.BLOB,
-      },
+        type: Sequelize.BLOB
+      }
     },
     {
-      charset: "utf8",
-      timestamps: false,
+      charset: 'utf8',
+      timestamps: false
     }
-  );
+  )
 
-  return Submission;
-};
+  return Submission
+}

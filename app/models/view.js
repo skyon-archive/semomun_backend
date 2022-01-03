@@ -1,41 +1,41 @@
 module.exports = (sequelize, Sequelize) => {
   const View = sequelize.define(
-    "Views",
+    'Views',
     {
       vid: {
         type: Sequelize.INTEGER,
         allowNull: false,
         primaryKey: true,
-        autoIncrement: true,
+        autoIncrement: true
       },
       sid: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: false
       },
       index_start: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: false
       },
       index_end: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: false
       },
       form: {
         type: Sequelize.TINYINT,
-        allowNull: false,
+        allowNull: false
       },
       material: {
-        type: Sequelize.STRING(256),
+        type: Sequelize.STRING(256)
       },
       record: {
-        type: Sequelize.STRING(256),
-      },
+        type: Sequelize.STRING(256)
+      }
     },
     {
       charset: 'utf8',
-      timestamps: false,
+      timestamps: false
     }
-  );
+  )
 
-  return View;
-};
+  return View
+}

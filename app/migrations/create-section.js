@@ -1,38 +1,38 @@
-"use strict";
+'use strict'
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable("Sections", {
+    await queryInterface.createTable('Sections', {
       sid: {
         type: Sequelize.INTEGER,
         allowNull: false,
         primaryKey: true,
-        autoIncrement: true,
+        autoIncrement: true
       },
       wid: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: false
       },
       index: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: false
       },
       title: {
         type: Sequelize.STRING(256),
-        allowNull: false,
+        allowNull: false
       },
       detail: {
         type: Sequelize.TEXT,
-        allowNull: false,
+        allowNull: false
       },
       sectioncover: {
-        type: Sequelize.STRING(256),
+        type: Sequelize.STRING(256)
       },
       cutoff: {
-        type: Sequelize.JSON,
-      },
-    });
+        type: Sequelize.JSON
+      }
+    })
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable("Sections");
-  },
-};
+    await queryInterface.dropTable('Sections')
+  }
+}

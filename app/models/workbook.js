@@ -1,63 +1,64 @@
 module.exports = (sequelize, Sequelize) => {
   const Workbook = sequelize.define(
-    "Workbooks",
+    'Workbooks',
     {
       wid: {
         type: Sequelize.INTEGER,
         allowNull: false,
         primaryKey: true,
-        autoIncrement: true,
+        autoIncrement: true
       },
       title: {
         type: Sequelize.STRING(256),
-        allowNull: false,
+        allowNull: false
       },
       year: {
-        type: Sequelize.SMALLINT,
-        allowNull: false,
+        type: Sequelize.STRING(32),
+        allowNull: false
       },
       month: {
-        type: Sequelize.TINYINT,
-        allowNull: false,
+        type: Sequelize.STRING(32),
+        allowNull: false
       },
       price: {
         type: Sequelize.INTEGER,
         allowNull: false,
+        defaultValue: 0
       },
       detail: {
         type: Sequelize.TEXT,
-        allowNull: false,
+        allowNull: false
       },
       bookcover: {
-        type: Sequelize.STRING(256),
+        type: Sequelize.STRING(256)
       },
       sales: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        defaultValue: 0,
+        defaultValue: 0
       },
       publisher: {
         type: Sequelize.STRING(256),
-        allowNull: false,
+        allowNull: false
       },
       category: {
         type: Sequelize.STRING(256),
-        allowNull: false,
+        allowNull: false
       },
       subject: {
         type: Sequelize.STRING(256),
-        allowNull: false,
+        allowNull: false
       },
       grade: {
-        type: Sequelize.TINYINT,
-        allowNull: false,
-      },
+        type: Sequelize.STRING(32),
+        allowNull: false
+      }
     },
     {
       charset: 'utf8',
-      timestamps: false,
+      timestamps: false
     }
-  );
+  )
 
-  return Workbook;
-};
+  return Workbook
+}

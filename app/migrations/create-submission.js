@@ -1,37 +1,37 @@
-"use strict";
+'use strict'
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable("Submissions", {
+    await queryInterface.createTable('Submissions', {
       uid: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        primaryKey: true,
+        primaryKey: true
       },
       pid: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        primaryKey: true,
+        primaryKey: true
       },
       elapsed: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: false
       },
       recent_time: {
         type: Sequelize.STRING(256),
-        allowNull: false,
+        allowNull: false
       },
-      user_anwer: {
-        type: Sequelize.STRING(256),
+      user_answer: {
+        type: Sequelize.STRING(256)
       },
       correct: {
-        type: Sequelize.BOOLEAN,
+        type: Sequelize.BOOLEAN
       },
       note: {
-        type: Sequelize.BLOB,
-      },
-    });
+        type: Sequelize.BLOB
+      }
+    })
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable("Submissions");
-  },
-};
+    await queryInterface.dropTable('Submissions')
+  }
+}

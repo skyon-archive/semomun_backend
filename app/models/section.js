@@ -1,41 +1,41 @@
 module.exports = (sequelize, Sequelize) => {
   const Section = sequelize.define(
-    "Sections",
+    'Sections',
     {
       sid: {
         type: Sequelize.INTEGER,
         allowNull: false,
         primaryKey: true,
-        autoIncrement: true,
+        autoIncrement: true
       },
       wid: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: false
       },
       index: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: false
       },
       title: {
         type: Sequelize.STRING(256),
-        allowNull: false,
+        allowNull: false
       },
       detail: {
         type: Sequelize.TEXT,
-        allowNull: false,
+        allowNull: false
       },
       sectioncover: {
-        type: Sequelize.STRING(256),
+        type: Sequelize.STRING(256)
       },
       cutoff: {
-        type: Sequelize.JSON,
-      },
+        type: Sequelize.JSON
+      }
     },
     {
       charset: 'utf8',
-      timestamps: false,
+      timestamps: false
     }
-  );
+  )
 
-  return Section;
-};
+  return Section
+}
