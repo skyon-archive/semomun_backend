@@ -16,6 +16,21 @@ async function query (category, attr) {
 
 exports.category = async (req, res) => {
   try {
+    const result = await Workbook.findAll({
+      attributes: [
+        [sequelize.fn('DISTINCT', sequelize.col('category')), 'category']
+      ],
+      raw: true
+    })
+    res.json({ category: result.map(res => res.category) })
+  } catch (err) {
+    console.log(err)
+    res.status(500).send()
+  }
+}
+
+exports.buttons = async (req, res) => {
+  try {
     const category = req.query.c
     const subject = { title: '과목', queryParamKey: 's', queryParamValues: (await query(category, 'subject')).map(res => res.subject) }
     const year = { title: '년도', queryParamKey: 'y', queryParamValues: (await query(category, 'year')).map(res => res.year) }

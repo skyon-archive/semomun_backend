@@ -3,6 +3,7 @@ module.exports = (app) => {
 
   const router = require('express').Router()
 
+  router.get('/buttons', info.buttons)
   router.get('/category', info.category)
   router.get('/major', info.major)
 

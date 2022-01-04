@@ -363,7 +363,16 @@ Semomun에서 사용자의 입력은 다음 세 가지 중 하나의 형태로 �
 
 정렬 기준은 현재는 무작위입니다.
 
+성공 시 반환값은 JSON이며, 다음과 같은 객체입니다.
+
 - { category }
+
+
+### GET /info/buttons
+
+문제집이 속한 카테고리의 버튼 정보를 반환합니다.
+
+- c(ategory)
 
 성공 시 반환값은 JSON이며, 다음과 같은 객체입니다.
 
@@ -371,7 +380,6 @@ Semomun에서 사용자의 입력은 다음 세 가지 중 하나의 형태로 �
   - queryButtons: 카테고리의 버튼 정보입니다. 다음과 같은 객체입니다.
     - { title, queryParamKey, queryParamValues }
       - queryParamValues: 카테고리에 포함된 각 attr의 목록입니다.
-
 
 
 ### GET /info/major
