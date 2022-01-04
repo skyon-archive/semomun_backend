@@ -1,5 +1,6 @@
 const db = require('../models/index')
 const Workbook = db.workbooks
+const Section = db.sections
 const Op = db.Sequelize.Op
 
 exports.fetch_workbooks = async (req, res) => {
@@ -144,8 +145,7 @@ exports.create = async (req, res) => {
 }
 */
 
-/*
-exports.get = async (req, res) => {
+exports.fetch_workbook = async (req, res) => {
   let sections
   await Section.findAll({
     where: {
@@ -176,7 +176,6 @@ exports.get = async (req, res) => {
       })
     })
 }
-*/
 
 /*
 exports.put = (req, res) => {
