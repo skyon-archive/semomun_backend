@@ -4,6 +4,7 @@ module.exports = (app) => {
   const router = require('express').Router()
 
   router.get('/category', info.category)
+  router.get('/major', info.major)
 
   app.use('/info', router)
 }

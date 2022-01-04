@@ -16,10 +16,10 @@ app.use(
 
 const db = require('./app/models/index')
 
-// db.sequelize.sync();
-db.sequelize.sync({ force: true }).then(() => {
+db.sequelize.sync()
+/* db.sequelize.sync({ force: true }).then(() => {
   console.log('Drop and re-sync db.')
-})
+}) */
 
 app.use(express.static(path.join(__dirname, '/../data/')))
 
