@@ -35,7 +35,7 @@ exports.buttons = async (req, res) => {
     const subject = { title: '과목', queryParamKey: 's', queryParamValues: (await query(category, 'subject')).map(res => res.subject) }
     const year = { title: '년도', queryParamKey: 'y', queryParamValues: (await query(category, 'year')).map(res => res.year) }
     const month = { title: '개월', queryParamKey: 'm', queryParamValues: (await query(category, 'month')).map(res => res.month) }
-    const grade = { title: '학년', queryParamKey: 'g', queryParamValues: (await query(category, 'month')).map(res => res.grade) }
+    const grade = { title: '학년', queryParamKey: 'g', queryParamValues: (await query(category, 'grade')).map(res => res.grade) }
     res.json({ queryButtons: [subject, year, month, grade] })
   } catch (err) {
     console.log(err)
