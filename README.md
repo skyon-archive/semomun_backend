@@ -397,5 +397,16 @@ Semomun에서 사용자의 입력은 다음 세 가지 중 하나의 형태로 �
 { major: [{ '문과 계열': ['인문', '상경', '사회', '교육', '기타'] }, { '이과 계열': ['공학', '자연', '의약', '생활과학', '기타'] }, { 예체능계열: ['미술', '음악', '체육', '기타'] }] }
 ```
 
+### GET /users/:uid
 
+해당 사용자를 반환합니다.
 
+- uid: 사용자의 uid입니다.
+
+성공 시 반환값은 JSON이며, 다음과 같은 객체입니다.
+
+- { uid, name, nickName, gender, phone, school, major, majorDetail, favoriteCategory, graduationStatus, birthday, profileImage }
+
+실패 시 처리는 다음과 같습니다.
+
+- 404: 해당 사용자가 존재하지 않는 경우입니다. 반환값은 빈 문자열입니다.

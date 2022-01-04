@@ -38,6 +38,7 @@ require('./app/routes/sections')(app)
 require('./app/routes/upload')(app)
 require('./app/routes/info')(app)
 require('./app/routes/register')(app)
+require('./app/routes/user')(app)
 
 const PORT = process.env.PORT || 8080
 app.listen(PORT, () => {
