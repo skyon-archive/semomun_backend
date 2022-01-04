@@ -12,7 +12,7 @@ module.exports = {
         type: Sequelize.STRING(32),
         allowNull: false
       },
-      nickname: {
+      nickName: {
         type: Sequelize.STRING(32),
         allowNull: false
       },
@@ -41,6 +41,10 @@ module.exports = {
         allowNull: false
       },
       graduationStatus: {
+        type: Sequelize.STRING(32),
+        allowNull: false
+      },
+      birthday: {
         type: Sequelize.STRING(32),
         allowNull: false
       },

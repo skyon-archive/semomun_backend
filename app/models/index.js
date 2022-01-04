@@ -22,5 +22,6 @@ db.workbooks = require('./workbook.js')(sequelize, Sequelize)
 db.sections = require('./section.js')(sequelize, Sequelize)
 db.views = require('./view.js')(sequelize, Sequelize)
 db.problems = require('./problem.js')(sequelize, Sequelize)
+db.users = require('./user.js')(sequelize, Sequelize)
 
 module.exports = db

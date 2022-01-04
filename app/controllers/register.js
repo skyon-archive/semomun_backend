@@ -79,13 +79,15 @@ exports.check_code = async (req, res) => {
 exports.create_user = async (req, res) => {
   try {
     const token = req.body.token
-    const userInfo = req.body.info
+    const userInfo = JSON.parse(req.body.info)
     if (await get_user_with_google(token) || await get_user_with_apple(token)) {
       res.status(400).send()
     }
+    /*
     if (await get_user_with_nickname(userInfo.nickname)) {
       res.status(409).send('NICKNAME_NOT_AVAILABLE')
     }
+    */
     if (await get_user_with_phone(userInfo.phone)) {
       res.status(409).send('PHONE_NOT_AVAILABLE')
     }
@@ -111,9 +113,9 @@ exports.check = async (req, res) => {
   }
 }
 
-async function get_user_with_nickname (nickname) {
+async function get_user_with_nickname (nickName) {
   try {
-    const user = await User.findOne({ where: { nickname: nickname } })
+    const user = await User.findOne({ where: { nickName: nickName } })
     return user.uid
   } catch (err) {
     return null
