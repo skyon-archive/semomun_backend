@@ -97,6 +97,20 @@ exports.create_user = async (req, res) => {
   }
 }
 
+exports.check = async (req, res) => {
+  try {
+    const token = req.body.token
+    if (await get_user_with_google(token) || await get_user_with_apple(token)) {
+      res.json({})
+    } else {
+      res.status(401).send()
+    }
+  } catch (err) {
+    console.log(err)
+    res.status(500).send()
+  }
+}
+
 async function get_user_with_nickname (nickname) {
   try {
     const user = await User.findOne({ where: { nickname: nickname } })
