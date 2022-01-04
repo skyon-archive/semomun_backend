@@ -1,13 +1,10 @@
-const { OAuth2Client } = require('google-auth-library')
 const { createClient } = require('redis')
-const jwt = require('jsonwebtoken')
+const { get_user_with_google, get_user_with_apple } = require('./auth')
 const db = require('../models/index')
 const request = require('request')
 const crypto = require('crypto')
-const User = db.users
 const env = process.env
-const client_id = process.env.CLIENT_ID
-const client = new OAuth2Client(client_id)
+const User = db.users
 
 function send_sms (phone, code) {
   const timestamp = new Date().getTime()
@@ -83,11 +80,9 @@ exports.create_user = async (req, res) => {
     if (await get_user_with_google(token) || await get_user_with_apple(token)) {
       res.status(400).send()
     }
-    /*
     if (await get_user_with_nickname(userInfo.nickname)) {
       res.status(409).send('NICKNAME_NOT_AVAILABLE')
     }
-    */
     if (await get_user_with_phone(userInfo.phone)) {
       res.status(409).send('PHONE_NOT_AVAILABLE')
     }
@@ -126,36 +121,6 @@ async function get_user_with_phone (phone) {
   try {
     const user = await User.findOne({ where: { phone: phone } })
     return user.uid
-  } catch (err) {
-    return null
-  }
-}
-
-async function get_user_with_google (token) {
-  try {
-    const ticket = await client.verifyIdToken({
-      idToken: token,
-      audience: client_id
-    })
-    const payload = ticket.getPayload()
-    const sub = payload.sub
-    const user = await User.findOne({ where: { googleId: sub } })
-    return user.uid
-  } catch (err) {
-    return null
-  }
-}
-
-async function get_user_with_apple (token) {
-  try {
-    const idToken = jwt.decode(token)
-    const sub = idToken.sub
-    const user = await User.findOne({ where: { appleId: sub } })
-    if (user === null) {
-      return null
-    } else {
-      return user.uid
-    }
   } catch (err) {
     return null
   }

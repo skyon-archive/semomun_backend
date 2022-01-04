@@ -3,7 +3,7 @@ module.exports = (app) => {
 
   const router = require('express').Router()
 
-  router.get('/:uid', users.fetch_user)
+  router.get('/-', users.fetch_self)
   router.put('/:uid', users.update_user)
 
   app.use('/users', router)
