@@ -4,7 +4,7 @@ const Op = db.Sequelize.Op
 
 exports.fetch_workbooks = async (req, res) => {
   const where = {}
-  const limit = 25
+  const limit = req.query.page ? 25 : 1000
   const offset = req.query.page ? 0 + (req.query.page - 1) * limit : 0
 
   if (req.query.s !== undefined) {
