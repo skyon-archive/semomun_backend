@@ -101,9 +101,9 @@ exports.check = async (req, res) => {
   try {
     const token = req.body.token
     if (await get_user_with_google(token) || await get_user_with_apple(token)) {
-      res.json({})
+      res.json({ check: true })
     } else {
-      res.status(401).send()
+      res.json({ check: false })
     }
   } catch (err) {
     console.log(err)
