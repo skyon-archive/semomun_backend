@@ -86,8 +86,8 @@ exports.create_user = async (req, res) => {
     if (await get_user_with_phone(userInfo.phone)) {
       res.status(409).send('PHONE_NOT_AVAILABLE')
     }
-    await User.create(userInfo)
-    res.status(200).json({})
+    const result = await User.create(userInfo)
+    res.status(200).json({ uid: result.uid })
   } catch (err) {
     console.log(err)
     res.status(500).send()
