@@ -115,28 +115,56 @@ async function uploader (dir) {
 
 function validate (dir) {
   const doc = yaml.load(fs.readFileSync(path.join(dir, 'config.yaml'), 'utf8'))
+
   const workbook = doc.workbook
   if (!workbook) throw new Error(`${dir} does not have workbook`)
   if (workbook.bookcover !== undefined && !fs.existsSync(path.join(dir, workbook.bookcover))) {
     throw new Error(`${dir} workbook have wrong bookcover`)
   }
+
+  let scoreSum = 0
+  let problemCnt = 0
   const sections = doc.sections
   if (!sections || sections.length === 0) {
     throw new Error(`${dir} does not have sections`)
   }
-  for (let section_idx = 0; section_idx < sections.length; section_idx++) {
-    const section = sections[section_idx]
+  for (let sectionIdx = 0; sectionIdx < sections.length; sectionIdx++) {
+    const section = sections[sectionIdx]
+    if (section.sectioncover !== undefined && !fs.existsSync(path.join(dir, section.sectioncover))) {
+      throw new Error(`${dir} section[${sectionIdx}] have wrong sectioncover`)
+    }
     const views = section.views
     if (!views || views.length === 0) {
-      throw new Error(`${dir}, section[${section_idx}] does not have views`)
+      throw new Error(`${dir}, section[${sectionIdx}] does not have views`)
     }
-    for (let view_idx = 0; view_idx < views.length; view_idx++) {
-      const problems = views[view_idx].problems
+
+    for (let viewIdx = 0; viewIdx < views.length; viewIdx++) {
+      const view = views[viewIdx]
+      if (view.form === 1 && !view.material) {
+        throw new Error(`${dir} section[${sectionIdx}] view[${viewIdx}] does not have material`)
+      }
+      const problems = view.problems
       if (!problems || problems.length === 0) {
-        throw new Error(`${dir}, section[${section_idx}], view[${view_idx}] does not have problems`)
+        throw new Error(`${dir}, section[${sectionIdx}], view[${viewIdx}] does not have problems`)
+      }
+      problemCnt += problems.length
+
+      for (let problemIdx = 0; problemIdx < problems.length; problemIdx++) {
+        const problem = problems[problemIdx]
+        scoreSum += problem.score
+        const type = problem.type
+        if ([4, 5].includes(type)) {
+          const answer = +problem.answer
+          if (isNaN(answer) || answer < 1 || answer > type) {
+            throw new Error(`${dir} section[${sectionIdx}] view[${viewIdx}] problem[${problemIdx}] has wrong answer`)
+          }
+        }
       }
     }
   }
+
+  if (scoreSum % 50 !== 0) throw new Error(`${dir} score sum is ${scoreSum}`)
+  if (problemCnt % 5 !== 0) throw new Error(`${dir} problem cnt is ${problemCnt}`)
 }
 
 exports.upload = async (req, res) => {
