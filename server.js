@@ -18,7 +18,7 @@ const db = require('./app/models/index')
 
 db.sequelize.sync()
 
-app.use(express.static(path.join(__dirname, '/../data/')))
+app.use(express.static(path.join(process.env.DATA_SOURCE)))
 
 app.use(
   responseTime((req, res, time) => {

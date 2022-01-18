@@ -142,7 +142,7 @@ function validate (dir) {
 
 exports.upload = async (req, res) => {
   try {
-    const src = path.join(process.env.DATA_SOURCE, req.params.title)
+    const src = path.join(process.env.UPLOAD_SOURCE, req.params.title)
     const outers = fs.readdirSync(src)
     for (const outer of outers) {
       const inners = fs.readdirSync(path.join(src, outer))
