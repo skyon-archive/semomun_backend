@@ -15,5 +15,7 @@ jobs:
     steps:
       - name: Docker run
         run: |
+          pwd
+          ls
           docker-compose down
           docker-compose up -d
