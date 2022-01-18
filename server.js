@@ -17,9 +17,6 @@ app.use(
 const db = require('./app/models/index')
 
 db.sequelize.sync()
-/* db.sequelize.sync({ force: true }).then(() => {
-  console.log('Drop and re-sync db.')
-}) */
 
 app.use(express.static(path.join(__dirname, '/../data/')))
 
@@ -40,7 +37,7 @@ require('./app/routes/info')(app)
 require('./app/routes/register')(app)
 require('./app/routes/user')(app)
 
-const PORT = process.env.PORT || 8080
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}.`)
-})
+const PORT = process.env.PORT
+const HOST = process.env.HOST
+app.listen(PORT, HOST)
+console.log(`Server is running on port ${PORT}.`)
