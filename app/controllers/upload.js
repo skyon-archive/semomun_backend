@@ -46,10 +46,6 @@ async function uploader (dir) {
   console.log(dir)
   const doc = yaml.load(fs.readFileSync(dir + '/config.yaml', 'utf8'))
   const workbook = doc.workbook
-  if (!workbook) {
-    console.log(dir + ' does not have workbook')
-    return
-  }
   if (workbook.bookcover !== undefined) {
     const imagedir = dir + '/' + workbook.bookcover
     workbook.bookcover = uuidv4() + '.png'
@@ -59,17 +55,7 @@ async function uploader (dir) {
   }
   const wid = (await Workbook.create(workbook)).wid
   const sections = doc.sections
-  if (!sections) {
-    console.log(dir + ' does not have sections')
-    return
-  }
-  const size = sections.length
-  for (let i = 0; i < size; i++) {
-    const section = sections[i]
-    if (!section) {
-      console.log(dir + ' does not have section')
-      return
-    }
+  for (const section of sections) {
     section.wid = wid
     if (section.sectioncover !== undefined) {
       const imagedir = dir + '/' + section.sectioncover
@@ -79,10 +65,6 @@ async function uploader (dir) {
       resizer(imagedir, 'sectioncover', section.sectioncover, 64)
     }
     const views = section.views
-    if (!views) {
-      console.log(dir + ' does not have views')
-      return
-    }
     delete section.views
     const sid = (await Section.create(section)).sid
 
@@ -91,10 +73,6 @@ async function uploader (dir) {
       views.map(async (view) => {
         view.sid = sid
         const problems = view.problems
-        if (!problems) {
-          const errorMsg = { code: 500, message: dir + ' does not have problems' }
-          throw errorMsg
-        }
         const cnt = problems.length
         view.index_start = cur + 1
         view.index_end = cur + cnt
@@ -135,18 +113,78 @@ async function uploader (dir) {
   }
 }
 
+function validate (dir) {
+  const doc = yaml.load(fs.readFileSync(path.join(dir, 'config.yaml'), 'utf8'))
+
+  const workbook = doc.workbook
+  if (!workbook) throw new Error(`${dir} does not have workbook`)
+  if (workbook.bookcover !== undefined && !fs.existsSync(path.join(dir, workbook.bookcover))) {
+    throw new Error(`${dir} workbook have wrong bookcover`)
+  }
+
+  let scoreSum = 0
+  let problemCnt = 0
+  const sections = doc.sections
+  if (!sections || sections.length === 0) {
+    throw new Error(`${dir} does not have sections`)
+  }
+  for (let sectionIdx = 0; sectionIdx < sections.length; sectionIdx++) {
+    const section = sections[sectionIdx]
+    if (section.sectioncover !== undefined && !fs.existsSync(path.join(dir, section.sectioncover))) {
+      throw new Error(`${dir} section[${sectionIdx}] have wrong sectioncover`)
+    }
+    const views = section.views
+    if (!views || views.length === 0) {
+      throw new Error(`${dir}, section[${sectionIdx}] does not have views`)
+    }
+
+    for (let viewIdx = 0; viewIdx < views.length; viewIdx++) {
+      const view = views[viewIdx]
+      if (view.form === 1 && !view.material) {
+        throw new Error(`${dir} section[${sectionIdx}] view[${viewIdx}] does not have material`)
+      }
+      const problems = view.problems
+      if (!problems || problems.length === 0) {
+        throw new Error(`${dir}, section[${sectionIdx}], view[${viewIdx}] does not have problems`)
+      }
+      problemCnt += problems.length
+
+      for (let problemIdx = 0; problemIdx < problems.length; problemIdx++) {
+        const problem = problems[problemIdx]
+        scoreSum += problem.score
+        const type = problem.type
+        if ([4, 5].includes(type)) {
+          const answer = +problem.answer
+          if (isNaN(answer) || answer < 1 || answer > type) {
+            throw new Error(`${dir} section[${sectionIdx}] view[${viewIdx}] problem[${problemIdx}] has wrong answer`)
+          }
+        }
+      }
+    }
+  }
+
+  if (scoreSum % 50 !== 0) throw new Error(`${dir} score sum is ${scoreSum}`)
+  if (problemCnt % 5 !== 0) throw new Error(`${dir} problem cnt is ${problemCnt}`)
+}
+
 exports.upload = async (req, res) => {
   try {
     const src = path.join(process.env.DATA_SOURCE, req.params.title)
-    fs.readdirSync(src).forEach((outer) => {
-      fs.readdirSync(path.join(src, '/', outer)).forEach((inner) => {
-        if (fs.existsSync(path.join(src, '/', outer, '/', inner, '/config.yaml'))) {
-          uploader(path.join(src, '/', outer, '/', inner))
+    const outers = fs.readdirSync(src)
+    for (const outer of outers) {
+      const inners = fs.readdirSync(path.join(src, outer))
+      for (const inner of inners) {
+        const dir = path.join(src, outer, inner)
+        if (fs.existsSync(path.join(dir, 'config.yaml'))) {
+          validate(dir)
+          await uploader(dir)
         }
-      })
-    })
+      }
+    }
+    res.send('done')
   } catch (err) {
     console.log(err)
+    res.status(500).send(String(err))
   }
 }
 
