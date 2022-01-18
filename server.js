@@ -4,6 +4,8 @@ const responseTime = require('response-time')
 const cors = require('cors')
 const path = require('path')
 const app = express()
+const morgan = require('morgan')
+const rfs = require('rotating-file-stream')
 
 const corsOptions = {
   origin: ['http://localhost:8081', 'http://localhost:3000', 'https://www.semomun.com', 'https://semomun.com']
@@ -25,6 +27,12 @@ app.use(
     console.log(`${req.method} ${req.url} ${time}`)
   })
 )
+
+const accessLogStream = rfs.createStream('access.log', {
+  interval: '1d',
+  path: path.join(process.env.LOG_SOURCE)
+})
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms', { stream: accessLogStream }))
 
 app.get('/', (req, res) => {
   res.json({ message: 'Semomun API.' })
