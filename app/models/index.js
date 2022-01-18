@@ -10,7 +10,11 @@ const sequelize = new Sequelize(env.DB_DATABASE, env.DB_USERNAME, env.DB_PASSWOR
     min: 0,
     acquire: 60000,
     idle: 10000
-  }
+  },
+  retry: {
+    match: [Sequelize.ConnectionError]
+  },
+  query: { raw: true }
 })
 
 const db = {}
