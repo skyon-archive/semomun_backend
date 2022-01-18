@@ -18,4 +18,5 @@ jobs:
       run: |
         cp ~/app/.env .
         docker-compose down
+        docker-compose build
         docker-compose up -d
