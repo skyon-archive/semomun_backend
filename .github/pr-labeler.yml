@@ -1,0 +1,5 @@
+# Used in .github/workflows/pr-label.yml
+bug: ['bug/*', 'fix/*', 'bugfix/*']
+documentation: ['doc/*', 'documentation/*']
+enhancement: ['feature/*', 'enhancement/*']
+refactoring: ['refactor/*', 'refactoring/*']
