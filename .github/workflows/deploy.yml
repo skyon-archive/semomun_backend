@@ -16,5 +16,6 @@ jobs:
     - uses: actions/checkout@v2
     - name: Docker run
       run: |
+        cp ~/app/.env .
         docker-compose down
         docker-compose up -d
