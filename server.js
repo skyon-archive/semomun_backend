@@ -6,7 +6,7 @@ const path = require('path')
 const app = express()
 
 const corsOptions = {
-  origin: 'http://localhost:8081'
+  origin: ['http://localhost:8081', 'http://localhost:3000', 'https://www.semomun.com', 'https://semomun.com']
 }
 app.use(cors(corsOptions))
 app.use(express.json())
