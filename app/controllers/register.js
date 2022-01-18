@@ -1,5 +1,5 @@
 const { createClient } = require('redis')
-const { get_user_with_google, get_user_with_apple } = require('./auth')
+const { get_user_with_google, get_user_with_apple, get_google_id, get_apple_id } = require('./auth')
 const db = require('../models/index')
 const request = require('request')
 const crypto = require('crypto')
@@ -77,14 +77,20 @@ exports.create_user = async (req, res) => {
   try {
     const token = req.body.token
     const userInfo = JSON.parse(req.body.info)
-    if (await get_user_with_google(token) || await get_user_with_apple(token)) {
-      res.status(400).send()
+    const google = await get_user_with_google(token)
+    const apple = await get_user_with_apple(token)
+    if (google || apple) {
+      return res.status(400).send()
     }
+    userInfo.googleId = await get_google_id(token)
+    userInfo.appleId = await get_apple_id(token)
+    console.log(userInfo.googleId)
+    console.log(userInfo.appleId)
     if (await get_user_with_nickname(userInfo.nickname)) {
-      res.status(409).send('NICKNAME_NOT_AVAILABLE')
+      return res.status(409).send('NICKNAME_NOT_AVAILABLE')
     }
     if (await get_user_with_phone(userInfo.phone)) {
-      res.status(409).send('PHONE_NOT_AVAILABLE')
+      return res.status(409).send('PHONE_NOT_AVAILABLE')
     }
     const result = await User.create(userInfo)
     res.status(200).json({ uid: result.uid })

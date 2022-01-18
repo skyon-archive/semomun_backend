@@ -3,15 +3,26 @@ const Workbook = db.workbooks
 const sequelize = db.sequelize
 
 async function query (category, attr) {
-  return Workbook.findAll({
+  const res = Workbook.findAll({
     where: {
       category: category
     },
     attributes: [
       [sequelize.fn('DISTINCT', sequelize.col(attr)), attr]
     ],
+    order: [
+      [attr, 'ASC']
+    ],
     raw: true
+  }).map(workbook => workbook[attr])
+  /*
+  res.sort(function (x, y) {
+    const a = x.toUpperCase()
+    const b = y.toUpperCase()
+    return a === b ? 0 : a > b ? 1 : -1
   })
+  */
+  return res
 }
 
 exports.category = async (req, res) => {
@@ -32,10 +43,10 @@ exports.category = async (req, res) => {
 exports.buttons = async (req, res) => {
   try {
     const category = req.query.c
-    const subject = { title: '과목', queryParamKey: 's', queryParamValues: (await query(category, 'subject')).map(res => res.subject) }
-    const year = { title: '년도', queryParamKey: 'y', queryParamValues: (await query(category, 'year')).map(res => res.year) }
-    const month = { title: '개월', queryParamKey: 'm', queryParamValues: (await query(category, 'month')).map(res => res.month) }
-    const grade = { title: '학년', queryParamKey: 'g', queryParamValues: (await query(category, 'grade')).map(res => res.grade) }
+    const subject = { title: '과목', queryParamKey: 's', queryParamValues: (await query(category, 'subject')) }
+    const year = { title: '년도', queryParamKey: 'y', queryParamValues: (await query(category, 'year')) }
+    const month = { title: '월', queryParamKey: 'm', queryParamValues: (await query(category, 'month')) }
+    const grade = { title: '학년', queryParamKey: 'g', queryParamValues: (await query(category, 'grade')) }
     res.json({ queryButtons: [subject, year, month, grade] })
   } catch (err) {
     console.log(err)

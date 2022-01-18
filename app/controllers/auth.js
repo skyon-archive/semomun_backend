@@ -21,16 +21,40 @@ exports.get_user_with_google = async (token) => {
   }
 }
 
+exports.get_google_id = async (token) => {
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: client_id
+    })
+    const payload = ticket.getPayload()
+    const sub = payload.sub
+    return sub
+  } catch (err) {
+    return null
+  }
+}
+
 exports.get_user_with_apple = async (token) => {
   try {
-    const idToken = jwt.decode(token)
-    const sub = idToken.sub
+    const sub = jwt.decode(token).sub
+    console.log('ap' + sub)
     const user = await User.findOne({ where: { appleId: sub } })
     if (user === null) {
       return null
     } else {
       return user.uid
     }
+  } catch (err) {
+    return null
+  }
+}
+
+exports.get_apple_id = async (token) => {
+  try {
+    const sub = jwt.decode(token).sub
+    console.log('get' + sub)
+    return sub
   } catch (err) {
     return null
   }

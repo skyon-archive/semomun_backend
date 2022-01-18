@@ -4,9 +4,12 @@ const User = db.users
 
 exports.fetch_self = async (req, res) => {
   try {
-    const token = req.body.token
+    const token = req.query.token
+    console.log(token)
     const google = await get_user_with_google(token)
     const apple = await get_user_with_apple(token)
+    console.log(google)
+    console.log(apple)
     const uid = google || apple
     const user = await User.findOne({
       where: {
@@ -58,20 +61,20 @@ exports.fetch_user = async (req, res) => {
 
 exports.update_user = async (req, res) => {
   try {
-    const target = req.params.uid
+    const target = await User.findOne({ where: { nickName: req.params.nickname } })
+    if (target === null) { return res.status(404).send() }
+
     const token = req.body.token
     const google = await get_user_with_google(token)
     const apple = await get_user_with_apple(token)
     const uid = google || apple
-    if (uid !== target) {
-      res.status(403).send()
+    if (uid !== target.uid) {
+      return res.status(403).send()
     }
-    if (await User.findByPk(uid) === null) { res.status(404).send() }
-
     const userInfo = JSON.parse(req.body.info)
     const whitelist = ['gender', 'school', 'major', 'majorDetail', 'favoriteCategory', 'graduationStatus', 'birthday']
     if (Object.keys(userInfo).some(r => whitelist.includes(r)) === false) {
-      res.status(400).send()
+      return res.status(400).send()
     }
 
     await User.update(userInfo, { where: { uid: uid } })

@@ -3,12 +3,24 @@ module.exports = (sequelize, Sequelize) => {
     'Submissions',
     {
       uid: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.UUID,
+        refernces: {
+          model: 'Users',
+          key: 'uid'
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
         allowNull: false,
         primaryKey: true
       },
       pid: {
         type: Sequelize.INTEGER,
+        refernces: {
+          model: 'Problems',
+          key: 'pid'
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
         allowNull: false,
         primaryKey: true
       },

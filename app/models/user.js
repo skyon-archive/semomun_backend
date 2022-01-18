@@ -6,7 +6,7 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
         allowNull: false,
-        primaryKey: true,
+        primaryKey: true
       },
       name: {
         type: Sequelize.STRING(32),
@@ -68,6 +68,5 @@ module.exports = (sequelize, Sequelize) => {
       timestamps: false
     }
   )
-
   return User
 }
