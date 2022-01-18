@@ -12,6 +12,8 @@ services:
       - mysql
     ports:
       - "8080:8080"
+    volumes:
+      - /home/ubuntu/data:/app/data:Z
     container_name: semomun-backend
   mysql:
     image: mysql:5.7
