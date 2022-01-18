@@ -15,7 +15,6 @@ services:
     volumes:
       - /home/ubuntu/data:/data:Z
       - /home/ubuntu/tmp:/tmp:Z
-      - /home/ubuntu/app:/app:Z
     container_name: semomun-backend
   mysql:
     image: mysql:5.7
