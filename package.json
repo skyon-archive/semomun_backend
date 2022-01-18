@@ -1,22 +1,11 @@
 {
-  "name": "nodejs-express-sequelize-mysql",
+  "name": "semomun_backend",
   "version": "1.0.0",
-  "description": "Node.js Rest Apis with Express, Sequelize & MySQL",
+  "description": "",
   "main": "server.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+  "directories": {
+    "test": "test"
   },
-  "keywords": [
-    "nodejs",
-    "express",
-    "rest",
-    "api",
-    "sequelize",
-    "mysql"
-  ],
-  "author": "bezkoder",
-  "license": "ISC",
   "dependencies": {
     "apple-auth": "^1.0.7",
     "body-parser": "^1.19.0",
@@ -44,12 +33,18 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.2.0"
   },
+  "scripts": {
+    "start": "node server.js",
+    "lint": "eslint ."
+  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/white-l0tus/semomun-backend.git"
+    "url": "git+https://github.com/semomun/semomun_backend.git"
   },
+  "author": "L0TUS",
+  "license": "ISC",
   "bugs": {
-    "url": "https://github.com/white-l0tus/semomun-backend/issues"
+    "url": "https://github.com/semomun/semomun_backend/issues"
   },
-  "homepage": "https://github.com/white-l0tus/semomun-backend#readme"
+  "homepage": "https://github.com/semomun/semomun_backend#readme"
 }
