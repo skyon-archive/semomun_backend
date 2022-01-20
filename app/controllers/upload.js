@@ -70,7 +70,6 @@ function validate (dir) {
       throw new Error(`${dir} workbook have wrong bookcover`)
     }
 
-    let problemCnt = 0
     const sections = doc.sections
     if (!sections || sections.length === 0) {
       throw new Error(`${dir} does not have sections`)
@@ -88,6 +87,7 @@ function validate (dir) {
         throw new Error(`${dir}, section[${sectionIdx}] does not have views`)
       }
 
+      let problemCnt = 0
       for (let viewIdx = 0; viewIdx < views.length; viewIdx++) {
         const view = views[viewIdx]
         /* if (view.form === 1 && !view.material) {
