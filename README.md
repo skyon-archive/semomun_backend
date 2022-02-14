@@ -27,6 +27,153 @@ Semomun API의 명세와 조건, 참고사항 및 예외들을 정리해 작성�
 
 ## 자료형
 
+```sql
+-- 사용자 --
+CREATE TABLE `Users` (
+    `uid` INT NOT NULL AUTO_INCREMENT,                                             /* 식별자                          */
+    `username` VARCHAR(256) NOT NULL,                                              /* 아이디                          */
+    `phone` VARCHAR(32) NOT NULL,                                                  /* 전화번호, 국가코드 포함 필요?      */
+    `degree` VARCHAR(256) NOT NULL,                                                /* 학력                           */
+    `degreeStatus` VARCHAR(32) NOT NULL,                                           /* 재학 상태                       */
+    `credit` INT NOT NULL,                                                         /* 보유 캐시, 종속성 관리 필요        */
+    `favoriteTags` VARCHAR(258) NOT NULL,                                          /* 선호 태그, 분리해야 할까?          */
+    `auth` INT NOT NULL,                                                           /* 유저 권한                       */
+    -- 결제 수단, 계정 연동 등은 테이블 따로 만들거나 redis로 --
+    -- 신상 정보 (성별, 생일, 주소 등등) 물어보고 얼마나 넣어놓을지 정하기 --
+    PRIMARY KEY (`uid`)
+);
+
+-- 상품 (세모문에서 판매하는 모든 물품의 상위 스키마) --
+CREATE TABLE `Items` (
+    `id` INT NOT NULL AUTO_INCREMENT,                                              /* 식별자                          */
+    `type` VARCHAR(32) NOT NULL,                                                   /* 유형                            */
+    `price` INT NOT NULL,                                                          /* 판매가                          */
+    `sales` INT NOT NULL,                                                          /* 판매량, 종속성 관리 필요          */
+    PRIMARY KEY (`id`)
+);
+
+-- 문제집 --
+CREATE TABLE `Workbooks` (
+    `id` INT NOT NULL,                                                             /* 상품 식별자                      */
+    `wid` INT NOT NULL AUTO_INCREMENT,                                             /* 식별자                          */
+    `title` VARCHAR(256) NOT NULL,                                                 /* 제목                            */
+    `detail` VARCHAR(4096) NOT NULL,                                               /* 설명                            */
+    `isbn` VARCHAR(32) NOT NULL,                                                   /* ISBN, 형식 논의 필요             */
+    `author` VARCHAR(32) NOT NULL,                                                 /* 저자                            */
+    `date` TIMESTAMP NOT NULL,                                                     /* 발행일                          */
+    `publishMan` VARCHAR(32) NOT NULL,                                             /* 발행인                          */
+    `publishCompany` VARCHAR(32) NOT NULL,                                         /* 출판사                          */
+    `originalPrice` VARCHAR(32) NOT NULL,                                          /* 원가                            */
+    `bookcover` VARCHAR(256) NOT NULL,                                             /* 표지 파일 식별자, uuid로 변경 필요 */
+    PRIMARY KEY (`wid`),
+    FOREIGN KEY (`id`) REFERENCES `Items` (`id`) ON UPDATE CASCADE
+);
+
+-- 섹션 (문제집의 각 단원) --
+CREATE TABLE `Sections` (
+    `wid` INT NOT NULL,                                                             /* 문제집                          */
+    `sid` INT NOT NULL AUTO_INCREMENT,                                              /* 식별자                          */
+    `index` INT NOT NULL,                                                           /* 섹션 번호                        */
+    `title` VARCHAR(256) NOT NULL,                                                  /* 제목                            */
+    `detail` VARCHAR(4096) NOT NULL,                                               /* 설명                            */
+    `cutoff` JSON NOT NULL,                                                         /* 등급컷                           */
+    `sectioncover` VARCHAR(256) NOT NULL,                                           /* 표지 파일 식별자, uuid로 변경 필요  */
+    `size` INT NOT NULL,                                                             /* 다운로드 파일 크기, 종속성 관리 필요 */
+    PRIMARY KEY (`sid`),
+    FOREIGN KEY (`wid`) REFERENCES `Workbooks` (`wid`) ON UPDATE CASCADE
+);
+
+-- 뷰 (섹션의 각 페이지) --
+CREATE TABLE `Views` (
+    `sid` INT NOT NULL,                                                             /* 섹션                            */
+    `vid` INT NOT NULL AUTO_INCREMENT,                                              /* 식별자                           */
+    `index` INT NOT NULL,                                                           /* 페이지 번호                      */
+    `form` INT NOT NULL,                                                            /* 유형                            */
+    `passage` VARCHAR(256) NOT NULL,                                                /* 지문 파일 식별자, uuid로 변경 필요 */
+    `attachment` VARCHAR(256) NOT NULL,                                             /* 자료(음성) 식별자, uuid로 변경 필요 */ 
+    PRIMARY KEY (`vid`),
+    FOREIGN KEY (`sid`) REFERENCES `Sections` (`sid`) ON UPDATE CASCADE
+);
+
+-- 문제 --
+CREATE TABLE `Problems` (
+    `vid` INT NOT NULL,                                                             /* 뷰                             */
+    `pid` INT NOT NULL AUTO_INCREMENT,                                              /* 식별자                          */
+    `index` INT NOT NULL,                                                           /* 페이지 내에서의! 문제 번호         */
+    -- 문제집 내에서의 원래 번호, 저장 방식이랑 등등 논의 필요 --
+    `label` VARCHAR(32) NOT NULL,                                                   /* 아이콘에 표시될 이름, 고민 필      */
+    `type` INT NOT NULL,                                                            /* 유형                            */
+    `answer` VARCHAR(256) NOT NULL,                                                 /* 정답                            */
+    `content` VARCHAR(256) NOT NULL,                                                /* 문제 파일 식별자, uuid로 변경 필요 */
+    `explanation` VARCHAR(256) NOT NULL,                                            /* 해설 파일 식별자, uuid로 변경 필요 */ 
+    PRIMARY KEY (`pid`),
+    FOREIGN KEY (`vid`) REFERENCES `Views` (`vid`) ON UPDATE CASCADE
+);
+
+-- 제출 기록 --
+CREATE TABLE `Submissions` (
+    `uid` INT NOT NULL,                                                            /* 유저                           */
+    `pid` INT NOT NULL,                                                            /* 문제                           */
+    `elapsed` INT NOT NULL,                                                        /* 소요 시간                       */
+    `answer` VARCHAR(256) NOT NULL,                                                /* 유저가 제출한 답                 */
+    `note` BLOB NOT NULL,                                                          /* 필기                            */
+    -- 중복 제출 가능하게 해야함 --
+    PRIMARY KEY (`uid`, `pid`, ),
+    FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`) ON UPDATE CASCADE,
+    FOREIGN KEY (`pid`) REFERENCES `Problems` (`pid`) ON UPDATE CASCADE
+);
+
+-- 태그 --
+CREATE TABLE `Tags` (
+    `tid` INT NOT NULL AUTO_INCREMENT,                                             /* 식별자                          */
+    `name` VARCHAR(32) NOT NULL,                                                   /* 이름                           */
+    PRIMARY KEY (`tid`)
+);
+
+-- 문제집 별 태그 --
+CREATE TABLE `WorkbookTags` (
+    `wid` INT NOT NULL,                                                            /* 문제집                         */
+    `tid` INT NOT NULL,                                                            /* 태그                           */
+    PRIMARY KEY (`wid`, `tid`),
+    FOREIGN KEY (`wid`) REFERENCES `Workbooks` (`wid`) ON UPDATE CASCADE,
+    FOREIGN KEY (`tid`) REFERENCES `Tags` (`tid`) ON UPDATE CASCADE
+);
+
+-- 주문 내역 (캐시 사용 내역) --
+CREATE TABLE `OrderHistory` (
+    `id` INT NOT NULL,                                                             /* 구매품목                         */
+    `uid` INT NOT NULL,                                                            /* 유저                            */
+    `payment` INT NOT NULL,                                                        /* 지불금액                         */
+    PRIMARY KEY (`id`, `uid`),
+    FOREIGN KEY (`id`) REFERENCES `Items` (`id`) ON UPDATE CASCADE,
+    FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`) ON UPDATE CASCADE
+);
+
+-- 캐시 충전 내역 --
+CREATE TABLE `ChargeHistory` (
+    `identifier` INT NOT NULL,                                                     /* 주문번호, 논의 필요                */
+    `uid` INT NOT NULL,                                                            /* 유저                            */
+    `amount` INT NOT NULL,                                                         /* 충전량                           */
+    `type` VARCHAR(32) NOT NULL,                                                   /* 이벤트, 쿠폰, 결제, 등등            */
+    -- 논의가 더 필요 -- 
+    PRIMARY KEY (`identifier`),
+    FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`) ON UPDATE CASCADE
+);
+
+-- 학습 기록 --
+CREATE TABLE `WorkbookHistory` (
+    `wid` INT NOT NULL,                                                            /* 문제집                         */
+    `uid` INT NOT NULL,                                                            /* 유저                           */
+    `type` VARCHAR(32) NOT NULL,                                                   /* start, end, download 등등      */
+    -- type == `start` 를 이용해서 최근에 이용한 문제집 판별 --
+    -- type == `download` 를 이용해서 문제집 별 다운로드 추이 등 판별 --
+    PRIMARY KEY (`wid`, `uid`),
+    FOREIGN KEY (`wid`) REFERENCES `Workbooks` (`wid`) ON UPDATE CASCADE,
+    FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`) ON UPDATE CASCADE
+);
+```
+
+
 ### 사용자 User
 
 - uid(기본키): 사용자의 고유 번호입니다. 4바이트의 음이 아닌 정수입니다.
