@@ -82,6 +82,8 @@ CREATE TABLE `Sections` (
     `cutoff` JSON NOT NULL,                                                         /* 등급컷                           */
     `sectioncover` VARCHAR(256) NOT NULL,                                           /* 표지 파일 식별자, uuid로 변경 필요  */
     `size` INT NOT NULL,                                                             /* 다운로드 파일 크기, 종속성 관리 필요 */
+    `audio` VARCHAR(256) NOT NULL,                                                  /* 음성파일                          */
+    `audioDetail` JSON NOT NULL,                                                   /* 음성파일에 대한 각 view timestamp 등  */
     PRIMARY KEY (`sid`),
     FOREIGN KEY (`wid`) REFERENCES `Workbooks` (`wid`) ON UPDATE CASCADE
 );
@@ -93,7 +95,7 @@ CREATE TABLE `Views` (
     `index` INT NOT NULL,                                                           /* 페이지 번호                      */
     `form` INT NOT NULL,                                                            /* 유형                            */
     `passage` VARCHAR(256) NOT NULL,                                                /* 지문 파일 식별자, uuid로 변경 필요 */
-    `attachment` VARCHAR(256) NOT NULL,                                             /* 자료(음성) 식별자, uuid로 변경 필요 */ 
+    `attachment` VARCHAR(256) NOT NULL,                                             /* 자료 식별자, uuid로 변경 필요     */
     PRIMARY KEY (`vid`),
     FOREIGN KEY (`sid`) REFERENCES `Sections` (`sid`) ON UPDATE CASCADE
 );
