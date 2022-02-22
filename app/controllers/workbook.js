@@ -1,34 +1,10 @@
 const db = require('../models/index')
 const Workbook = db.Workbooks
 const Section = db.Sections
-const Op = db.Sequelize.Op
 
 exports.fetch_workbooks = async (req, res) => {
-  const where = {}
-  const limit = req.query.page ? 25 : 1000
-  const offset = req.query.page ? 0 + (req.query.page - 1) * limit : 0
-
-  if (req.query.s !== undefined) {
-    where.subject = {
-      [Op.like]: req.query.s
-    }
-  }
-  if (req.query.c !== undefined) {
-    where.category = {
-      [Op.like]: req.query.c
-    }
-  }
-  if (req.query.g !== undefined) where.grade = req.query.g
-  if (req.query.y !== undefined) where.year = req.query.y
-  if (req.query.m !== undefined) where.month = req.query.m
-
   try {
-    const result = await Workbook.findAndCountAll({
-      where,
-      attributes: ['wid', 'title', 'bookcover'],
-      offset: offset,
-      limit: limit
-    })
+    const result = await Workbook.findAndCountAll()
     res.json({ count: result.count, workbooks: result.rows })
   } catch (err) {
     console.log(err)
