@@ -1,6 +1,6 @@
 const db = require('../models/index')
-const Workbook = db.workbooks
-const Section = db.sections
+const Workbook = db.Workbooks
+const Section = db.Sections
 const Op = db.Sequelize.Op
 
 exports.fetch_workbooks = async (req, res) => {

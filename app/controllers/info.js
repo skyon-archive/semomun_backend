@@ -1,5 +1,5 @@
 const db = require('../models/index')
-const Workbook = db.workbooks
+const Workbook = db.Workbooks
 const sequelize = db.sequelize
 
 async function query (category, attr) {

@@ -14,19 +14,13 @@ const sequelize = new Sequelize(env.DB_DATABASE, env.DB_USERNAME, env.DB_PASSWOR
   retry: {
     match: [Sequelize.ConnectionError]
   },
-  query: { raw: true }
+  query: { raw: true },
+  define: { timestamps: true }
 })
 
-const db = {}
+const db = require('./init-models')(sequelize)
 
 db.Sequelize = Sequelize
 db.sequelize = sequelize
-
-db.workbooks = require('./workbook.js')(sequelize, Sequelize)
-db.sections = require('./section.js')(sequelize, Sequelize)
-db.views = require('./view.js')(sequelize, Sequelize)
-db.problems = require('./problem.js')(sequelize, Sequelize)
-db.users = require('./user.js')(sequelize, Sequelize)
-db.submissions = require('./submission.js')(sequelize, Sequelize)
 
 module.exports = db
