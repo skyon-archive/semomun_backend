@@ -1,37 +1,30 @@
 const db = require('../models/index')
 const { get_user_with_google, get_user_with_apple } = require('./auth')
-const View = db.views
-const Problem = db.problems
-const Submission = db.submissions
-const Op = db.Sequelize.Op
+const View = db.Views
+const Problem = db.Problems
+const Submission = db.Submissions
 
 exports.get = async (req, res) => {
   try {
+    const sid = req.params.sid
+    if (!sid) res.status(400)
     const views = await View.findAll({
-      where: {
-        sid: req.params.sid
-      },
+      where: { sid },
       order: [
-        ['index_start', 'ASC']
+        ['index', 'ASC']
       ],
-      raw: true
-    })
-    await Promise.all(
-      views.map(async (view) => {
-        view.problems = await Problem.findAll({
-          where: {
-            sid: req.params.sid,
-            icon_index: {
-              [Op.between]: [view.index_start, view.index_end]
-            }
-          },
+      include: [
+        {
+          model: Problem,
+          as: 'problems',
           order: [
-            ['icon_index', 'ASC']
-          ],
-          raw: true
-        })
-      })
-    )
+            ['index', 'ASC']
+          ]
+        }
+      ],
+      raw: true,
+      nest: true
+    })
     res.json(views)
   } catch (err) {
     console.log(err)

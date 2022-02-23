@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken')
 const env = process.env
 const client_id = env.CLIENT_ID
 const client = new OAuth2Client(client_id)
-const User = db.users
+const User = db.Users
 
 exports.get_user_with_google = async (token) => {
   try {

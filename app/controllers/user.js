@@ -1,6 +1,6 @@
 const { get_user_with_google, get_user_with_apple } = require('./auth')
 const db = require('../models/index')
-const User = db.users
+const User = db.Users
 
 exports.fetch_self = async (req, res) => {
   try {

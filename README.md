@@ -35,12 +35,11 @@ CREATE TABLE `Users` (
     `name` VARCHAR(256) NOT NULL,                                                  /* 실명                          */
     `email` VARCHAR(256) NOT NULL,                                                 /* 이메일                         */
     `gender` VARCHAR(32) NOT NULL,                                                 /* 성별                          */
-    `birth` TIMESTAMP NOT NULL,                                                    /* 생년월일                        */
+    `birth` TIMESTAMP NOT NULL,                                                    /* 생년월일 ex. 82-10-2302-3319    */
     `phone` VARCHAR(32) NOT NULL,                                                  /* 전화번호, 국가코드 포함            */
     `degree` VARCHAR(256) NOT NULL,                                                /* 학력                           */
     `degreeStatus` VARCHAR(32) NOT NULL,                                           /* 재학 상태                       */
     `credit` INT NOT NULL,                                                         /* 보유 캐시, 종속성 관리 필요        */
-    `favoriteTags` VARCHAR(258) NOT NULL,                                          /* 선호 태그, 분리해야 할까?          */
     `auth` INT NOT NULL,                                                           /* 유저 권한                       */
     -- 결제 수단, 계정 연동 등은 테이블 따로 만들거나 redis로 --
     PRIMARY KEY (`uid`)
@@ -67,7 +66,7 @@ CREATE TABLE `Workbooks` (
     `publishMan` VARCHAR(32) NOT NULL,                                             /* 발행인                          */
     `publishCompany` VARCHAR(32) NOT NULL,                                         /* 출판사                          */
     `originalPrice` VARCHAR(32) NOT NULL,                                          /* 정가                            */
-    `bookcover` VARCHAR(256) NOT NULL,                                             /* 표지 파일 식별자, uuid로 변경 필요 */
+    `bookcover` CHAR(36) NOT NULL,                                                 /* 표지 파일 식별자, uuid            */
     PRIMARY KEY (`wid`),
     FOREIGN KEY (`id`) REFERENCES `Items` (`id`) ON UPDATE CASCADE
 );
@@ -80,10 +79,10 @@ CREATE TABLE `Sections` (
     `title` VARCHAR(256) NOT NULL,                                                  /* 제목                            */
     `detail` VARCHAR(4096) NOT NULL,                                               /* 설명                            */
     `cutoff` JSON NOT NULL,                                                         /* 등급컷                           */
-    `sectioncover` VARCHAR(256) NOT NULL,                                           /* 표지 파일 식별자, uuid로 변경 필요  */
+    `sectioncover` CHAR(36) NOT NULL,                                               /* 표지 파일 식별자, uuid           */
     `size` INT NOT NULL,                                                             /* 다운로드 파일 크기, 종속성 관리 필요 */
-    `audio` VARCHAR(256) NOT NULL,                                                  /* 음성파일                          */
-    `audioDetail` JSON NOT NULL,                                                   /* 음성파일에 대한 각 view timestamp 등  */
+    `audio` CHAR(36),                                                               /* 음성파일, uuid                    */
+    `audioDetail` JSON,                                                             /* 음성파일에 대한 각 view timestamp 등  */
     PRIMARY KEY (`sid`),
     FOREIGN KEY (`wid`) REFERENCES `Workbooks` (`wid`) ON UPDATE CASCADE
 );
@@ -94,8 +93,8 @@ CREATE TABLE `Views` (
     `vid` INT NOT NULL AUTO_INCREMENT,                                              /* 식별자                           */
     `index` INT NOT NULL,                                                           /* 페이지 번호                      */
     `form` INT NOT NULL,                                                            /* 유형                            */
-    `passage` VARCHAR(256) NOT NULL,                                                /* 지문 파일 식별자, uuid로 변경 필요 */
-    `attachment` VARCHAR(256) NOT NULL,                                             /* 자료 식별자, uuid로 변경 필요     */
+    `passage` CHAR(36),                                                             /* 지문 파일 식별자, uuid           */
+    `attachment` CHAR(36),                                                          /* 자료 식별자, uuid               */
     PRIMARY KEY (`vid`),
     FOREIGN KEY (`sid`) REFERENCES `Sections` (`sid`) ON UPDATE CASCADE
 );
@@ -105,23 +104,23 @@ CREATE TABLE `Problems` (
     `vid` INT NOT NULL,                                                             /* 뷰                             */
     `pid` INT NOT NULL AUTO_INCREMENT,                                              /* 식별자                          */
     `index` INT NOT NULL,                                                           /* 페이지 내에서의! 문제 번호         */
-    -- 문제집 내에서의 원래 번호, 저장 방식이랑 등등 논의 필요 --
-    `label` VARCHAR(32) NOT NULL,                                                   /* 아이콘에 표시될 이름, 고민 필      */
+    `labelType` VARCHAR(32) NOT NULL,                                               /* 아이콘에 표시될 이름              */
+    `labelNum` VARCHAR(32) NOT NULL,                                                /* 문제집 내에서 문제의 번호            */
     `type` INT NOT NULL,                                                            /* 유형                            */
     `answer` VARCHAR(256) NOT NULL,                                                 /* 정답                            */
-    `content` VARCHAR(256) NOT NULL,                                                /* 문제 파일 식별자, uuid로 변경 필요 */
-    `explanation` VARCHAR(256) NOT NULL,                                            /* 해설 파일 식별자, uuid로 변경 필요 */ 
+    `content` CHAR(36) NOT NULL,                                                    /* 문제 파일 식별자, uuid           */
+    `explanation` CHAR(36),                                                         /* 해설 파일 식별자, uuid           */ 
     PRIMARY KEY (`pid`),
     FOREIGN KEY (`vid`) REFERENCES `Views` (`vid`) ON UPDATE CASCADE
 );
 
 -- 제출 기록 --
 CREATE TABLE `Submissions` (
-    `identifier` INT NOT NULL,
+    `identifier` INT NOT NULL AUTO_INCREMENT,
     `uid` INT NOT NULL,                                                            /* 유저                           */
     `pid` INT NOT NULL,                                                            /* 문제                           */
     `elapsed` INT NOT NULL,                                                        /* 소요 시간                       */
-    `answer` VARCHAR(256) NOT NULL,                                                /* 유저가 제출한 답                 */
+    `answer` VARCHAR(256),                                                         /* 유저가 제출한 답                 */
     `note` BLOB NOT NULL,                                                          /* 필기                            */
     -- 중복 제출 가능하게 해야함 --
     PRIMARY KEY (`identifier` ),
@@ -145,9 +144,18 @@ CREATE TABLE `WorkbookTags` (
     FOREIGN KEY (`tid`) REFERENCES `Tags` (`tid`) ON UPDATE CASCADE
 );
 
+-- 나의 태그 (관심 태그) -- 
+CREATE TABLE `FavoriteTags` (
+    `uid` INT NOT NULL,                                                            /* 유저                          */
+    `tid` INT NOT NULL,                                                            /* 태그                          */
+    PRIMARY KEY (`uid`, `tid`),
+    FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`) ON UPDATE CASCADE,
+    FOREIGN KEY (`tid`) REFERENCES `Tags` (`tid`) ON UPDATE CASCADE
+)
+
 -- 주문 내역 (캐시 사용 내역) --
 CREATE TABLE `OrderHistory` (
-    `ohid` INT NOT NULL,
+    `ohid` INT NOT NULL AUTO_INCREMENT,
     `id` INT NOT NULL,                                                             /* 구매품목                         */
     `uid` INT NOT NULL,                                                            /* 유저                            */
     `payment` INT NOT NULL,                                                        /* 총 지불금액                       */
@@ -158,18 +166,17 @@ CREATE TABLE `OrderHistory` (
 
 -- 캐시 충전 내역 --
 CREATE TABLE `ChargeHistory` (
-    `chid` INT NOT NULL,                                                     /* 주문번호, 논의 필요                */
+    `chid` INT NOT NULL AUTO_INCREMENT,                                            /* 주문번호, 논의 필요                */
     `uid` INT NOT NULL,                                                            /* 유저                            */
     `amount` INT NOT NULL,                                                         /* 충전량                           */
     `type` VARCHAR(32) NOT NULL,                                                   /* 이벤트, 쿠폰, 결제, 등등            */
-    -- 논의가 더 필요 -- 
     PRIMARY KEY (`chid`),
     FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`) ON UPDATE CASCADE
 );
 
 -- 학습 기록 --
 CREATE TABLE `WorkbookHistory` (
-    `whid` INT NOT NULL,
+    `whid` INT NOT NULL AUTO_INCREMENT,
     `wid` INT NOT NULL,                                                            /* 문제집                         */
     `uid` INT NOT NULL,                                                            /* 유저                           */
     `type` VARCHAR(32) NOT NULL,                                                   /* start, end, download 등등      */
@@ -182,205 +189,6 @@ CREATE TABLE `WorkbookHistory` (
 );
 ```
 
-
-### 사용자 User
-
-- uid(기본키): 사용자의 고유 번호입니다. 4바이트의 음이 아닌 정수입니다.
-
-  - 각 사용자는 가입한 순서대로 번호를 부여받습니다. 처음 가입한 사용자는 1번입니다.
-
-- auth: 사용자의 권한 수준입니다. 4바이트의 음수가 아닌 정수입니다.
-
-  - 가능한 값은 증가순으로 `USER(1)`, `ADMIN(100)` 입니다.
-
-- username: 사용자의 닉네임입니다. 32바이트 이하의 문자열입니다.
-
-  - 기본적으로 한글, 영어, 숫자만 허용되며 중복될 수 없습니다.
-
-- email: 사용자의 이메일입니다. 256바이트 이하의 문자열입니다.
-
-- password: 사용자의 비밀번호입니다. 256바이트 이하의 Argon2id 해시입니다.
-
-- settings: 사용자의 개인 설정입니다. 65536바이트 이하의 JSON 문자열입니다.
-
-- profile_image: 사용자의 프로필 사진입니다. 4바이트의 음이 아닌 정수입니다.
-  - 해당 값이 i일 경우 DB의 `/tmp/profile/i.png`에 해당하는 문제 이미지가 존재해야 합니다.
-
-### 학습내역 History
-
-다음 경우에 프론트는 해당 정보를 DB에 전송해야 합니다.
-
-1. 사용자가 어플리케이션을 시작할 때
-
-2. 사용자가 학습공간에서 빠져나올 때
-
-- uid(기본키): 사용자의 uid입니다.
-
-- date(기본키): 사용자가 학습한 날짜입니다. 4바이트의 음이 아닌 정수입니다.
-
-- study_time: 그 날 공부한 시간(초)입니다. 4바이트의 음이 아닌 정수입니다.
-
-### 문제 Problem
-
-- pid(기본키): 문제의 고유 번호입니다. 4바이트의 음이 아닌 정수입니다.
-
-  - 각 문제는 등록된 순서대로 번호를 부여받습니다. 처음 등록된 문제는 1번입니다.
-
-- sid(외래키): 문제가 속한 섹션의 sid입니다.
-
-  - 뷰어의 sid와 일치해야 합니다.
-
-- icon_index: 문제에 대응되는 하단 아이콘의 순서입니다. 4바이트의 음이 아닌 정수입니다.
-
-  - i번째 아이콘을 터치하면 icon_index가 i인 문제가 표시되어야 합니다.
-
-- icon_name: 문제에 대응되는 하단 아이콘의 이름입니다. 4바이트의 문자열입니다.
-
-  - 아이콘 안에 표시될 글자로 가능한 것은 숫자, 심(화), 개(념) 등이 있습니다.
-
-- type: 문제의 속성입니다. 1바이트의 음이 아닌 정수입니다.
-
-  - 0은 `채점 불가`, 1은 `주관식`, 1 초과의 $x$는 `선지가 x개인 객관식`을 의미합니다.
-
-- answer: 문제의 정답입니다. 256바이트 이하의 가변 길이 문자열입니다.
-
-  - 정답이 여럿 존재할 경우 구분자 (,) 를 이용해서 구분합니다.
-
-- content: 문제의 내용입니다. 256바이트 이하의 가변 길이 문자열입니다.
-
-  - 해당 값이 i일 경우 DB의 `/images/content/i` 에 해당하는 문제 이미지가 존재해야 합니다.
-
-- explanation: 문제의 해설입니다. 256바이트 이하의 가변 길이 문자열입니다.
-
-  - 해당 값이 i일 경우 DB의 `/images/explanation/i` 에 해당하는 문제 이미지가 존재해야 합니다.
-  - 해설이 존재하지 않을 경우 null입니다.
-
-- attempt_total: 문제에 답이 제출된 총 횟수입니다.
-
-  - 각 사용자의 첫 제출만 반영합니다.
-
-- attempt_correct: 문제에 정답이 제출된 총 횟수입니다.
-
-  - 각 사용자의 첫 제출만 반영합니다.
-
-- rate: 문제의 외부 정답률입니다. 1바이트의 정수입니다.
-
-  - 기본적으로 0에서 100사이의 값을 갖습니다. 외부 정답률 통계가 존재하지 않을 경우 null입니다.
-  - 세모문 내에서의 제출과는 관계가 없는 값입니다.
-
-- elapsed_total: 각 사용자가 첫 제출을 하기까지 걸린 시간(초)의 합입니다. 4바이트의 음이 아닌 정수입니다.
-
-### 제출 Submission (사용자 - 문제 관계)
-
-다음 경우에 프론트는 해당 정보를 DB에 전송해야 합니다.
-
-1. 사용자가 학습공간에서 `제출` 버튼을 누를 경우
-
-현재는 사용자가 **모든 문제에 답을 입력**해야만 `제출`이 가능합니다.
-
-- uid(기본키): 제출한 사용자의 uid입니다.
-- pid(기본키): 제출된 문제의 pid입니다.
-- elapsed: 사용자의 첫 제출까지 걸린 시간(초)입니다.
-- recent_time: 사용자가 가장 최근에 제출한 시각입니다.
-- user_answer: 사용자가 가장 최근에 제출한 답입니다.
-- correct: 사용자 제출의 정답 여부입니다.
-- note: 사용자의 필기 내용입니다. 65536바이트 이하의 가변 길이 이진 문자열입니다.
-  - 기본적으로 `ios PencilKit`으로 작성한 필기를 저장하게 됩니다.
-
-### 뷰어 View
-
-- vid(기본키): 뷰어의 고유 번호입니다. 4바이트의 음이 아닌 정수입니다.
-- sid(외래키): 문제가 속한 섹션의 sid입니다.
-- index_start: 뷰어에 포함될 문제의 시작 인덱스입니다. 4바이트의 음이 아닌 정수입니다.
-- index_end: 뷰어에 포함될 문제의 끝 인덱스입니다. 4바이트의 음이 아닌 정수입니다.
-
-  - 각 뷰어의 시작 인덱스부터 끝 인덱스까지의 모든 문제는 한 화면에 표시되어야 합니다.
-
-- material: 뷰어의 자료로 쓰일 이미지 정보입니다. 256바이트 이하의 가변 길이 문자열입니다.
-
-  - 해당 값이 i일 경우 DB의 `/images/material/i` 에 해당하는 뷰어 이미지가 존재해야 합니다.
-
-- record: 뷰어의 자료로 쓰일 음성 정보입니다. 256바이트 이하의 가변 길이 문자열입니다.
-
-  - 해당 값이 i일 경우 DB의 `/sounds/record/i` 에 해당하는 음성 파일이 존재해야 합니다.
-
-- form: 뷰어의 형태입니다. 1바이트의 음이 아닌 정수입니다.
-  - 0일 경우 material이 null임을 시사합니다.
-  - 1일 경우 `세로선`, 2일 경우 `가로선`을 기준으로 자료와 문제가 구분된 형태여야 합니다.
-
-### 섹션 Section
-
-- sid(기본키): 섹션의 고유 번호입니다. 4바이트의 음이 아닌 정수입니다.
-
-  - 각 섹션은 추가된 순서대로 번호를 부여받습니다. 처음 추가된 섹션은 1번입니다.
-
-- wid(외래키): 섹션이 속한 문제집의 wid입니다.
-
-- index: 섹션의 순서입니다. 4바이트의 음이 아닌 정수입니다.
-
-- title: 섹션의 제목입니다. 256바이트 이하의 문자열입니다.
-
-- detail: 섹션의 정보입니다. 65536바이트 이하의 문자열입니다.
-
-- sectioncover: 섹션의 표지 이미지입니다. 256바이트 이하의 가변 길이 문자열입니다.
-
-  - 해당 값이 i일 경우 DB의 `/images/section/AxA/i` 에 해당하는 AxA 크기의 표지 이미지가 존재해야 합니다.
-
-- cutoff: 섹션의 등급 컷 관련 정보입니다. 65536바이트 이하의 JSON 문자열입니다.
-
-### 성적표 Report (사용자 - 섹션 관계)
-
-다음 경우에 프론트는 해당 정보를 DB에 전송해야 합니다.
-
-1. 사용자가 `제출`한 문제집의 category가 `수능 모의고사`일 경우
-
-- uid(기본키): 제출한 사용자의 uid입니다.
-
-- sid(기본키): 제출된 섹션의 sid입니다.
-
-- grade: 사용자의 모의고사 등급입니다.
-
-  - 프론트는 섹션의 cutoff와 채점 결과를 바탕으로 이를 계산해야 합니다.
-
-- elapsed: 사용자가 모의고사를 마치는 데 소요된 시간(초)입니다.
-
-- subject: 섹션이 소속된 과목입니다.
-  - 섹션이 속한 문제집의 subject와 일치해야 합니다.
-
-### 문제집 Workbook
-
-- wid(기본키): 문제집의 고유 번호입니다. 4바이트의 음이 아닌 정수입니다.
-
-  - 각 문제집은 추가된 순서대로 번호를 부여받습니다. 처음 추가된 문제집은 1번입니다.
-
-- title: 문제집의 이름입니다. 256바이트 이하의 문자열입니다.
-
-- year: 문제집의 출판연도입니다. 1바이트의 음이 아닌 정수입니다.
-- month: 문제집이 출판된 달입니다. 1바이트의 음이 아닌 정수입니다.
-  - 1에서 12 사이의 값을 가져야 합니다.
-- price: 문제집의 판매 가격(원)입니다. 4바이트의 음이 아닌 정수입니다.
-- detail: 문제집의 정보입니다. 65536바이트 이하의 문자열입니다.
-- bookcover: 문제집의 표지 이미지입니다. 256바이트 이하의 가변 길이 문자열입니다.
-  - 해당 값이 i일 경우 DB의 `/images/workbook/AxA/i` 에 해당하는 AxA 크기의 표지 이미지가 존재해야 합니다.
-- sales: 문제집의 판매량입니다. 4파이트의 음이 아닌 정수입니다.
-- publisher: 문제집의 출판사입니다. 256바이트 이하의 문자열입니다.
-- category: 문제집의 유형입니다. 256바이트 이하의 문자열입니다.
-- subject: 문제집의 주제입니다. 256바이트 이하의 문자열입니다.
-
-- grade: 문제집이 대상으로 하는 학년입니다. 1바이트의 음이 아닌 정수입니다.
-  - 0에서 13 사이의 값을 가져야 합니다. 0은 대상 학년이 특정되지 않은 경우입니다.
-
-문제집 정보 입력 예시는 다음과 같습니다.
-
-```
-ex1) title = 2022년 9월 국어 모의평가, category = 수능 모의고사, subject = 국어
-
-ex2) title = BLACKLABEL 블랙라벨 미적분 (2021년용), category = 내신, subject = 수학
-
-ex3) title = 2021 시나공 정보처리기사 실기, category = 자격증, subject = 국가기술자격
-
-ex4) title = 해커스 토익 실전 1000제 1 LISTENING 문제집, category = 자격증, subject = 토익
-```
 
 
 
@@ -421,30 +229,17 @@ Semomun에서 사용자의 입력은 다음 세 가지 중 하나의 형태로 �
 
 ### GET /workbooks (workbook.js - fetch_workbooks)
 
-요청한 사용자가 해당 문제의 열람 권한이 있는 문제들 중, 주어진 조건에 맞는 문제의 목록을 반환합니다.
-
-- query: 문제 검색 쿼리입니다. 다음과 같은 url query가 가능합니다.
-
-  - { s(ubject), c(ategory), g(rade), y(ear), m(onth) }
-
-- ~~sort: 문제를 정렬할 기준입니다.~~
-
-- page: 페이지의 번호입니다.
-
-정렬 기준은 다음과 같습니다. 
-
-- ~~lexicographical (사전순)~~
+요청한 사용자가 열람 권한을 가지고 있으며 검색 조건과 맞는 문제집의 목록을 반환합니다. 현재는 모든 문제집을 반환합니다.
 
 성공 시 반환값은 JSON이며, 다음과 같은 객체입니다.
 
 - { count, workbooks }
   - count: 주어진 조건에 맞는 문제집의 개수입니다. sort 혹은 page에 영향을 받지 **않습니다**.
-  - workbooks: 문제집 정보들을 sort에 따라 정렬했을 때, [25 * (page - 1), 25 * page) 구간 배열입니다. 문제집 정보는 다음과 같은 객체입니다.
-    - { wid, title, bookcover }
+  - workbooks: 문제집의 배열입니다.
 
 
 
-### POST /register (register.js - create_user)
+### ~~POST /register (register.js - create_user)~~
 
 사용자의 정보를 받아 가입시킵니다
 
@@ -462,7 +257,7 @@ Semomun에서 사용자의 입력은 다음 세 가지 중 하나의 형태로 �
 
 
 
-### POST /register/auth (register.js - send_code)
+### ~~POST /register/auth (register.js - send_code)~~
 
 사용자의 전화번호를 받고, ~~올바른 전화번호인지 확인한 후~~ 해당 번호로 인증 코드를 전송합니다.
 
@@ -485,7 +280,7 @@ Semomun에서 사용자의 입력은 다음 세 가지 중 하나의 형태로 �
 
 
 
-### POST /register/verify (register.js - check_code)
+### ~~POST /register/verify (register.js - check_code)~~
 
 사용자의 전화번호와 인증 코드를 받아 DB와 대조한 후 인증 여부를 판단합니다.
 
@@ -505,15 +300,10 @@ Semomun에서 사용자의 입력은 다음 세 가지 중 하나의 형태로 �
 
 성공 시 반환값은 JSON이며, 다음과 같은 객체입니다.
 
-- { views }
-  - views: 섹션에 포함된 뷰어의 배열입니다. 뷰어 정보는 다음과 같은 객체입니다.
-    - { vid, index_start, index_end, material, form, problems }
-      - problems: 뷰어에 포함된 문제의 배열입니다. 문제 정보는 다음과 같은 객체입니다.
-        - { pid, icon_index, icon_name, type, answer, content, explanation, attempt_total, attempt_correct, rate, elapsed_total}
+- [ view1, view2, ... ]: 섹션에 포함된 뷰의 배열입니다.
 
 
-
-### GET /info/category
+### ~~GET /info/category~~
 
 문제집이 속한 카테고리의 목록을 반환합니다.
 
@@ -524,7 +314,7 @@ Semomun에서 사용자의 입력은 다음 세 가지 중 하나의 형태로 �
 - { category }
 
 
-### GET /info/buttons
+### ~~GET /info/buttons~~
 
 문제집이 속한 카테고리의 버튼 정보를 반환합니다.
 
@@ -538,7 +328,7 @@ Semomun에서 사용자의 입력은 다음 세 가지 중 하나의 형태로 �
       - queryParamValues: 카테고리에 포함된 각 attr의 목록입니다.
 
 
-### GET /info/major
+### ~~GET /info/major~~
 
 회원 가입 시 요구되는 계열 및 전공의 목록입니다.
 
@@ -553,7 +343,7 @@ Semomun에서 사용자의 입력은 다음 세 가지 중 하나의 형태로 �
 { major: [{ '문과 계열': ['인문', '상경', '사회', '교육', '기타'] }, { '이과 계열': ['공학', '자연', '의약', '생활과학', '기타'] }, { 예체능계열: ['미술', '음악', '체육', '기타'] }] }
 ```
 
-### GET /users/self
+### ~~GET /users/self~~
 
 해당 요청을 한 사용자 본인의 정보를 반환합니다.
 
@@ -567,7 +357,7 @@ Semomun에서 사용자의 입력은 다음 세 가지 중 하나의 형태로 �
 
 - 404: 해당 사용자가 존재하지 않는 경우입니다. 반환값은 빈 문자열입니다.
 
-### PUT /users/:uid
+### ~~PUT /users/:uid~~
 
 요청한 사용자가 ~~admin에 속하거나~~ 해당 사용자 본인일 경우, 해당 사용자의 정보를 변경합니다.
 
@@ -583,5 +373,14 @@ Semomun에서 사용자의 입력은 다음 세 가지 중 하나의 형태로 �
 - 403: 요청한 사용자가 admin이 아니며 해당 user도 아닌 경우입니다. 반환값은 빈 문자열입니다.
 - 404: 해당 사용자가 존재하지 않는 경우입니다. 반환값은 빈 문자열입니다.
 
-### PUT /sections/:sid/submit
+### ~~PUT /sections/:sid/submit~~
+
+
+### GET /s3/presignedUrl?uuid=uuid&type=type
+특정 uuid의 파일을 조회하기 위한 url을 조회합니다. url은 1시간(3600초)가 경과될 경우 expire됩니다. 해당 유저가 파일에 대한 열람 권한을 가지고 있지 않을 경우 status code 403을 반환합니다.
+
+- uuid: 조회하고자 하는 파일의 uuid입니다. 파일 확장자 없이 36자의 string입니다.
+- type: `bookcover`, `sectioncover`, `material`, `explanation`, `content` 중 하나의 값입니다. 조회하고자 하는 파일의 종류를 나타냅니다.
+
+반환값은 url string입니다. (**JSON 아님**)
 

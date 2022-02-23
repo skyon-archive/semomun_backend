@@ -5,10 +5,10 @@ const { v4: uuidv4 } = require('uuid')
 const fs = require('fs')
 const db = require('../models/index')
 const path = require('path')
-const Workbook = db.workbooks
-const Section = db.sections
-const View = db.views
-const Problem = db.problems
+const Workbook = db.Workbooks
+const Section = db.Sections
+const View = db.Views
+const Problem = db.Problems
 
 function resizer (src, folder, option) {
   const file = uuidv4() + '.png'

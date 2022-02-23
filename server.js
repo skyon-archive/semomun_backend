@@ -18,7 +18,7 @@ app.use(
 
 const db = require('./app/models/index')
 
-db.sequelize.sync()
+db.sequelize.sync({ alter: true })
 
 app.use(express.static(path.join(process.env.DATA_SOURCE)))
 
@@ -44,6 +44,7 @@ require('./app/routes/upload')(app)
 require('./app/routes/info')(app)
 require('./app/routes/register')(app)
 require('./app/routes/user')(app)
+require('./app/routes/s3')(app)
 
 const PORT = process.env.PORT
 const HOST = process.env.HOST

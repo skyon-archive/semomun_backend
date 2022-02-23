@@ -4,7 +4,7 @@ const db = require('../models/index')
 const request = require('request')
 const crypto = require('crypto')
 const env = process.env
-const User = db.users
+const User = db.Users
 
 function send_sms (phone, code) {
   const timestamp = new Date().getTime()
