@@ -24,7 +24,7 @@ app.use(express.static(path.join(process.env.DATA_SOURCE)))
 
 app.use(
   responseTime((req, res, time) => {
-    console.log(`${req.method} ${req.url} ${time}`)
+    console.log(`${req.method} ${req.originalUrl} ${time}`)
   })
 )
 
@@ -32,7 +32,7 @@ const accessLogStream = rfs.createStream('access.log', {
   interval: '1d',
   path: path.join(process.env.LOG_SOURCE)
 })
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms', { stream: accessLogStream }))
+app.use(morgan('[:date[clf]] :method :url :status :res[content-length] - :response-time ms', { stream: accessLogStream }))
 
 app.get('/', (req, res) => {
   res.json({ message: 'Semomun API.' })
