@@ -116,10 +116,12 @@ exports.createUser = async (req, res) => {
     userInfo.gender = ''
     userInfo.auth = 1
     userInfo.credit = 0
+    userInfo.favoriteTags = userInfo.favoriteTags.map((tid) => ({ tid }))
 
     let result
     try {
-      result = await User.create(userInfo)
+      result = await User.create(userInfo,
+        { include: [{ association: User.FavoriteTags }] })
     } catch (err) {
       res.status(400).send(err.toString())
     }

@@ -244,9 +244,29 @@ Semomun에서 사용자의 입력은 다음 세 가지 중 하나의 형태로 �
 사용자의 정보를 받아 가입시킵니다
 
 - info: 사용자 초기 정보입니다. 다음과 같은 객체입니다.
-  - `{ nickname, phone, school, major, majorDetail, favoriteCategory, graduationStatus }`
+  - `{ nickname, phone, school, major, majorDetail, favoriteTags, graduationStatus }`
   - phone: `+82-10-1234-5678`과 같은 형식입니다.
+  - favoriteTags: `[1, 2]`와 같은 형식으로 tid들의 목록입니다.
 - token: 사용자 식별 토큰입니다.
+- type: 소셜로그인 타입입니다. 그 값은 `google` 또는 `apple`입니다.
+<details>
+<summary>example</summary>
+<pre><code class="language-json">{
+    "info": {
+        "nickname": "nickname1",
+        "phone": "+82-10-0000-0000",
+        "school": "서울대학교",
+        "major": "이과 계열",
+        "majorDetail": "공학",
+        "graduationStatus": "재학",
+        "favoriteTags": [1, 4]
+    },
+    "token": "eyJhb...",
+    "type": "google"
+}
+</code></pre>
+</details>
+<br/>
 
 성공 시 반환값은 JSON이며, `{ uid: 1 }`과 같은 객체입니다.
 
