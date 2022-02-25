@@ -33,10 +33,15 @@ exports.getAppleId = async (token) => {
 
 exports.createJWT = (uid) => {
   const payload = { uid }
-  const accessToken = jwt.sign(payload, +secret, { algorithm: 'HS256', expiresIn: '15m' })
-  const refreshToken = jwt.sign({}, +secret, { algorithm: 'HS256', expiresIn: '30d' })
-  const accessHash = bcrypt.hashSync(accessToken, salt)
-  const refreshHash = bcrypt.hashSync(refreshToken, salt)
+  const accessToken = jwt.sign(payload, secret, { algorithm: 'HS256', expiresIn: '15m' })
+  const refreshToken = jwt.sign({}, secret, { algorithm: 'HS256', expiresIn: '30d' })
+  const accessHash = bcrypt.hashSync(accessToken, +salt)
+  const refreshHash = bcrypt.hashSync(refreshToken, +salt)
   redis.set(`auth:jwt:${refreshHash}`, accessHash, { EX: 60 * 60 * 24 * 30 })
   return { accessToken, refreshToken }
 }
+
+exports.AuthType = ({
+  GOOGLE: 'google',
+  APPLE: 'apple'
+})

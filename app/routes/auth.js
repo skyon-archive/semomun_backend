@@ -6,7 +6,7 @@ module.exports = (app) => {
 
   router.post('/code/send', register.send_code)
   router.post('/code/verify', register.check_code)
-  router.post('/check', register.check)
+  router.post('/login', auth.login)
   router.post('/signup', auth.createUser)
   app.use('/auth', router)
 }

@@ -1,5 +1,4 @@
 const { createClient } = require('redis')
-const { getUserWithGoogle, getUserWithApple } = require('../services/auth')
 const request = require('request')
 const crypto = require('crypto')
 const env = process.env
@@ -64,20 +63,6 @@ exports.check_code = async (req, res) => {
       res.json({})
     } else {
       res.status(400).send()
-    }
-  } catch (err) {
-    console.log(err)
-    res.status(500).send()
-  }
-}
-
-exports.check = async (req, res) => {
-  try {
-    const token = req.body.token
-    if (await getUserWithGoogle(token) || await getUserWithApple(token)) {
-      res.json({ check: true })
-    } else {
-      res.json({ check: false })
     }
   } catch (err) {
     console.log(err)

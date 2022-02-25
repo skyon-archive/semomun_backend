@@ -252,7 +252,7 @@ Semomun에서 사용자의 입력은 다음 세 가지 중 하나의 형태로 �
   - phone: `+82-10-1234-5678`과 같은 형식입니다.
   - favoriteTags: `[1, 2]`와 같은 형식으로 tid들의 목록입니다.
 - token: 사용자 식별 토큰입니다.
-- type: 소셜로그인 타입입니다. 그 값은 `google` 또는 `apple`입니다.
+- type: 소셜로그인 타입입니다. 그 값은 "google" 또는 "apple"입니다.
 <details>
 <summary>example</summary>
 <pre><code class="language-json">{
@@ -276,13 +276,26 @@ Semomun에서 사용자의 입력은 다음 세 가지 중 하나의 형태로 �
 
 실패 시 처리는 다음과 같습니다.
 
-- 400 Bad Request: type이 `google` 또는 `apple`이 아닌 경우입니다. 반환값은 `WRONG_TYPE`입니다.
+- 400 Bad Request: type이 "google" 또는 "apple"이 아닌 경우입니다. 반환값은 `WRONG_TYPE`입니다.
 - 400 Bad Request: 해당 토큰으로 가입한 유저가 이미 존재하는 경우입니다. 반환값은 `USER_ALREADY_EXISTS`입니다.
 - 400 Bad Request: 토큰이 유효하지 않은 경우입니다.
 - 400 Bad Request: 유저 정보가 유효하지 않은 경우입니다. 에러 내역을 반환합니다.
 - 409 Conflict: 이미 사용중인 닉네임인 경우입니다. 반환값은 `NICKNAME_NOT_AVAILABLE` 입니다.
 - 409 Conflict: 이미 사용중인 전화번호인 경우입니다. 반환값은 `PHONE_NOT_AVAILABLE` 입니다.
 
+
+### POST /auth/login (auth.js - login)
+
+google 또는 apple 토큰을 통해 로그인을 합니다.
+- token: google 또는 apple 토큰입니다.
+- type: "google" 또는 "apple"의 값입니다.
+
+성공 시 반환값은 JSON이며, `{ "accessToken": "asdf", "refreshToken": "abcd" }`와 같이 access token과 refresh token을 담은 객체입니다.
+
+실패 시 처리는 다음과 같습니다.
+- 400 Bad Request: type이 "google" 또는 "apple"이 아닌 경우입니다. 반환값은 `WRONG_TYPE`입니다.
+- 400 Bad Request: 토큰 파싱에 실패한 경우입니다.
+- 400 Bad Request: 해당 토큰으로 가입한 유저가 없는 경우입니다. 반환값은 `USER_NOT_EXIST`입니다.
 
 
 ### ~~POST /register/auth (register.js - send_code)~~
