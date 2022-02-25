@@ -42,7 +42,7 @@ require('./app/routes/workbooks')(app)
 require('./app/routes/sections')(app)
 require('./app/routes/upload')(app)
 require('./app/routes/info')(app)
-require('./app/routes/register')(app)
+require('./app/routes/auth')(app)
 require('./app/routes/user')(app)
 require('./app/routes/s3')(app)
 

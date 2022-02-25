@@ -1,5 +1,5 @@
 const db = require('../models/index')
-const { getUserWithGoogle, getUserWithApple } = require('./auth')
+const { getUserWithGoogle, getUserWithApple } = require('../services/auth')
 const View = db.Views
 const Problem = db.Problems
 const Submission = db.Submissions

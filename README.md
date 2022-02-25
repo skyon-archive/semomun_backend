@@ -239,7 +239,7 @@ Semomun에서 사용자의 입력은 다음 세 가지 중 하나의 형태로 �
 
 
 
-### POST /register (register.js - createUser)
+### POST /auth/signup (auth.js - createUser)
 
 사용자의 정보를 받아 가입시킵니다
 

@@ -1,11 +1,12 @@
-/*
 module.exports = (app) => {
-  const auth = require('../controllers/auth.js')
+  const register = require('../controllers/register')
+  const auth = require('../controllers/auth')
 
   const router = require('express').Router()
 
-  router.post('/login', auth.login)
-  router.get('/', auth.url)
+  router.post('/code/send', register.send_code)
+  router.post('/code/verify', register.check_code)
+  router.post('/check', register.check)
+  router.post('/signup', auth.createUser)
   app.use('/auth', router)
 }
-*/

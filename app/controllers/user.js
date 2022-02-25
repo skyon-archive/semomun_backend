@@ -1,4 +1,4 @@
-const { getUserWithGoogle, getUserWithApple } = require('./auth')
+const { getUserWithGoogle, getUserWithApple } = require('../services/auth')
 const db = require('../models/index')
 const User = db.Users
 

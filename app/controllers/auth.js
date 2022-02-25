@@ -1,61 +1,49 @@
-const { OAuth2Client } = require('google-auth-library')
-const db = require('../models/index')
-const jwt = require('jsonwebtoken')
-const env = process.env
-const client_id = env.CLIENT_ID
-const client = new OAuth2Client(client_id)
-const User = db.Users
+const { getUserWithGoogle, getUserWithApple, getGoogleId, getAppleId } = require('../services/auth')
+const { getUserWithPhone, getUserWithNickname } = require('./user')
+const { createUser } = require('../services/user')
 
-exports.getUserWithGoogle = async (token) => {
+exports.createUser = async (req, res) => {
   try {
-    const ticket = await client.verifyIdToken({
-      idToken: token,
-      audience: client_id
-    })
-    const payload = ticket.getPayload()
-    const sub = payload.sub
-    const user = await User.findOne({ where: { googleId: sub } })
-    return user.uid
-  } catch (err) {
-    return null
-  }
-}
+    const token = req.body.token
+    const userInfo = req.body.info
+    const type = req.body.type
 
-exports.getGoogleId = async (token) => {
-  try {
-    const ticket = await client.verifyIdToken({
-      idToken: token,
-      audience: client_id
-    })
-    const payload = ticket.getPayload()
-    const sub = payload.sub
-    return sub
-  } catch (err) {
-    return null
-  }
-}
-
-exports.getUserWithApple = async (token) => {
-  try {
-    const sub = jwt.decode(token).sub
-    console.log('ap' + sub)
-    const user = await User.findOne({ where: { appleId: sub } })
-    if (user === null) {
-      return null
+    if (type === 'google') {
+      if (await getUserWithGoogle(token)) {
+        return res.status(400).send('USER_ALREADY_EXISTS')
+      }
+      userInfo.googleId = await getGoogleId(token)
+      if (!userInfo.googleId) {
+        return res.status(400).send()
+      }
+    } else if (type === 'apple') {
+      if (await getUserWithApple(token)) {
+        return res.status(400).send('USER_ALREADY_EXISTS')
+      }
+      userInfo.appleId = await getAppleId(token)
+      if (!userInfo.appleId) {
+        return res.status(400).send()
+      }
     } else {
-      return user.uid
+      return res.status(400).send('WRONG_TYPE')
     }
-  } catch (err) {
-    return null
-  }
-}
 
-exports.getAppleId = async (token) => {
-  try {
-    const sub = jwt.decode(token).sub
-    console.log('get' + sub)
-    return sub
+    if (await getUserWithNickname(userInfo.nickname)) {
+      return res.status(409).send('NICKNAME_NOT_AVAILABLE')
+    }
+    if (await getUserWithPhone(userInfo.phone)) {
+      return res.status(409).send('PHONE_NOT_AVAILABLE')
+    }
+
+    let result
+    try {
+      result = await createUser(userInfo)
+    } catch (err) {
+      res.status(400).send(err.toString())
+    }
+    res.status(200).json({ uid: result.uid })
   } catch (err) {
-    return null
+    console.log(err)
+    res.status(500).send()
   }
 }

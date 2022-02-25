@@ -1,10 +1,8 @@
 const { createClient } = require('redis')
-const { getUserWithGoogle, getUserWithApple, getGoogleId, getAppleId } = require('./auth')
-const db = require('../models/index')
+const { getUserWithGoogle, getUserWithApple } = require('../services/auth')
 const request = require('request')
 const crypto = require('crypto')
 const env = process.env
-const User = db.Users
 
 function send_sms (phone, code) {
   const timestamp = new Date().getTime()
@@ -73,65 +71,6 @@ exports.check_code = async (req, res) => {
   }
 }
 
-exports.createUser = async (req, res) => {
-  try {
-    const token = req.body.token
-    const userInfo = req.body.info
-    const type = req.body.type
-
-    if (type === 'google') {
-      if (await getUserWithGoogle(token)) {
-        return res.status(400).send('USER_ALREADY_EXISTS')
-      }
-      userInfo.googleId = await getGoogleId(token)
-      if (!userInfo.googleId) {
-        return res.status(400).send()
-      }
-    } else if (type === 'apple') {
-      if (await getUserWithApple(token)) {
-        return res.status(400).send('USER_ALREADY_EXISTS')
-      }
-      userInfo.appleId = await getAppleId(token)
-      if (!userInfo.appleId) {
-        return res.status(400).send()
-      }
-    } else {
-      return res.status(400).send('WRONG_TYPE')
-    }
-
-    if (await getUserWithNickname(userInfo.nickname)) {
-      return res.status(409).send('NICKNAME_NOT_AVAILABLE')
-    }
-    if (await getUserWithPhone(userInfo.phone)) {
-      return res.status(409).send('PHONE_NOT_AVAILABLE')
-    }
-
-    if (userInfo.uid) {
-      return res.status(400).send()
-    }
-    userInfo.username = userInfo.nickname
-    delete userInfo.nickName
-    userInfo.name = ''
-    userInfo.email = ''
-    userInfo.gender = ''
-    userInfo.auth = 1
-    userInfo.credit = 0
-    userInfo.favoriteTags = userInfo.favoriteTags.map((tid) => ({ tid }))
-
-    let result
-    try {
-      result = await User.create(userInfo,
-        { include: [{ association: User.FavoriteTags }] })
-    } catch (err) {
-      res.status(400).send(err.toString())
-    }
-    res.status(200).json({ uid: result.uid })
-  } catch (err) {
-    console.log(err)
-    res.status(500).send()
-  }
-}
-
 exports.check = async (req, res) => {
   try {
     const token = req.body.token
@@ -143,23 +82,5 @@ exports.check = async (req, res) => {
   } catch (err) {
     console.log(err)
     res.status(500).send()
-  }
-}
-
-async function getUserWithNickname (nickName) {
-  try {
-    const user = await User.findOne({ where: { nickName: nickName } })
-    return user.uid
-  } catch (err) {
-    return null
-  }
-}
-
-async function getUserWithPhone (phone) {
-  try {
-    const user = await User.findOne({ where: { phone: phone } })
-    return user.uid
-  } catch (err) {
-    return null
   }
 }
