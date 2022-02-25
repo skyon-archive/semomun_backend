@@ -298,6 +298,22 @@ google 또는 apple 토큰을 통해 로그인을 합니다.
 - 400 Bad Request: 해당 토큰으로 가입한 유저가 없는 경우입니다. 반환값은 `USER_NOT_EXIST`입니다.
 
 
+### GET /auth/refresh (auth.js - refresh)
+
+만료된 accessToken과 만료되지 않은 refreshToken을 통해 새로운 accessToken과 refreshToken을 생성합니다. 이전 refreshToken은 폐기됩니다.
+
+**헤더**에 다음과 같은 값을 담아야 합니다.
+- authorization: `Bearer aaa.bbb.ccc.`
+  - accessToken을 일반적인 Bearer token과 같은 형태로 담습니다.
+- refresh: `rrr.bbb.ccc`
+
+성공 시 반환값은 JSON이며, `{ "accessToken": "asdf", "refreshToken": "abcd" }`와 같이 access token과 refresh token을 담은 객체입니다.
+accessToken과 refreshToken 모두 새로 생성된 값입니다.
+
+실패 시 처리는 다음과 같습니다.
+- 400 Bad Request: 토큰이 주어지지 않았거나, 파싱에 실패했거나, 서버에서 알고 있는 값이 아니거나, accessToken이 만료되지 않았거나, refreshToken이 만료된 경우에 해당합니다. 정상적인 로직 상에서 (해커의 공격이 아닌) status code 400을 받았다면 그것은 refreshToken의 expire time인 30일이 경과하여 로그인이 풀린 것입니다.
+
+
 ### ~~POST /register/auth (register.js - send_code)~~
 
 사용자의 전화번호를 받고, ~~올바른 전화번호인지 확인한 후~~ 해당 번호로 인증 코드를 전송합니다.

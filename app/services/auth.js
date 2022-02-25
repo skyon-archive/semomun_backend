@@ -31,14 +31,32 @@ exports.getAppleId = async (token) => {
   }
 }
 
-exports.createJWT = (uid) => {
+const getAuthJwtKey = (refreshToken) => {
+  return `auth:jwt:${refreshToken}`
+}
+exports.getAuthJwtKey = getAuthJwtKey
+
+exports.createJwt = async (uid) => {
   const payload = { uid }
   const accessToken = jwt.sign(payload, secret, { algorithm: 'HS256', expiresIn: '15m' })
   const refreshToken = jwt.sign({}, secret, { algorithm: 'HS256', expiresIn: '30d' })
   const accessHash = bcrypt.hashSync(accessToken, +salt)
-  const refreshHash = bcrypt.hashSync(refreshToken, +salt)
-  redis.set(`auth:jwt:${refreshHash}`, accessHash, { EX: 60 * 60 * 24 * 30 })
+  await redis.set(getAuthJwtKey(refreshToken), accessHash, { EX: 60 * 60 * 24 * 30 + 15 })
   return { accessToken, refreshToken }
+}
+
+exports.verifyJwt = (token) => {
+  try {
+    const result = jwt.verify(token, secret)
+    return { ok: true, result }
+  } catch {
+    try {
+      const result = jwt.decode(token, secret)
+      return { ok: false, result }
+    } catch {
+      return { ok: false, result: null }
+    }
+  }
 }
 
 exports.AuthType = ({

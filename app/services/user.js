@@ -19,14 +19,14 @@ exports.getUserWithPhone = async (phone) => {
   }
 }
 
-exports.getUserWithGoogleId = (googleId) => {
-  const user = User.findOne({ where: { googleId } })
+exports.getUserWithGoogleId = async (googleId) => {
+  const user = await User.findOne({ where: { googleId } })
   if (user) return user.uid
   return null
 }
 
-exports.getUserWithAppleId = (appleId) => {
-  const user = User.findOne({ where: { appleId } })
+exports.getUserWithAppleId = async (appleId) => {
+  const user = await User.findOne({ where: { appleId } })
   if (user) return user.uid
   return null
 }

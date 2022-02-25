@@ -1,7 +1,10 @@
+const bcrypt = require('bcrypt')
 const {
   getGoogleId,
   getAppleId,
-  createJWT,
+  getAuthJwtKey,
+  createJwt,
+  verifyJwt,
   AuthType
 } = require('../services/auth')
 const {
@@ -11,6 +14,7 @@ const {
   getUserWithNickname,
   createUser
 } = require('../services/user')
+const redis = require('../services/redis')
 
 exports.createUser = async (req, res) => {
   try {
@@ -49,8 +53,8 @@ exports.createUser = async (req, res) => {
     } catch (err) {
       res.status(400).send(err.toString())
     }
-    const tokens = createJWT(result.uid)
-    res.status(200).json(tokens)
+    const tokens = createJwt(result.uid)
+    res.json(tokens)
   } catch (err) {
     console.log(err)
     res.status(500).send()
@@ -64,18 +68,53 @@ exports.login = async (req, res) => {
     let uid
     if (type === AuthType.GOOGLE) {
       const googleId = await getGoogleId(token)
-      if (!googleId) return res.send(400)
+      if (!googleId) return res.status(400).send()
       uid = await getUserWithGoogleId(googleId)
     } else if (type === AuthType.APPLE) {
       const appleId = await getAppleId(token)
-      if (!appleId) return res.send(400)
+      if (!appleId) return res.status(400).send()
       uid = await getUserWithAppleId(appleId)
     } else return res.status(400).send('WRONG_TYPE')
 
-    if (!uid) res.status(400).send('USER_NOT_EXIST')
+    if (!uid) return res.status(400).send('USER_NOT_EXIST')
 
-    const tokens = createJWT(uid)
-    res.status(200).json(tokens)
+    const tokens = await createJwt(uid)
+    res.json(tokens)
+  } catch (err) {
+    console.log(err)
+    res.status(500).send()
+  }
+}
+
+exports.refresh = async (req, res) => {
+  try {
+    const refreshToken = req.headers.refresh
+    if (!refreshToken) return res.status(400).send()
+    const { ok: refreshOk, result: refreshDecoded } = verifyJwt(refreshToken)
+    if (!refreshOk || !refreshDecoded) return res.status(400).send()
+    const redisKey = getAuthJwtKey(refreshToken)
+
+    const authorization = req.headers.authorization
+    const accessToken = authorization ? authorization.split('Bearer ')[1] : null
+    if (!accessToken) {
+      await redis.del(redisKey)
+      return res.status(400).send()
+    }
+
+    const { ok: accessOk, result: accessDecoded } = verifyJwt(accessToken)
+    if (accessOk || !accessDecoded) {
+      await redis.del(redisKey)
+      return res.status(400).send()
+    }
+
+    const redisValue = await redis.get(redisKey)
+    await redis.del(redisKey)
+    if (!redisValue || !await bcrypt.compare(accessToken, redisValue)) {
+      return res.status(400).send()
+    }
+
+    const newTokens = await createJwt(accessDecoded.uid)
+    res.json(newTokens)
   } catch (err) {
     console.log(err)
     res.status(500).send()
