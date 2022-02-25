@@ -255,7 +255,7 @@ Semomun에서 사용자의 입력은 다음 세 가지 중 하나의 형태로 �
 - 400 Bad Request: type이 `google` 또는 `apple`이 아닌 경우입니다. 반환값은 `WRONG_TYPE`입니다.
 - 400 Bad Request: 해당 토큰으로 가입한 유저가 이미 존재하는 경우입니다. 반환값은 `USER_ALREADY_EXISTS`입니다.
 - 400 Bad Request: 토큰이 유효하지 않은 경우입니다.
-- 400 Bad Request: 유저 정보가 유효하지 않은 경우입니다.
+- 400 Bad Request: 유저 정보가 유효하지 않은 경우입니다. 에러 내역을 반환합니다.
 - 409 Conflict: 이미 사용중인 닉네임인 경우입니다. 반환값은 `NICKNAME_NOT_AVAILABLE` 입니다.
 - 409 Conflict: 이미 사용중인 전화번호인 경우입니다. 반환값은 `PHONE_NOT_AVAILABLE` 입니다.
 

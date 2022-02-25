@@ -117,7 +117,12 @@ exports.createUser = async (req, res) => {
     userInfo.auth = 1
     userInfo.credit = 0
 
-    const result = await User.create(userInfo)
+    let result
+    try {
+      result = await User.create(userInfo)
+    } catch (err) {
+      res.status(400).send(err.toString())
+    }
     res.status(200).json({ uid: result.uid })
   } catch (err) {
     console.log(err)
