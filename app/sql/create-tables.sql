@@ -95,7 +95,7 @@ CREATE TABLE `Submissions` (
     `pid` INT NOT NULL,                                                            /* 문제                           */
     `elapsed` INT NOT NULL,                                                        /* 소요 시간                       */
     `answer` VARCHAR(256),                                                         /* 유저가 제출한 답                 */
-    `note` BLOB NOT NULL,                                                          /* 필기                            */
+    `note` MEDIUMBLOB NOT NULL,                                                          /* 필기                            */
     -- 중복 제출 가능하게 해야함 --
     PRIMARY KEY (`identifier` ),
     FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`) ON UPDATE CASCADE,

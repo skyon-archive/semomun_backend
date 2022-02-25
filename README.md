@@ -35,8 +35,12 @@ CREATE TABLE `Users` (
     `name` VARCHAR(256) NOT NULL,                                                  /* 실명                          */
     `email` VARCHAR(256) NOT NULL,                                                 /* 이메일                         */
     `gender` VARCHAR(32) NOT NULL,                                                 /* 성별                          */
-    `birth` TIMESTAMP NOT NULL,                                                    /* 생년월일 ex. 82-10-2302-3319    */
+    `birth` TIMESTAMP,
+    `googleId` VARCHAR(256),                                                       /* 구글 소셜로그인 id                */
+    `appleId` VARCHAR(256),                                                        /* 애플 소셜로그인 id                */
     `phone` VARCHAR(32) NOT NULL,                                                  /* 전화번호, 국가코드 포함            */
+    `major` VARCHAR(32) NOT NULL,                                                  /* 계역                           */
+    `majorDetail` VARCHAR(32) NOT NULL,                                            /* 전공                          */
     `degree` VARCHAR(256) NOT NULL,                                                /* 학력                           */
     `degreeStatus` VARCHAR(32) NOT NULL,                                           /* 재학 상태                       */
     `credit` INT NOT NULL,                                                         /* 보유 캐시, 종속성 관리 필요        */
@@ -121,7 +125,7 @@ CREATE TABLE `Submissions` (
     `pid` INT NOT NULL,                                                            /* 문제                           */
     `elapsed` INT NOT NULL,                                                        /* 소요 시간                       */
     `answer` VARCHAR(256),                                                         /* 유저가 제출한 답                 */
-    `note` BLOB NOT NULL,                                                          /* 필기                            */
+    `note` MEDIUMBLOB NOT NULL,                                                          /* 필기                            */
     -- 중복 제출 가능하게 해야함 --
     PRIMARY KEY (`identifier` ),
     FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`) ON UPDATE CASCADE,

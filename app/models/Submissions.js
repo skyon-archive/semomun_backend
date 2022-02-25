@@ -31,7 +31,7 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false
     },
     note: {
-      type: DataTypes.BLOB,
+      type: DataTypes.BLOB('medium'),
       allowNull: false
     }
   }, {
