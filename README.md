@@ -268,7 +268,7 @@ Semomun에서 사용자의 입력은 다음 세 가지 중 하나의 형태로 �
 </details>
 <br/>
 
-성공 시 반환값은 JSON이며, `{ uid: 1 }`과 같은 객체입니다.
+성공 시 반환값은 JSON이며, `{ "accessToken": "asdf", "refreshToken": "abcd" }`와 같이 access token과 refresh token을 담은 객체입니다.
 
 실패 시 처리는 다음과 같습니다.
 

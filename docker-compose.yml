@@ -26,3 +26,10 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql:Z
     container_name: semomun-mysql
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/var/lib/redis:Z
+    container_name: semomun-redis

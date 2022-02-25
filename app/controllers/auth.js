@@ -1,4 +1,4 @@
-const { getGoogleId, getAppleId } = require('../services/auth')
+const { getGoogleId, getAppleId, createJWT } = require('../services/auth')
 const { getUserWithGoogleId, getUserWithAppleId, getUserWithPhone, getUserWithNickname } = require('../services/user')
 const { createUser } = require('../services/user')
 
@@ -41,7 +41,8 @@ exports.createUser = async (req, res) => {
     } catch (err) {
       res.status(400).send(err.toString())
     }
-    res.status(200).json({ uid: result.uid })
+    const tokens = createJWT(result.uid)
+    res.status(200).json(tokens)
   } catch (err) {
     console.log(err)
     res.status(500).send()
