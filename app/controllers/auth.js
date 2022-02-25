@@ -1,5 +1,5 @@
-const { getUserWithGoogle, getUserWithApple, getGoogleId, getAppleId } = require('../services/auth')
-const { getUserWithPhone, getUserWithNickname } = require('./user')
+const { getGoogleId, getAppleId } = require('../services/auth')
+const { getUserWithGoogleId, getUserWithAppleId, getUserWithPhone, getUserWithNickname } = require('../services/user')
 const { createUser } = require('../services/user')
 
 exports.createUser = async (req, res) => {
@@ -9,20 +9,20 @@ exports.createUser = async (req, res) => {
     const type = req.body.type
 
     if (type === 'google') {
-      if (await getUserWithGoogle(token)) {
-        return res.status(400).send('USER_ALREADY_EXISTS')
-      }
       userInfo.googleId = await getGoogleId(token)
       if (!userInfo.googleId) {
         return res.status(400).send()
       }
-    } else if (type === 'apple') {
-      if (await getUserWithApple(token)) {
+      if (await getUserWithGoogleId(userInfo.googleId)) {
         return res.status(400).send('USER_ALREADY_EXISTS')
       }
+    } else if (type === 'apple') {
       userInfo.appleId = await getAppleId(token)
       if (!userInfo.appleId) {
         return res.status(400).send()
+      }
+      if (await getUserWithAppleId(userInfo.appleId)) {
+        return res.status(400).send('USER_ALREADY_EXISTS')
       }
     } else {
       return res.status(400).send('WRONG_TYPE')

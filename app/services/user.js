@@ -19,6 +19,18 @@ exports.getUserWithPhone = async (phone) => {
   }
 }
 
+exports.getUserWithGoogleId = (googleId) => {
+  const user = User.findOne({ where: { googleId } })
+  if (user) return user.uid
+  return null
+}
+
+exports.getUserWithAppleId = (appleId) => {
+  const user = User.findOne({ where: { appleId } })
+  if (user) return user.uid
+  return null
+}
+
 exports.createUser = async (userInfo) => {
   if (userInfo.uid) {
     throw new Error('uid should be null')
