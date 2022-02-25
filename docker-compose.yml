@@ -2,6 +2,7 @@ version: '3'
 
 volumes:
   mysql_data: {}
+  redis_data: {}
 
 services:
   node:
@@ -11,7 +12,7 @@ services:
     depends_on:
       - mysql
     ports:
-      - "8080:8080"
+      - 8080:8080
     volumes:
       - /home/ubuntu/data:/data:Z
       - /home/ubuntu/tmp:/tmp:Z
@@ -19,7 +20,7 @@ services:
   mysql:
     image: mysql:5.7
     ports:
-      - "3306:3306"
+      - 3306:3306
     environment:
       - MYSQL_ROOT_PASSWORD="${DB_PASSWORD}"
       - MYSQL_DATABASE="${DB_DATABASE}"
@@ -29,7 +30,7 @@ services:
   redis:
     image: redis:latest
     ports:
-      - "6379:6379"
+      - 6379:6379
     volumes:
       - redis_data:/var/lib/redis:Z
     container_name: semomun-redis
