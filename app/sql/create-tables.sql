@@ -5,7 +5,7 @@ CREATE TABLE `Users` (
     `name` VARCHAR(256) NOT NULL,                                                  /* 실명                          */
     `email` VARCHAR(256) NOT NULL,                                                 /* 이메일                         */
     `gender` VARCHAR(32) NOT NULL,                                                 /* 성별                          */
-    `birth` TIMESTAMP NOT NULL,                                                    /* 생년월일 ex. 82-10-2302-3319    */
+    `birth` TIMESTAMP,
     `googleId` VARCHAR(256),                                                       /* 구글 소셜로그인 id                */
     `appleId` VARCHAR(256),                                                        /* 애플 소셜로그인 id                */
     `phone` VARCHAR(32) NOT NULL,                                                  /* 전화번호, 국가코드 포함            */

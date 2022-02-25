@@ -109,8 +109,13 @@ exports.createUser = async (req, res) => {
     if (userInfo.uid) {
       return res.status(400).send()
     }
-    userInfo.username = userInfo.nickName
-    delete userInfo.username
+    userInfo.username = userInfo.nickname
+    delete userInfo.nickName
+    userInfo.name = ''
+    userInfo.email = ''
+    userInfo.gender = ''
+    userInfo.auth = 1
+    userInfo.credit = 0
 
     const result = await User.create(userInfo)
     res.status(200).json({ uid: result.uid })

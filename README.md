@@ -239,15 +239,16 @@ Semomun에서 사용자의 입력은 다음 세 가지 중 하나의 형태로 �
 
 
 
-### ~~POST /register (register.js - createUser)~~
+### POST /register (register.js - createUser)
 
 사용자의 정보를 받아 가입시킵니다
 
 - info: 사용자 초기 정보입니다. 다음과 같은 객체입니다.
-  - { nickname, phone, school, major, majorDetail, favoriteCategory, graduationStatus }
+  - `{ nickname, phone, school, major, majorDetail, favoriteCategory, graduationStatus }`
+  - phone: `+82-10-1234-5678`과 같은 형식입니다.
 - token: 사용자 식별 토큰입니다.
 
-성공 시 반환값은 JSON이며, `{ uid }` 객체입니다.
+성공 시 반환값은 JSON이며, `{ uid: 1 }`과 같은 객체입니다.
 
 실패 시 처리는 다음과 같습니다.
 

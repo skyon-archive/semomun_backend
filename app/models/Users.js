@@ -25,7 +25,7 @@ module.exports = function (sequelize, DataTypes) {
     },
     birth: {
       type: DataTypes.DATE,
-      allowNull: false
+      allowNull: true
     },
     googleId: {
       type: DataTypes.STRING(256),
