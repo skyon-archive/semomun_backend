@@ -17,8 +17,9 @@ app.use(
 )
 
 const db = require('./app/models/index')
-
 db.sequelize.sync({ alter: true })
+
+require('./app/services/redis')
 
 app.use(express.static(path.join(process.env.DATA_SOURCE)))
 
