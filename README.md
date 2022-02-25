@@ -239,19 +239,22 @@ Semomun에서 사용자의 입력은 다음 세 가지 중 하나의 형태로 �
 
 
 
-### ~~POST /register (register.js - create_user)~~
+### ~~POST /register (register.js - createUser)~~
 
 사용자의 정보를 받아 가입시킵니다
 
 - info: 사용자 초기 정보입니다. 다음과 같은 객체입니다.
-  - { name, nickname, gender, phone, school, major, majorDetail, favoriteCategory, graduationStatus }
+  - { nickname, phone, school, major, majorDetail, favoriteCategory, graduationStatus }
 - token: 사용자 식별 토큰입니다.
 
-성공 시 반환값은 JSON이며, 빈 객체입니다.
+성공 시 반환값은 JSON이며, `{ uid }` 객체입니다.
 
 실패 시 처리는 다음과 같습니다.
 
+- 400 Bad Request: type이 `google` 또는 `apple`이 아닌 경우입니다. 반환값은 `WRONG_TYPE`입니다.
+- 400 Bad Request: 해당 토큰으로 가입한 유저가 이미 존재하는 경우입니다. 반환값은 `USER_ALREADY_EXISTS`입니다.
 - 400 Bad Request: 토큰이 유효하지 않은 경우입니다.
+- 400 Bad Request: 유저 정보가 유효하지 않은 경우입니다.
 - 409 Conflict: 이미 사용중인 닉네임인 경우입니다. 반환값은 `NICKNAME_NOT_AVAILABLE` 입니다.
 - 409 Conflict: 이미 사용중인 전화번호인 경우입니다. 반환값은 `PHONE_NOT_AVAILABLE` 입니다.
 

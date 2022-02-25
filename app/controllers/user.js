@@ -1,4 +1,4 @@
-const { get_user_with_google, get_user_with_apple } = require('./auth')
+const { getUserWithGoogle, getUserWithApple } = require('./auth')
 const db = require('../models/index')
 const User = db.Users
 
@@ -6,8 +6,8 @@ exports.fetch_self = async (req, res) => {
   try {
     const token = req.query.token
     console.log(token)
-    const google = await get_user_with_google(token)
-    const apple = await get_user_with_apple(token)
+    const google = await getUserWithGoogle(token)
+    const apple = await getUserWithApple(token)
     console.log(google)
     console.log(apple)
     const uid = google || apple
@@ -34,8 +34,8 @@ exports.fetch_user = async (req, res) => {
   try {
     const target = req.params.uid
     const token = req.body.token
-    const google = await get_user_with_google(token)
-    const apple = await get_user_with_apple(token)
+    const google = await getUserWithGoogle(token)
+    const apple = await getUserWithApple(token)
     const uid = google || apple
     if (uid !== target) {
       res.status(403).send()
@@ -65,8 +65,8 @@ exports.update_user = async (req, res) => {
     if (target === null) { return res.status(404).send() }
 
     const token = req.body.token
-    const google = await get_user_with_google(token)
-    const apple = await get_user_with_apple(token)
+    const google = await getUserWithGoogle(token)
+    const apple = await getUserWithApple(token)
     const uid = google || apple
     if (uid !== target.uid) {
       return res.status(403).send()

@@ -6,7 +6,11 @@ CREATE TABLE `Users` (
     `email` VARCHAR(256) NOT NULL,                                                 /* 이메일                         */
     `gender` VARCHAR(32) NOT NULL,                                                 /* 성별                          */
     `birth` TIMESTAMP NOT NULL,                                                    /* 생년월일 ex. 82-10-2302-3319    */
+    `googleId` VARCHAR(256),                                                       /* 구글 소셜로그인 id                */
+    `appleId` VARCHAR(256),                                                        /* 애플 소셜로그인 id                */
     `phone` VARCHAR(32) NOT NULL,                                                  /* 전화번호, 국가코드 포함            */
+    `major` VARCHAR(32) NOT NULL,                                                  /* 계역                           */
+    `majorDetail` VARCHAR(32) NOT NULL,                                            /* 전공                          */
     `degree` VARCHAR(256) NOT NULL,                                                /* 학력                           */
     `degreeStatus` VARCHAR(32) NOT NULL,                                           /* 재학 상태                       */
     `credit` INT NOT NULL,                                                         /* 보유 캐시, 종속성 관리 필요        */

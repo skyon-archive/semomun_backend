@@ -6,7 +6,7 @@ const client_id = env.CLIENT_ID
 const client = new OAuth2Client(client_id)
 const User = db.Users
 
-exports.get_user_with_google = async (token) => {
+exports.getUserWithGoogle = async (token) => {
   try {
     const ticket = await client.verifyIdToken({
       idToken: token,
@@ -21,7 +21,7 @@ exports.get_user_with_google = async (token) => {
   }
 }
 
-exports.get_google_id = async (token) => {
+exports.getGoogleId = async (token) => {
   try {
     const ticket = await client.verifyIdToken({
       idToken: token,
@@ -35,7 +35,7 @@ exports.get_google_id = async (token) => {
   }
 }
 
-exports.get_user_with_apple = async (token) => {
+exports.getUserWithApple = async (token) => {
   try {
     const sub = jwt.decode(token).sub
     console.log('ap' + sub)
@@ -50,7 +50,7 @@ exports.get_user_with_apple = async (token) => {
   }
 }
 
-exports.get_apple_id = async (token) => {
+exports.getAppleId = async (token) => {
   try {
     const sub = jwt.decode(token).sub
     console.log('get' + sub)

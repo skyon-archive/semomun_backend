@@ -1,5 +1,5 @@
 const { createClient } = require('redis')
-const { get_user_with_google, get_user_with_apple, get_google_id, get_apple_id } = require('./auth')
+const { getUserWithGoogle, getUserWithApple, getGoogleId, getAppleId } = require('./auth')
 const db = require('../models/index')
 const request = require('request')
 const crypto = require('crypto')
@@ -73,25 +73,45 @@ exports.check_code = async (req, res) => {
   }
 }
 
-exports.create_user = async (req, res) => {
+exports.createUser = async (req, res) => {
   try {
     const token = req.body.token
-    const userInfo = JSON.parse(req.body.info)
-    const google = await get_user_with_google(token)
-    const apple = await get_user_with_apple(token)
-    if (google || apple) {
-      return res.status(400).send()
+    const userInfo = req.body.info
+    const type = req.body.type
+
+    if (type === 'google') {
+      if (await getUserWithGoogle(token)) {
+        return res.status(400).send('USER_ALREADY_EXISTS')
+      }
+      userInfo.googleId = await getGoogleId(token)
+      if (!userInfo.googleId) {
+        return res.status(400).send()
+      }
+    } else if (type === 'apple') {
+      if (await getUserWithApple(token)) {
+        return res.status(400).send('USER_ALREADY_EXISTS')
+      }
+      userInfo.appleId = await getAppleId(token)
+      if (!userInfo.appleId) {
+        return res.status(400).send()
+      }
+    } else {
+      return res.status(400).send('WRONG_TYPE')
     }
-    userInfo.googleId = await get_google_id(token)
-    userInfo.appleId = await get_apple_id(token)
-    console.log(userInfo.googleId)
-    console.log(userInfo.appleId)
-    if (await get_user_with_nickname(userInfo.nickname)) {
+
+    if (await getUserWithNickname(userInfo.nickname)) {
       return res.status(409).send('NICKNAME_NOT_AVAILABLE')
     }
-    if (await get_user_with_phone(userInfo.phone)) {
+    if (await getUserWithPhone(userInfo.phone)) {
       return res.status(409).send('PHONE_NOT_AVAILABLE')
     }
+
+    if (userInfo.uid) {
+      return res.status(400).send()
+    }
+    userInfo.username = userInfo.nickName
+    delete userInfo.username
+
     const result = await User.create(userInfo)
     res.status(200).json({ uid: result.uid })
   } catch (err) {
@@ -103,7 +123,7 @@ exports.create_user = async (req, res) => {
 exports.check = async (req, res) => {
   try {
     const token = req.body.token
-    if (await get_user_with_google(token) || await get_user_with_apple(token)) {
+    if (await getUserWithGoogle(token) || await getUserWithApple(token)) {
       res.json({ check: true })
     } else {
       res.json({ check: false })
@@ -114,7 +134,7 @@ exports.check = async (req, res) => {
   }
 }
 
-async function get_user_with_nickname (nickName) {
+async function getUserWithNickname (nickName) {
   try {
     const user = await User.findOne({ where: { nickName: nickName } })
     return user.uid
@@ -123,7 +143,7 @@ async function get_user_with_nickname (nickName) {
   }
 }
 
-async function get_user_with_phone (phone) {
+async function getUserWithPhone (phone) {
   try {
     const user = await User.findOne({ where: { phone: phone } })
     return user.uid

@@ -8,7 +8,8 @@ module.exports = function (sequelize, DataTypes) {
     },
     username: {
       type: DataTypes.STRING(256),
-      allowNull: false
+      allowNull: false,
+      unique: true
     },
     name: {
       type: DataTypes.STRING(256),
@@ -26,15 +27,33 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.DATE,
       allowNull: false
     },
+    googleId: {
+      type: DataTypes.STRING(256),
+      allowNull: true,
+      unique: true
+    },
+    appleId: {
+      type: DataTypes.STRING(256),
+      allowNull: true,
+      unique: true
+    },
     phone: {
       type: DataTypes.STRING(32),
       allowNull: false
     },
-    degree: {
+    major: {
+      type: DataTypes.STRING(32),
+      allowNull: false
+    },
+    majorDetail: {
+      type: DataTypes.STRING(32),
+      allowNull: false
+    },
+    school: {
       type: DataTypes.STRING(256),
       allowNull: false
     },
-    degreeStatus: {
+    graduationStatus: {
       type: DataTypes.STRING(32),
       allowNull: false
     },

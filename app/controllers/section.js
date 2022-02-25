@@ -1,5 +1,5 @@
 const db = require('../models/index')
-const { get_user_with_google, get_user_with_apple } = require('./auth')
+const { getUserWithGoogle, getUserWithApple } = require('./auth')
 const View = db.Views
 const Problem = db.Problems
 const Submission = db.Submissions
@@ -35,8 +35,8 @@ exports.get = async (req, res) => {
 exports.create_submission = async (req, res) => {
   try {
     const token = req.body.token
-    const google = await get_user_with_google(token)
-    const apple = await get_user_with_apple(token)
+    const google = await getUserWithGoogle(token)
+    const apple = await getUserWithApple(token)
     const uid = google || apple
     // const sid = req.params.sid
     // console.log(sid)
@@ -56,8 +56,8 @@ exports.create_submission = async (req, res) => {
 exports.update_submission = async (req, res) => {
   try {
     const token = req.body.token
-    const google = await get_user_with_google(token)
-    const apple = await get_user_with_apple(token)
+    const google = await getUserWithGoogle(token)
+    const apple = await getUserWithApple(token)
     const uid = google || apple
     // const sid = req.params.sid
     // console.log(sid)
@@ -76,8 +76,8 @@ exports.fetch_submission = async (req, res) => {
   try {
     const token = req.query.token
     const pid = req.params.pid
-    const google = await get_user_with_google(token)
-    const apple = await get_user_with_apple(token)
+    const google = await getUserWithGoogle(token)
+    const apple = await getUserWithApple(token)
     const uid = google || apple
     // const sid = req.params.sid
     // console.log(sid)
