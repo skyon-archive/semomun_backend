@@ -49,12 +49,12 @@ exports.verifyJwt = (token) => {
   try {
     const result = jwt.verify(token, secret)
     return { ok: true, result }
-  } catch {
+  } catch (e) {
     try {
       const result = jwt.decode(token, secret)
-      return { ok: false, result }
+      return { ok: false, result, message: e.message }
     } catch {
-      return { ok: false, result: null }
+      return { ok: false, result: null, message: e.message }
     }
   }
 }
