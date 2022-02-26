@@ -9,6 +9,7 @@
   "dependencies": {
     "apple-auth": "^1.0.7",
     "aws-sdk": "^2.1079.0",
+    "axios": "^0.26.0",
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
@@ -21,7 +22,6 @@
     "morgan": "^1.10.0",
     "mysql2": "^2.3.0",
     "redis": "^4.0.0",
-    "request": "^2.88.2",
     "response-time": "^2.3.2",
     "rotating-file-stream": "^3.0.2",
     "sequelize": "^5.22.4",
