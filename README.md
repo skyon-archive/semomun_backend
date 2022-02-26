@@ -314,41 +314,38 @@ accessToken과 refreshToken 모두 새로 생성된 값입니다.
 - 400 Bad Request: 토큰이 주어지지 않았거나, 파싱에 실패했거나, 서버에서 알고 있는 값이 아니거나, accessToken이 만료되지 않았거나, refreshToken이 만료된 경우에 해당합니다. 정상적인 로직 상에서 (해커의 공격이 아닌) status code 400을 받았다면 그것은 refreshToken의 expire time인 30일이 경과하여 로그인이 풀린 것입니다.
 
 
-### ~~POST /register/auth (register.js - send_code)~~
+### POST /sms/code (sms.js - sendCode)
 
-사용자의 전화번호를 받고, ~~올바른 전화번호인지 확인한 후~~ 해당 번호로 인증 코드를 전송합니다.
+사용자의 전화번호를 받은 후 해당 번호로 인증 코드를 전송합니다.
 
-~~IP와 전화번호 각각에 요청 횟수에 제한이 있으며, 둘 중 하나라도 요청 횟수가 5번을 초과한다면 즉시 429 상태 코드를 반환합니다.~~
+같은 전화번호에 1시간 이내의 간격으로 요청을 보내는 것은 10회로 제한됩니다. 10회 초과 시 1시간이 경과할 때까지는 status code 429를 반환합니다.
 
-해당 전화번호에 이미 인증 코드가 DB에 있는 경우(즉, 사용자가 인증을 재요청한 경우) 새로 생성한 인증 코드로 대체하고 다시 전송합니다.
+인증 코드는 5분이 지나면 삭제됩니다.
 
-인증 코드는 5분, 요청 횟수 제한은 생성되고 하루가 지나면 완전히 삭제됩니다.
-
-- phone: 사용자의 전화번호입니다.
+- phone: 사용자의 전화번호입니다. string이며, 10개 또는 11개의 숫자로 구성되어야 합니다.
 
 성공 시 반환값은 JSON이며, 빈 객체입니다.
 
 실패 시 처리는 다음과 같습니다.
 
-- ~~400 Bad Request: 사용할 수 없는 전화번호입니다. 반환값은 `PHONE_NOT_ALLOWED` 입니다.~~
-- ~~409 Conflict: 이미 사용중인 전화번호인 경우입니다. 반환값은 `PHONE_NOT_AVAILABLE` 입니다~~.
-- ~~429: 인증 요청 횟수가 제한을 초과한 경우입니다. 반환값은 `AUTHPHONE_QUOTA_EXCEEDED` 입니다.~~
-- 500: 해당 이메일로 코드를 전송하는데 실패한 경우입니다. 반환값은 `AUTHPHONE_SEND_FAILED` 입니다.
+- 400 Bad Request: phone 필드가 body에 주어지지 않은 경우입니다. 반환값은 `PHONE_MISSING`입니다.
+- 400 Bad Request: phone 의 형식(숫자 10~11개)이 맞지 않은 경우입니다. 반환값은 `PHONE_WRONG_FORMAT`입니다.
+- 429 Too Many Requests: 인증 요청 횟수가 제한을 초과한 경우입니다.
 
 
+### GET /sms/code/verify (sms.js - verifyCode)~~
 
-### ~~POST /register/verify (register.js - check_code)~~
-
-사용자의 전화번호와 인증 코드를 받아 DB와 대조한 후 인증 여부를 판단합니다.
+사용자의 전화번호와 인증 코드를 받아 올바른 인증 코드인지 확인합니다.
 
 - { phone, code }
 
-성공 시 반환값은 JSON이며, 빈 객체입니다.
+성공 시 반환값은 JSON이며, 아래의 두 경우 중 하나입니다.
+- 옳은 코드: `${ result: "ok" }`
+- 틀린 코드: `${ result: "fail" }`
 
 실패 시 처리는 다음과 같습니다.
-
-- 400 Bad Request: 해당 전화번호가 존재하지 않거나, `POST /register/auth` 를 통해 전송한 코드와 사용자의 입력이 일치하지 않는 경우입니다.
-
+- 400 Bad Request: phone 필드가 body에 주어지지 않은 경우입니다. 반환값은 `PHONE_MISSING`입니다.
+- 400 Bad Request: phone 의 형식(숫자 10~11개)이 맞지 않은 경우입니다. 반환값은 `PHONE_WRONG_FORMAT`입니다.
 
 
 ### GET /sections/:sid
