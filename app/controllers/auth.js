@@ -18,7 +18,7 @@ const redis = require('../services/redis')
 
 exports.createUser = async (req, res) => {
   try {
-    const { token, type, userInfo } = req.body
+    const { token, type, info: userInfo } = req.body
 
     if (type === AuthType.GOOGLE) {
       userInfo.googleId = await getGoogleId(token)

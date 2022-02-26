@@ -32,9 +32,20 @@ exports.getUserWithAppleId = async (appleId) => {
 }
 
 exports.createUser = async (userInfo) => {
-  if (userInfo.uid) {
-    throw new Error('uid should be null')
-  }
+  const whiteList = [
+    'nickname',
+    'phone',
+    'school',
+    'major',
+    'majorDetail',
+    'favoriteTags',
+    'graduationStatus',
+    'googleId',
+    'appleId'
+  ]
+  Object.keys(userInfo).forEach(key => {
+    if (!whiteList.includes(key)) throw new Error(`${key} is not a valid key`)
+  })
   userInfo.username = userInfo.nickname
   delete userInfo.nickName
   userInfo.name = ''
