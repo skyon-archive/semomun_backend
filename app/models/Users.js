@@ -29,13 +29,11 @@ module.exports = function (sequelize, DataTypes) {
     },
     googleId: {
       type: DataTypes.STRING(256),
-      allowNull: true,
-      unique: true
+      allowNull: true
     },
     appleId: {
       type: DataTypes.STRING(256),
-      allowNull: true,
-      unique: true
+      allowNull: true
     },
     phone: {
       type: DataTypes.STRING(32),

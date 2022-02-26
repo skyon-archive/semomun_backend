@@ -51,9 +51,9 @@ exports.createUser = async (req, res) => {
     try {
       result = await createUser(userInfo)
     } catch (err) {
-      res.status(400).send(err.toString())
+      return res.status(400).send(err.toString())
     }
-    const tokens = createJwt(result.uid)
+    const tokens = await createJwt(result.uid)
     res.json(tokens)
   } catch (err) {
     console.log(err)
