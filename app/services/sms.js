@@ -22,17 +22,27 @@ exports.sendSms = async (phone, message) => {
     'x-ncp-iam-access-key': accessKey,
     'x-ncp-apigw-signature-v2': createSignature(timestamp)
   }
+
+  const countryCode = phone.substring(1, 3)
+  const parsedPhone = '0' + phone.substring(4).replaceAll('-', '')
   const form = {
     type: 'SMS',
-    countryCode: '82',
+    countryCode,
     from: sendPhone,
     content: message,
     messages: [
       {
-        to: phone,
+        to: parsedPhone,
         content: message
       }
     ]
   }
-  await axios.post(url, form, { headers }).catch((e) => console.log(e.message))
+
+  const { data } = await axios.post(url, form, { headers })
+    .catch((e) => console.log(e.message))
+  if (data.statusCode !== '202') throw new Error('failed to send sms')
+}
+
+exports.verifyPhoneFormat = (phone) => {
+  return phone.match(/^\+\d{2}-\d{1,2}-\d{3,4}-\d{3,4}$/)
 }

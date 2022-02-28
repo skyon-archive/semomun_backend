@@ -4,7 +4,7 @@ module.exports = (app) => {
   const router = require('express').Router()
 
   router.post('/code', sms.sendCode)
-  router.get('/code/verify', sms.verifyCode)
+  router.post('/code/verify', sms.verifyCode)
 
   app.use('/sms', router)
 }

@@ -1,11 +1,13 @@
 const redis = require('../services/redis')
-const { sendSms } = require('../services/sms')
+const { sendSms, verifyPhoneFormat } = require('../services/sms')
 
 exports.sendCode = async (req, res) => {
   try {
     const { phone } = req.body
     if (!phone) return res.status(400).send('PHONE_MISSING')
-    if (!phone.match(/^\d{10,11}$/)) return res.status(400).send('PHONE_WRONG_FORMAT')
+    if (!verifyPhoneFormat(phone)) {
+      return res.status(400).send('PHONE_WRONG_FORMAT')
+    }
 
     const count = await redis.incr(`code:count${phone}`)
     if (count > 10) return res.status(429).send('TOO_FREQUENT')
@@ -25,7 +27,9 @@ exports.verifyCode = async (req, res) => {
   try {
     const { phone, code } = req.body
     if (!phone) return res.status(400).send('PHONE_MISSING')
-    if (!phone.match(/^\d{10,11}$/)) return res.status(400).send('PHONE_WRONG_FORMAT')
+    if (!verifyPhoneFormat(phone)) {
+      return res.status(400).send('PHONE_WRONG_FORMAT')
+    }
     const redisCode = await redis.get(`code:${phone}`)
     if (code === redisCode) res.json({ result: 'ok' })
     else res.json({ result: 'fail' })
