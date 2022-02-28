@@ -1,29 +1,13 @@
-const { getUserWithGoogle, getUserWithApple } = require('../services/auth')
-const { updateUser } = require('../services/user')
-const db = require('../models/index')
-const User = db.Users
+const { updateUser, getUser } = require('../services/user')
 
-exports.fetch_self = async (req, res) => {
+exports.fetchSelf = async (req, res) => {
   try {
-    const token = req.query.token
-    console.log(token)
-    const google = await getUserWithGoogle(token)
-    const apple = await getUserWithApple(token)
-    console.log(google)
-    console.log(apple)
-    const uid = google || apple
-    const user = await User.findOne({
-      where: {
-        uid: uid
-      },
-      attributes: { exclude: ['googleId', 'appleId', 'auth'] },
-      raw: true
-    })
-    if (user === null) {
-      res.status(404).send()
-    } else {
-      res.json(user)
-    }
+    const uid = req.uid
+    if (!uid) return res.status(401).send()
+
+    const user = await getUser(uid)
+    if (!user) return res.status(404).send()
+    res.json(user)
   } catch (err) {
     console.log(err)
     res.status(500).send()

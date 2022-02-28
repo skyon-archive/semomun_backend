@@ -1,11 +1,10 @@
+const router = require('express').Router()
+const { authJwt } = require('../middleware/auth')
+const { fetchSelf, updateUser } = require('../controllers/user.js')
+
 module.exports = (app) => {
-  const { authJwt } = require('../middleware/auth')
-  const users = require('../controllers/user.js')
-
-  const router = require('express').Router()
-
-  router.get('/self', users.fetch_self)
-  router.put('/self', authJwt, users.updateUser)
+  router.get('/self', authJwt, fetchSelf)
+  router.put('/self', authJwt, updateUser)
 
   app.use('/users', router)
 }

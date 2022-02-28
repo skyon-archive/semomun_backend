@@ -508,19 +508,36 @@ accessToken과 refreshToken 모두 새로 생성된 값입니다.
 { major: [{ '문과 계열': ['인문', '상경', '사회', '교육', '기타'] }, { '이과 계열': ['공학', '자연', '의약', '생활과학', '기타'] }, { 예체능계열: ['미술', '음악', '체육', '기타'] }] }
 ```
 
-### ~~GET /users/self~~
+### GET /users/self
 
-해당 요청을 한 사용자 본인의 정보를 반환합니다.
+해당 요청을 한 사용자 본인의 정보를 반환합니다. 헤더의 Authorization 필드에 access token이 `Bearer aaaa`와 같은 형태로 주어져야 합니다.
 
-- { token }
+성공 시 반환값은 JSON이며, 아래와 객체입니다.
 
-성공 시 반환값은 JSON이며, 다음과 같은 객체입니다.
-
-- { uid, name, nickName, gender, phone, school, major, majorDetail, favoriteCategory, graduationStatus, birthday, profileImage }
+<details>
+<summary>response 예시</summary>
+<pre language="json"><code class="language-json">{
+    "uid": 1,
+    "name": "name",
+    "email": "email",
+    "gender": "gender",
+    "birth": null,
+    "phone": "010-23023319",
+    "major": "major",
+    "majorDetail": "majorDetail",
+    "school": "school",
+    "graduationStatus": "graduationStatus",
+    "credit": 0,
+    "createdAt": "2022-03-01T01:43:51.000Z",
+    "updatedAt": "2022-02-28T17:03:34.000Z",
+    "nickname": "nickname"
+}
+</code></pre></details>
+<br/>
 
 실패 시 처리는 다음과 같습니다.
 
-- 404: 해당 사용자가 존재하지 않는 경우입니다. 반환값은 빈 문자열입니다.
+- 404 Not Found: 해당되는 유저가 없는 경우입니다. 정상적으로 서버에서 발급받은 access token이라면, 해당 access token이 발급된 후 유저가 탈퇴한 경우일 것입니다.
 
 ### PUT /users/self
 

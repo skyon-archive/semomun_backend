@@ -1,9 +1,8 @@
-const db = require('../models/index')
-const User = db.Users
+const { Users } = require('../models/index')
 
 exports.getUserWithNickname = async (nickName) => {
   try {
-    const user = await User.findOne({ where: { nickName: nickName } })
+    const user = await Users.findOne({ where: { nickName: nickName } })
     return user.uid
   } catch (err) {
     return null
@@ -12,7 +11,7 @@ exports.getUserWithNickname = async (nickName) => {
 
 exports.getUserWithPhone = async (phone) => {
   try {
-    const user = await User.findOne({ where: { phone: phone } })
+    const user = await Users.findOne({ where: { phone: phone } })
     return user.uid
   } catch (err) {
     return null
@@ -20,13 +19,13 @@ exports.getUserWithPhone = async (phone) => {
 }
 
 exports.getUserWithGoogleId = async (googleId) => {
-  const user = await User.findOne({ where: { googleId } })
+  const user = await Users.findOne({ where: { googleId } })
   if (user) return user.uid
   return null
 }
 
 exports.getUserWithAppleId = async (appleId) => {
-  const user = await User.findOne({ where: { appleId } })
+  const user = await Users.findOne({ where: { appleId } })
   if (user) return user.uid
   return null
 }
@@ -55,8 +54,8 @@ exports.createUser = async (userInfo) => {
   userInfo.credit = 0
   userInfo.favoriteTags = userInfo.favoriteTags.map((tid) => ({ tid }))
 
-  return await User.create(userInfo,
-    { include: [{ association: User.FavoriteTags }] })
+  return await Users.create(userInfo,
+    { include: [{ association: Users.FavoriteTags }] })
 }
 
 exports.updateUser = async (uid, userInfo) => {
@@ -78,8 +77,20 @@ exports.updateUser = async (uid, userInfo) => {
   userInfo.username = userInfo.nickname
   delete userInfo.nickname
 
-  const target = await User.findByPk(uid)
-  if (!target) throw new Error('wrong uid')
+  const target = await Users.findByPk(uid)
+  if (!target) throw new Error('wrong user')
 
-  await User.update(userInfo, { where: { uid } })
+  await Users.update(userInfo, { where: { uid } })
+}
+
+exports.getUser = async (uid) => {
+  const user = await Users.findOne({
+    where: { uid },
+    attributes: { exclude: ['googleId', 'appleId', 'auth'] },
+    raw: true
+  })
+  if (!user) return null
+  user.nickname = user.username
+  delete user.username
+  return user
 }
