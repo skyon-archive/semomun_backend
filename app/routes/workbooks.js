@@ -1,10 +1,11 @@
 module.exports = (app) => {
-  const workbooks = require('../controllers/workbook.js')
+  const { authJwt } = require('../middleware/auth')
+  const { fetchWorkbook, fetchWorkbooks } = require('../controllers/workbook')
 
   const router = require('express').Router()
 
-  router.get('/:wid', workbooks.fetchWorkbook)
-  router.get('/', workbooks.fetchWorkbooks)
+  router.get('/:wid', authJwt, fetchWorkbook)
+  router.get('/', fetchWorkbooks)
 
   app.use('/workbooks', router)
 }

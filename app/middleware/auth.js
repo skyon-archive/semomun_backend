@@ -6,9 +6,11 @@ exports.authJwt = (req, res, next) => {
   if (!accessToken) res.status(401).send()
   else {
     const { ok, result, message } = verifyJwt(accessToken)
-    if (ok) {
-      req.uid = result.uid
-      next()
-    } else res.status(401).send(message)
+    if (ok) req.uid = result.uid
+    else {
+      req.uid = null
+      req.jwtMessage = message
+    }
+    next()
   }
 }

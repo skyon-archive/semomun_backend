@@ -17,7 +17,7 @@ app.use(
 )
 
 const db = require('./app/models/index')
-db.sequelize.sync({ alter: true })
+db.sequelize.sync()
 
 require('./app/services/redis')
 
