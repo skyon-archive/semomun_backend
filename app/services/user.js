@@ -1,8 +1,8 @@
 const { Users } = require('../models/index')
 
-exports.getUserWithNickname = async (nickName) => {
+exports.getUserWithNickname = async (nickname) => {
   try {
-    const user = await Users.findOne({ where: { nickName: nickName } })
+    const user = await Users.findOne({ where: { username: nickname } })
     return user.uid
   } catch (err) {
     return null
