@@ -2,13 +2,10 @@
 
 Semomun API의 명세와 조건, 참고사항 및 예외들을 정리해 작성한 문서입니다.
 
-위 문장에서 '예외들'은 실제로 프로그램에서 예외를 던져야 한다는 의미로 쓴 것은 아닙니다. 주로 사용자가 잘못된 입력을 넣었을 때, 버그나 취약점이 발생할 수 있고 프로그래머가 자칫 넘기기 쉬울 수 있는 부분들을 뜻합니다. 별도의 처리를 하라고 명시되어 있지 않다면 따로 무언가를 하지 않는 것을 권장합니다.
+위 문장에서 '예외들'은 실제로 프로그램에서 예외를 던져야 한다는 의미로 쓴 것은 아닙니다. 주로 사용자가 잘못된 입력을 넣었을 때, 버그나 취약점이 발생할 수 있고 프로그래머가 자칫 넘기기 쉬울 수 있는 부분들을 뜻합니다.
 
-만약 주어진 입력이 잘못된 쿼리라고 판단된 경우, HTTP 상태 코드는 400 Bad Request 여야 합니다. 또한 **각 엔드포인트에 명시된 값을 반환** 하며, 쿼리를 실행하기 전, 파싱 도중에 즉시 응답을 완료하여야 합니다. 즉, 파싱 외의 추가적인 성능 소모가 없어야 합니다.
+해당 문서에서 ~~취소선~~이 그어진 API는 1.0 버전으로부터의 migration이 아직 이루어지지 않았음을 의미합니다. 따라서 정상적으로 동작하지 않을 수 있고, 추후에 수정되거나 삭제될 예정입니다.
 
-만약 주어진 입력이 존재하지 않는 요소를 참조한다고 판단된 경우, HTTP 상태 코드는 **404 Not Found** 여야 합니다. 또한 **각 엔드포인트에 명시된 값을 반환** 하며, 쿼리에 대한 결과를 만들기 전, 입력에 따른 요소를 가져오는 도중에 즉시 응답을 완료하여야 합니다. 즉, 파싱 및 값 참조 외에 추가적인 성능 소모가 없어야 합니다.
-
-본 문서에서 산술 평균, 조화 평균, 절사 평균, 혹은 중위값 등이 아닌 그냥 '평균'이란 단어가 나온다면, 아직 어떤 기준을 사용할지 명확히 정해지지 않았다는 것이므로 생략하고 보시면 됩니다.
 
 ## 문법
 
@@ -19,20 +16,22 @@ Semomun API의 명세와 조건, 참고사항 및 예외들을 정리해 작성�
 - 200 OK: 정상적으로 요청이 실행되었고, 서버가 적절한 응답을 돌려줄 수 있습니다.
 - 400 Bad Request: 사용자가 사이트에서 정상적으로는 제출할 수 없는 요청을 한 경우입니다.
   - 달리 말해, 프론트 개발자 역시 **해당 경우를 제출할 수 없도록 처리**해야 합니다.
-- 401 Unauthorized: 사용자가 로그인 없이 요청을 한 경우입니다.
+- 401 Unauthorized: 사용자가 로그인 없이 요청을 한 경우입니다. 주로 access token이 만료된 경우입니다.
 - 403 Forbidden: 사용자에게 권한이 허락되지 않은 요청을 한 경우입니다.
 - 404 Not Found: 요청은 올바르지만, 서버에 사용자가 찾는 것이 존재하지 않는 경우입니다.
 - 409 Conflict: 요청은 올바르지만, 서버에 이미 사용자가 추가하려는 것이 존재해 추가가 불가능한 경우입니다.
 - 422 Unprocessable Entity: 요청은 올바르지만, 해당 요청은 서버에서 처리할 수 없음(혹은, 처리하지 않을 것임)을 뜻합니다.
 - 429 Too Many Requests: 사용자에게 주어진 요청량을 초과한 경우입니다.
-- 500 Internal Server Error: 요청은 올바르지만, 서버에서 해당 요청을 처리하는데 실패한 경우입니다.
+- 500 Internal Server Error: 요청은 올바르지만, 서버에서 해당 요청을 처리하는데 실패한 경우입니다. 발생하지 않는 것이 이상적입니다.
 
 ### 합의된 사항들
 - timestamp는 iso8601 형식으로 오갑니다.
   - 백엔드에서 프론트엔드로 보낼 때는 `"2022-02-28T17:03:34.000Z"`와 같은 형식입니다.
   - 프론트엔드에서 백엔드로 보낼 때는 `"2022-02-28T17:03:34Z"`와 같은 형식입니다.
-- Users 테이블의 username 필드는 db에는 `username` 필드로 저장되어 있지만, 1.x.x 버전과의 통일성을 위하여 프론트엔드와 소통할 때는 `nickname` 필드를 이용합니다.
-- 로그인 후 이루어지는 대부분의 (모든) api 호출에서 헤더에 access token을 담아주세요. key는 `Authorization`, value는 `Bearer eyJhbGciOiJIUzI1N`와 같은 값입니다.
+- 전화번호는 `+82-10-1234-5678`와 같은 형식으로 국가번호를 포함합니다. db에도 이러한 형식으로 저장되고, 프론트엔드와 소통할 때도 항상 이 형식을 사용합니다.
+  - 정규표현식: `\+\d{2}-\d{1,2}-\d{3,4}-\d{3,4}`
+- Users 테이블의 username 필드는 db에는 `username` 필드로 저장되어 있지만, 1.0 버전과의 통일성을 위하여 프론트엔드와 소통할 때는 `nickname` 필드를 이용합니다.
+- 로그인 후 이루어지는 대부분의 (모든) api 호출에서 헤더에 access token을 담아주세요. key는 `Authorization`, value는 `Bearer eyJhbGciOiJIUzI1N`와 같은 형식의 값입니다.
 
 ## 자료형
 
@@ -207,42 +206,31 @@ CREATE TABLE `WorkbookHistory` (
 
 ## 목록
 
-Semomun에서 사용자의 입력은 다음 세 가지 중 하나의 형태로 들어옵니다.
+Semomun에서 사용자의 입력은 다음 네 가지 중 하나의 형태로 들어옵니다.
 
-1. 주소에서 /로 구분된 단어들 중 :로 시작하는 것
+1. Path Parameter: 주소에서 /로 구분된 단어들 중 :로 시작하는 것
+- 예시: `GET /dragon/:dragon_id/likes/:category` 에서 `dragon_id` 와 `category`
 
-- 예시: `GET /dragon/:dragon_id/likes/:category` 에서 `dragon_id` 와 `category` 는 1번에 해당하는 입력입니다.
+2. Query String: HTTP 메서드가 GET / DELETE: 주소에서 ? 뒤에 오는 것들
+- 예시: `GET /snake/:snake_id/:snake_type?start=5&limit=60` 에서 `start` 와 `limit`
 
-2. HTTP 메서드가 GET / DELETE: 주소에서 ? 뒤에 오는 것들, 즉 query string
+3. Request Body: HTTP 메서드가 POST / PUT인 경우에만 존재
+- 예시: `POST /write/:post_id` 주소로 body가 `{"title":"asdf","content":"asdf"}` 인 요청이 들어왔을 때 `title` 과 `content`
 
-- 예시: `GET /snake/:snake_id/:snake_type?start=5&limit=60` 에서 `start` 와 `limit` 는 2번에 해당하는 입력입니다.
+4. Header: token과 같이 보안에 민감한 정보를 담음
+- 예시: key가 `Authorization`, value가 `Bearer access-token1234`
 
-3. HTTP 메서드가 POST / PUT: HTTP Body. JSON 형태
 
-- 예시: `POST /write/:post_id` 주소로 body가 `{"title":"asdf","content":"asdf"}` 인 요청이 들어왔을 때 `title` 과 `content` 는 3번에 해당하는 입력입니다.
-
-1번은 제목(주소)에 명시적으로 적혀 있습니다. 2번과 3번은 제목에 적기엔 너무 많거나 지저분해져 생략합니다. 즉, 1번에 해당하지 않는 입력은 2번 혹은 3번으로 들어온다고 생각해 주세요. 또한 HTTP 규칙 상 각 요청에서 1번 형태가 아닌 입력은 반드시 2번이나 3번 중 하나의 형태로만 들어옵니다.
-
-3번에 해당하는 경우(즉, HTTP 메서드가 POST / PUT인 경우), 특별한 말이 없는 경우 요청의 **Content-Type** 헤더는 반드시 **application/json**이어야 합니다. **아니라면, 상태 코드는 400이며 빈 문자열을 반환하여야 합니다**.
+3번(Request Body)에 해당하는 경우, 특별한 말이 없는 경우 요청의 **Content-Type** 헤더는 반드시 **application/json**이어야 합니다. 아니라면, 상태 코드는 400이며 빈 문자열을 반환하여야 합니다.
 
 요청으로 들어온 값들이 명세에 위배된다면, 상태 코드는 400이며 빈 문자열을 반환해야 합니다.
 
-특별한 말이 없는 경우, 성공 시 반환값은 JSON 객체이며 실패 시 반환값은 빈 문자열 혹은 오류 코드입니다. JSON 객체에서 각 값이 명확해 설명할 필요가 없을 경우(주로 해당 값이 DB에 동일한 이름으로 존재하는 경우) 다음과 같이 설명을 생략합니다.
+특별한 말이 없는 경우, 성공 시 반환값은 JSON 객체이며 실패 시 반환값은 빈 문자열 혹은 오류 코드입니다.
 
-- { id, level, title, source, solves }
-
-실제 반환값의 예시로는 `{"id":1,"level":2,"title":"X","source":"Y","solves":3}` 이 가능합니다. 각 값에 대해 추가적인 설명이 필요할 경우, 다음처럼 작성합니다.
-
-- { a, b }
-  - a: 이 값은 항상 1입니다.
-  - b: 다음과 같은 객체의 배열입니다.
-    - { c }
-
-실제 반환값의 예시로는 `{"a":1,"b":[{"c":2},{"c":3}]}` 이 가능합니다.
 
 ### GET /workbooks (workbook.js - fetchWorkbooks)
 
-요청한 사용자가 열람 권한을 가지고 있으며 검색 조건과 맞는 문제집의 목록을 반환합니다. 현재는 모든 문제집을 반환합니다.
+요청한 사용자가 열람 권한을 가지고 있으며 검색 조건과 맞는 문제집의 목록을 반환합니다. 페이지네이션과 authorization이 추가될 예정이며, 현재는 모든 문제집을 반환합니다.
 
 성공 시 반환값은 JSON이며, 다음과 같은 객체입니다.
 
@@ -250,12 +238,36 @@ Semomun에서 사용자의 입력은 다음 세 가지 중 하나의 형태로 �
   - count: 주어진 조건에 맞는 문제집의 개수입니다. sort 혹은 page에 영향을 받지 **않습니다**.
   - workbooks: 문제집의 배열입니다. Workbooks 테이블에 들어있는 값들을 담고 있으며, 다른 테이블에 있는 값들은 담고 있지 않습니다. (ex. `price`, `sections`, `tags` 같은 필드는 없음.)
 
+<details>
+<summary>response 예시</summary>
+<pre language="json"><code class="language-json">
+    "count": 1,
+    "workbooks": [
+        {
+            "id": 1,
+            "wid": 1,
+            "title": "title",
+            "detail": "detail",
+            "isbn": "isbn",
+            "author": "author",
+            "date": "2022-02-28T17:39:49.000Z",
+            "publishMan": "publishMan",
+            "publishCompany": "publishCompany",
+            "originalPrice": "10000",
+            "bookcover": "uuid",
+            "createdAt": "2022-02-28T17:39:56.000Z",
+            "updatedAt": "2022-02-28T17:39:58.000Z"
+        }
+    ]
+}
+</code></pre></details>
+<br/>
 
 ### GET /workbooks/:wid (workbook.js - fetchWorkbook)
 
 wid가 주어진 값인 문제집을 반환합니다.
 
-성공 시 아래와 같은 형식의 json을 보냅니다. `GET /workbooks` api와 비교했을 때 `price`, `sales`, `sections`, `tags`의 필드가 추가되었습니다.
+성공 시 아래 예시와 같은 형식의 json을 보냅니다. `GET /workbooks` api와 비교했을 때 `price`, `sales`, `sections`, `tags`의 필드가 추가되었습니다.
 
 <details>
 <summary>response 예시</summary>
@@ -301,7 +313,6 @@ wid가 주어진 값인 문제집을 반환합니다.
     ]
 }
 </code></pre></details>
-<br/>
 
 실패 시 처리는 다음과 같습니다.
 - 404 Not Found: 해당 wid에 대한 문제집이 없는 경우입니다.
@@ -357,7 +368,6 @@ sid가 주어진 값인 섹션을 반환합니다.
     ]
 }
 </code></pre></details>
-<br/>
 
 실패 시 처리는 다음과 같습니다.
 - 404 Not Found: 해당 wid에 대한 문제집이 없는 경우입니다.
@@ -374,7 +384,7 @@ sid가 주어진 값인 섹션을 반환합니다.
 - token: 사용자 식별 토큰입니다.
 - type: 소셜로그인 타입입니다. 그 값은 "google" 또는 "apple"입니다.
 <details>
-<summary>example</summary>
+<summary>request 예시</summary>
 <pre language="json"><code class="language-json">{
     "info": {
         "nickname": "nickname1",
@@ -444,20 +454,35 @@ accessToken과 refreshToken 모두 새로 생성된 값입니다.
 
 - phone: 사용자의 전화번호입니다. string이며, 10개 또는 11개의 숫자로 구성되어야 합니다.
 
+<details>
+<summary>request 예시</summary>
+<pre language="json"><code class="language-json">{
+    "phone": "+82-10-1234-5678"
+}
+</code></pre></details>
+
 성공 시 반환값은 JSON이며, 빈 객체입니다.
 
 실패 시 처리는 다음과 같습니다.
 
 - 400 Bad Request: phone 필드가 body에 주어지지 않은 경우입니다. 반환값은 `PHONE_MISSING`입니다.
-- 400 Bad Request: phone 의 형식(숫자 10~11개)이 맞지 않은 경우입니다. 반환값은 `PHONE_WRONG_FORMAT`입니다.
+- 400 Bad Request: phone 의 형식이 맞지 않은 경우입니다. 반환값은 `PHONE_WRONG_FORMAT`입니다.
 - 429 Too Many Requests: 인증 요청 횟수가 제한을 초과한 경우입니다.
 
 
-### GET /sms/code/verify (sms.js - verifyCode)~~
+### POST /sms/code/verify (sms.js - verifyCode)
 
 사용자의 전화번호와 인증 코드를 받아 올바른 인증 코드인지 확인합니다.
 
 - { phone, code }
+
+<details>
+<summary>request 예시</summary>
+<pre language="json"><code class="language-json">{
+    "phone": "+82-10-1234-5678",
+    "code": "123123"
+}
+</code></pre></details>
 
 성공 시 반환값은 JSON이며, 아래의 두 경우 중 하나입니다.
 - 옳은 코드: `${ result: "ok" }`
@@ -465,16 +490,7 @@ accessToken과 refreshToken 모두 새로 생성된 값입니다.
 
 실패 시 처리는 다음과 같습니다.
 - 400 Bad Request: phone 필드가 body에 주어지지 않은 경우입니다. 반환값은 `PHONE_MISSING`입니다.
-- 400 Bad Request: phone 의 형식(숫자 10~11개)이 맞지 않은 경우입니다. 반환값은 `PHONE_WRONG_FORMAT`입니다.
-
-
-### GET /sections/:sid
-
-요청한 사용자가 해당 섹션의 열람 권한이 있는 경우, 해당 섹션을 반환합니다.
-
-성공 시 반환값은 JSON이며, 다음과 같은 객체입니다.
-
-- [ view1, view2, ... ]: 섹션에 포함된 뷰의 배열입니다.
+- 400 Bad Request: phone 의 형식이 맞지 않은 경우입니다. 반환값은 `PHONE_WRONG_FORMAT`입니다.
 
 
 ### ~~GET /info/category~~
