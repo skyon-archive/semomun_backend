@@ -14,7 +14,6 @@ const sequelize = new Sequelize(env.DB_DATABASE, env.DB_USERNAME, env.DB_PASSWOR
   retry: {
     match: [Sequelize.ConnectionError]
   },
-  query: { raw: true },
   define: { timestamps: true }
 })
 

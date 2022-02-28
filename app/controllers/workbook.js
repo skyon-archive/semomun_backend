@@ -15,18 +15,23 @@ exports.fetchWorkbook = async (req, res) => {
   try {
     const { wid } = req.params
 
-    const workbook = await Workbooks.findByPk(wid)
+    const workbook = await Workbooks.findOne({
+      where: { wid },
+      include: {
+        model: Sections,
+        as: 'sections'
+      },
+      raw: true,
+      nest: true
+    })
     if (!workbook) return res.status(404).send()
 
     const item = await Items.findOne({
-      where: { id: workbook.id }
+      where: { id: workbook.id },
+      raw: true
     })
     workbook.price = item.price
     workbook.sales = item.sales
-
-    workbook.sections = await Sections.findAll({
-      where: { wid }
-    })
 
     const workbookTags = await WorkbookTags.findAll({
       where: { wid },
@@ -35,9 +40,7 @@ exports.fetchWorkbook = async (req, res) => {
           model: Tags,
           as: 'tid_Tag'
         }
-      ],
-      raw: true,
-      nest: true
+      ]
     })
     workbook.tags = workbookTags.map(({ tid_Tag }) => tid_Tag)
 

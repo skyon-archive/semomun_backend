@@ -1,38 +1,33 @@
-const db = require('../models/index')
 const { getUserWithGoogle, getUserWithApple } = require('../services/auth')
-const View = db.Views
-const Problem = db.Problems
-const Submission = db.Submissions
+const { Sections, Views, Problems, Submissions } = require('../models/index')
 
-exports.get = async (req, res) => {
+exports.fetchSection = async (req, res) => {
   try {
     const sid = req.params.sid
     if (!sid) res.status(400)
-    const views = await View.findAll({
+
+    const section = await Sections.findOne({
       where: { sid },
-      order: [
-        ['index', 'ASC']
-      ],
-      include: [
-        {
-          model: Problem,
-          as: 'problems',
-          order: [
-            ['index', 'ASC']
-          ]
+      include: [{
+        model: Views,
+        as: 'views',
+        include: {
+          model: Problems,
+          as: 'problems'
         }
-      ],
+      }],
       raw: true,
       nest: true
     })
-    res.json(views)
+    if (!section) return res.status(404).send()
+    res.json(section).send()
   } catch (err) {
     console.log(err)
     res.status(500).send()
   }
 }
 
-exports.create_submission = async (req, res) => {
+exports.createSubmission = async (req, res) => {
   try {
     const token = req.body.token
     const google = await getUserWithGoogle(token)
@@ -44,7 +39,7 @@ exports.create_submission = async (req, res) => {
     for (const submission of submissions) {
       submission.uid = uid
       console.log(submission)
-      await Submission.create(submission)
+      await Submissions.create(submission)
     }
     res.json({})
   } catch (err) {
@@ -53,7 +48,7 @@ exports.create_submission = async (req, res) => {
   }
 }
 
-exports.update_submission = async (req, res) => {
+exports.updateSubmission = async (req, res) => {
   try {
     const token = req.body.token
     const google = await getUserWithGoogle(token)
@@ -63,7 +58,7 @@ exports.update_submission = async (req, res) => {
     // console.log(sid)
     const submissions = JSON.parse(req.body.submissions)
     for (const submission of submissions) {
-      await Submission.update(submission, { where: { uid: uid, pid: submission.pid } })
+      await Submissions.update(submission, { where: { uid: uid, pid: submission.pid } })
     }
     res.json({})
   } catch (err) {
@@ -72,7 +67,7 @@ exports.update_submission = async (req, res) => {
   }
 }
 
-exports.fetch_submission = async (req, res) => {
+exports.fetchSubmission = async (req, res) => {
   try {
     const token = req.query.token
     const pid = req.params.pid
@@ -81,7 +76,7 @@ exports.fetch_submission = async (req, res) => {
     const uid = google || apple
     // const sid = req.params.sid
     // console.log(sid)
-    const submission = await Submission.findOne({ where: { uid: uid, pid: pid } })
+    const submission = await Submissions.findOne({ where: { uid: uid, pid: pid } })
     if (submission) {
       res.json({ check: true })
     } else {
