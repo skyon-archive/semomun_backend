@@ -2,7 +2,7 @@ const db = require('../models/index')
 const Workbook = db.Workbooks
 const Section = db.Sections
 
-exports.fetch_workbooks = async (req, res) => {
+exports.fetchWorkbooks = async (req, res) => {
   try {
     const result = await Workbook.findAndCountAll()
     res.json({ count: result.count, workbooks: result.rows })

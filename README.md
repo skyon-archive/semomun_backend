@@ -231,7 +231,7 @@ Semomun에서 사용자의 입력은 다음 세 가지 중 하나의 형태로 �
 
 실제 반환값의 예시로는 `{"a":1,"b":[{"c":2},{"c":3}]}` 이 가능합니다.
 
-### GET /workbooks (workbook.js - fetch_workbooks)
+### GET /workbooks (workbook.js - fetchWorkbooks)
 
 요청한 사용자가 열람 권한을 가지고 있으며 검색 조건과 맞는 문제집의 목록을 반환합니다. 현재는 모든 문제집을 반환합니다.
 
@@ -239,7 +239,7 @@ Semomun에서 사용자의 입력은 다음 세 가지 중 하나의 형태로 �
 
 - { count, workbooks }
   - count: 주어진 조건에 맞는 문제집의 개수입니다. sort 혹은 page에 영향을 받지 **않습니다**.
-  - workbooks: 문제집의 배열입니다.
+  - workbooks: 문제집의 배열입니다. Workbooks 테이블에 들어있는 값들을 담고 있으며, 다른 테이블에 있는 값들은 담고 있지 않습니다. (ex. `price`, `sections`, `tags` 같은 필드는 없음.)
 
 
 

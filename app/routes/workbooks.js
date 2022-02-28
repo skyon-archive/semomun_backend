@@ -4,7 +4,7 @@ module.exports = (app) => {
   const router = require('express').Router()
 
   router.get('/:wid', workbooks.fetch_workbook)
-  router.get('/', workbooks.fetch_workbooks)
+  router.get('/', workbooks.fetchWorkbooks)
 
   app.use('/workbooks', router)
 }
