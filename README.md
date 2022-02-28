@@ -242,6 +242,59 @@ Semomun에서 사용자의 입력은 다음 세 가지 중 하나의 형태로 �
   - workbooks: 문제집의 배열입니다. Workbooks 테이블에 들어있는 값들을 담고 있으며, 다른 테이블에 있는 값들은 담고 있지 않습니다. (ex. `price`, `sections`, `tags` 같은 필드는 없음.)
 
 
+### GET /workbooks/:wid (workbook.js - fetchWorkbook)
+
+wid가 주어진 값인 문제집을 반환합니다.
+
+성공 시 아래와 같은 형식의 json을 보냅니다. `GET /workbooks` api와 비교했을 때 `price`, `sales`, `sections`, `tags`의 필드가 추가되었습니다.
+
+```json
+{
+    "id": 1,
+    "wid": 1,
+    "title": "title",
+    "detail": "detail",
+    "isbn": "isbn",
+    "author": "author",
+    "date": "2022-02-28T16:06:18.000Z",
+    "publishMan": "publishMan",
+    "publishCompany": "publishCompany",
+    "originalPrice": "10000",
+    "bookcover": "bookcover",
+    "createdAt": "2022-02-28T16:06:36.000Z",
+    "updatedAt": "2022-02-28T16:06:37.000Z",
+    "price": 10000,
+    "sales": 1,
+    "sections": [
+        {
+            "wid": 1,
+            "sid": 1,
+            "index": 0,
+            "title": "title",
+            "detail": "detail",
+            "cutoff": {},
+            "sectioncover": "sectioncover",
+            "size": 10000000,
+            "audio": null,
+            "audioDetail": null,
+            "createdAt": "2022-02-28T16:07:00.000Z",
+            "updatedAt": "2022-02-28T16:07:01.000Z"
+        }
+    ],
+    "tags": [
+        {
+            "tid": 1,
+            "name": "tag1",
+            "createdAt": "2022-02-25T20:32:20.000Z",
+            "updatedAt": "2022-02-25T20:32:22.000Z"
+        }
+    ]
+}
+```
+
+실패 시 처리는 다음과 같습니다.
+- 404 Not Found: 해당 wid에 대한 문제집이 없는 경우입니다.
+
 
 ### POST /auth/signup (auth.js - createUser)
 
