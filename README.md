@@ -248,8 +248,9 @@ wid가 주어진 값인 문제집을 반환합니다.
 
 성공 시 아래와 같은 형식의 json을 보냅니다. `GET /workbooks` api와 비교했을 때 `price`, `sales`, `sections`, `tags`의 필드가 추가되었습니다.
 
-```json
-{
+<details>
+<summary>response 예시</summary>
+<pre language="json"><code class="language-json">{
     "id": 1,
     "wid": 1,
     "title": "title",
@@ -290,7 +291,64 @@ wid가 주어진 값인 문제집을 반환합니다.
         }
     ]
 }
-```
+</code></pre></details>
+<br/>
+
+실패 시 처리는 다음과 같습니다.
+- 404 Not Found: 해당 wid에 대한 문제집이 없는 경우입니다.
+
+
+### GET /sections/:sid (sections.js - fetchSection)
+
+sid가 주어진 값인 섹션을 반환합니다.
+
+성공 시 아래와 같은 형식의 json을 보냅니다.
+
+<details>
+<summary>response 예시</summary>
+<pre language="json"><code class="language-json">{
+    "wid": 1,
+    "sid": 1,
+    "index": 0,
+    "title": "title",
+    "detail": "detail",
+    "cutoff": {},
+    "sectioncover": "uuid",
+    "size": 10000000,
+    "audio": null,
+    "audioDetail": null,
+    "createdAt": "2022-02-28T17:40:26.000Z",
+    "updatedAt": "2022-02-28T17:40:27.000Z",
+    "views": [
+        {
+            "sid": 1,
+            "vid": 1,
+            "index": 0,
+            "form": 0,
+            "passage": "uuid",
+            "attachment": "uuid",
+            "createdAt": "2022-02-28T17:50:28.000Z",
+            "updatedAt": "2022-02-28T17:50:29.000Z",
+            "problems": [
+                {
+                    "vid": 1,
+                    "pid": 1,
+                    "index": 1,
+                    "labelType": "문",
+                    "labelNum": "1",
+                    "type": 4,
+                    "answer": "3",
+                    "content": "uuid",
+                    "explanation": "uuid",
+                    "createdAt": "2022-02-28T17:54:17.000Z",
+                    "updatedAt": "2022-02-28T17:54:18.000Z"
+                }
+            ]
+        }
+    ]
+}
+</code></pre></details>
+<br/>
 
 실패 시 처리는 다음과 같습니다.
 - 404 Not Found: 해당 wid에 대한 문제집이 없는 경우입니다.
@@ -308,7 +366,7 @@ wid가 주어진 값인 문제집을 반환합니다.
 - type: 소셜로그인 타입입니다. 그 값은 "google" 또는 "apple"입니다.
 <details>
 <summary>example</summary>
-<pre><code class="language-json">{
+<pre language="json"><code class="language-json">{
     "info": {
         "nickname": "nickname1",
         "phone": "+82-10-0000-0000",
