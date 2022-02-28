@@ -47,7 +47,7 @@ exports.createUser = async (userInfo) => {
     if (!whiteList.includes(key)) throw new Error(`${key} is not a valid key`)
   })
   userInfo.username = userInfo.nickname
-  delete userInfo.nickName
+  delete userInfo.nickname
   userInfo.name = ''
   userInfo.email = ''
   userInfo.gender = ''
@@ -57,4 +57,29 @@ exports.createUser = async (userInfo) => {
 
   return await User.create(userInfo,
     { include: [{ association: User.FavoriteTags }] })
+}
+
+exports.updateUser = async (uid, userInfo) => {
+  const whiteList = [
+    'nickname',
+    'name',
+    'email',
+    'gender',
+    'birth',
+    'phone',
+    'major',
+    'majorDetail',
+    'school',
+    'graduationStatus'
+  ]
+  Object.keys(userInfo).forEach((key) => {
+    if (!whiteList.includes(key)) delete userInfo[key]
+  })
+  userInfo.username = userInfo.nickname
+  delete userInfo.nickname
+
+  const target = await User.findByPk(uid)
+  if (!target) throw new Error('wrong uid')
+
+  await User.update(userInfo, { where: { uid } })
 }

@@ -522,21 +522,35 @@ accessToken과 refreshToken 모두 새로 생성된 값입니다.
 
 - 404: 해당 사용자가 존재하지 않는 경우입니다. 반환값은 빈 문자열입니다.
 
-### ~~PUT /users/:uid~~
+### PUT /users/self
 
-요청한 사용자가 ~~admin에 속하거나~~ 해당 사용자 본인일 경우, 해당 사용자의 정보를 변경합니다.
+로그인된 유저가 자신의 정보를 수정합니다. 헤더의 Authorization 필드에 access token이 `Bearer aaaa`와 같은 형태로 주어져야 합니다.
 
-- { info, token }
-  - info: 사용자가 변경할 정보입니다. 다음과 같은 정보를 변경할 수 있습니다.
-    - { gender, school, major, majorDetail, favoriteCategory, graduationStatus, birthday }
+body에는 아래와 같은 값들이 주어집니다. 전부 optional하며, 주어진 옳지 않은 key 값들은 무시됩니다.
+
+<details>
+<summary>request 예시</summary>
+<pre language="json"><code class="language-json">{
+    "nickname": "yujin",
+    "name": "유진",
+    "email": "mail@gmail.com",
+    "gender": "male",
+    "birth": "2001-01-01T00:00:00Z",
+    "phone": "+82-10-1234-5678",
+    "major": "이과 계열",
+    "majorDetail": "의약",
+    "school": "서울대학교",
+    "graduationStatus": "재학"
+}
+</code></pre></details>
+<br/>
 
 성공 시 반환값은 JSON이며, 빈 객체입니다.
 
 실패 시 처리는 다음과 같습니다.
+- 400 Bad Request: 주어진 유저 정보가 옳지 않은 경우입니다.
+- 401 Unauthorized: 로그인에 실패한 경우입니다. 토큰을 잘 담아서 보냈다면 access token이 만료된 것입니다.
 
-- ~~401: 인증되지 않은 사용자인 경우입니다. 반환값은 빈 문자열입니다.~~
-- 403: 요청한 사용자가 admin이 아니며 해당 user도 아닌 경우입니다. 반환값은 빈 문자열입니다.
-- 404: 해당 사용자가 존재하지 않는 경우입니다. 반환값은 빈 문자열입니다.
 
 ### ~~PUT /sections/:sid/submit~~
 
