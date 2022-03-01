@@ -240,7 +240,7 @@ Semomun에서 사용자의 입력은 다음 네 가지 중 하나의 형태로 �
 
 <details>
 <summary>response 예시</summary>
-<pre language="json"><code class="language-json">
+<pre language="json"><code class="language-json">{
     "count": 1,
     "workbooks": [
         {
@@ -485,8 +485,8 @@ accessToken과 refreshToken 모두 새로 생성된 값입니다.
 </code></pre></details>
 
 성공 시 반환값은 JSON이며, 아래의 두 경우 중 하나입니다.
-- 옳은 코드: `${ result: "ok" }`
-- 틀린 코드: `${ result: "fail" }`
+- 옳은 코드: `{ result: "ok" }`
+- 틀린 코드: `{ result: "fail" }`
 
 실패 시 처리는 다음과 같습니다.
 - 400 Bad Request: phone 필드가 body에 주어지지 않은 경우입니다. 반환값은 `PHONE_MISSING`입니다.
