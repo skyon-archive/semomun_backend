@@ -11,13 +11,13 @@ exports.fetchSection = async (req, res) => {
       include: [{
         model: Views,
         as: 'views',
+        order: [['index', 'ASC']],
         include: {
           model: Problems,
-          as: 'problems'
+          as: 'problems',
+          order: [['index', 'ASC']]
         }
-      }],
-      raw: true,
-      nest: true
+      }]
     })
     if (!section) return res.status(404).send()
     res.json(section).send()

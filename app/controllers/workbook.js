@@ -19,32 +19,34 @@ exports.fetchWorkbook = async (req, res) => {
       where: { wid },
       include: {
         model: Sections,
-        as: 'sections'
-      },
-      raw: true,
-      nest: true
+        as: 'sections',
+        order: [['index', 'ASC']]
+      }
     })
     if (!workbook) return res.status(404).send()
+
+    const workbookData = workbook.get()
 
     const item = await Items.findOne({
       where: { id: workbook.id },
       raw: true
     })
-    workbook.price = item.price
-    workbook.sales = item.sales
+    workbookData.price = item.price
+    workbookData.sales = item.sales
 
     const workbookTags = await WorkbookTags.findAll({
       where: { wid },
-      include: [
-        {
-          model: Tags,
-          as: 'tid_Tag'
-        }
-      ]
+      order: [['createdAt', 'ASC']],
+      include: {
+        model: Tags,
+        as: 'tid_Tag'
+      },
+      raw: true,
+      nest: true
     })
-    workbook.tags = workbookTags.map(({ tid_Tag }) => tid_Tag)
+    workbookData.tags = workbookTags.map(({ tid_Tag }) => tid_Tag)
 
-    res.json(workbook).send()
+    res.json(workbookData).send()
   } catch (err) {
     console.log(err)
     res.status(500).send()
