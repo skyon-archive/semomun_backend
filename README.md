@@ -116,10 +116,11 @@ CREATE TABLE `Problems` (
     `vid` INT NOT NULL,                                                             /* 뷰                             */
     `pid` INT NOT NULL AUTO_INCREMENT,                                              /* 식별자                          */
     `index` INT NOT NULL,                                                           /* 페이지 내에서의! 문제 번호         */
-    `labelType` VARCHAR(32) NOT NULL,                                               /* 아이콘에 표시될 이름              */
-    `labelNum` VARCHAR(32) NOT NULL,                                                /* 문제집 내에서 문제의 번호            */
+    `btType` VARCHAR(32) NOT NULL,                                                  /* "문", "유", "개"와 같은 문제 타입  */
+    `btName` VARCHAR(32) NOT NULL,                                                  /* 앱의 하단버튼(label)에서 보여줄 이름 */
     `type` INT NOT NULL,                                                            /* 유형                            */
-    `answer` VARCHAR(256) NOT NULL,                                                 /* 정답                            */
+    `answer` VARCHAR(256),                                                          /* 정답                            */
+    `score` DOUBLE,                                                                 /* 배점                          */
     `content` CHAR(36) NOT NULL,                                                    /* 문제 파일 식별자, uuid           */
     `explanation` CHAR(36),                                                         /* 해설 파일 식별자, uuid           */ 
     PRIMARY KEY (`pid`),
@@ -130,10 +131,12 @@ CREATE TABLE `Problems` (
 CREATE TABLE `Submissions` (
     `identifier` INT NOT NULL AUTO_INCREMENT,
     `uid` INT NOT NULL,                                                            /* 유저                           */
-    `pid` INT NOT NULL,                                                            /* 문제                           */
-    `elapsed` INT NOT NULL,                                                        /* 소요 시간                       */
+    `targetId` INT NOT NULL,                                                       /* pid 또는 vid                   */
+    `elapsed` INT,                                                        /* 소요 시간                       */
     `answer` VARCHAR(256),                                                         /* 유저가 제출한 답                 */
-    `note` MEDIUMBLOB NOT NULL,                                                          /* 필기                            */
+    `attempt` INT NOT NULL,                                                        /* 다시풀기 n회차                   */
+    `note` MEDIUMBLOB,                                                          /* 필기                            */
+    `type` VARCHAR(32) NOT NULL,                                                    /* problem 또는 view            */
     -- 중복 제출 가능하게 해야함 --
     PRIMARY KEY (`identifier` ),
     FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`) ON UPDATE CASCADE,

@@ -28,10 +28,18 @@ module.exports = function (sequelize, DataTypes) {
     },
     answer: {
       type: DataTypes.STRING(256),
+      allowNull: true
+    },
+    attempt: {
+      type: DataTypes.INTEGER,
       allowNull: false
     },
     note: {
       type: DataTypes.BLOB('medium'),
+      allowNull: true
+    },
+    type: {
+      type: DataTypes.STRING(32),
       allowNull: false
     }
   }, {

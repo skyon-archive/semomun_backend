@@ -18,11 +18,11 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    labelType: {
+    btType: {
       type: DataTypes.STRING(32),
       allowNull: false
     },
-    labelNum: {
+    btName: {
       type: DataTypes.STRING(32),
       allowNull: false
     },
@@ -32,7 +32,11 @@ module.exports = function (sequelize, DataTypes) {
     },
     answer: {
       type: DataTypes.STRING(256),
-      allowNull: false
+      allowNull: true
+    },
+    score: {
+      type: DataTypes.DOUBLE,
+      allowNull: true
     },
     content: {
       type: DataTypes.UUID,
