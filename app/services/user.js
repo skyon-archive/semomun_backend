@@ -32,7 +32,7 @@ exports.getUserWithAppleId = async (appleId) => {
 
 exports.createUser = async (userInfo) => {
   const whiteList = [
-    'nickname',
+    'username',
     'phone',
     'school',
     'major',
@@ -45,8 +45,6 @@ exports.createUser = async (userInfo) => {
   Object.keys(userInfo).forEach(key => {
     if (!whiteList.includes(key)) throw new Error(`${key} is not a valid key`)
   })
-  userInfo.username = userInfo.nickname
-  delete userInfo.nickname
   userInfo.name = ''
   userInfo.email = ''
   userInfo.gender = ''
@@ -60,7 +58,7 @@ exports.createUser = async (userInfo) => {
 
 exports.updateUser = async (uid, userInfo) => {
   const whiteList = [
-    'nickname',
+    'username',
     'name',
     'email',
     'gender',
@@ -74,8 +72,6 @@ exports.updateUser = async (uid, userInfo) => {
   Object.keys(userInfo).forEach((key) => {
     if (!whiteList.includes(key)) delete userInfo[key]
   })
-  userInfo.username = userInfo.nickname
-  delete userInfo.nickname
 
   const target = await Users.findByPk(uid)
   if (!target) throw new Error('wrong user')
@@ -89,8 +85,5 @@ exports.getUser = async (uid) => {
     attributes: { exclude: ['googleId', 'appleId', 'auth'] },
     raw: true
   })
-  if (!user) return null
-  user.nickname = user.username
-  delete user.username
   return user
 }
