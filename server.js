@@ -47,6 +47,7 @@ require('./app/routes/auth')(app)
 require('./app/routes/user')(app)
 require('./app/routes/s3')(app)
 require('./app/routes/sms')(app)
+require('./app/routes/tags')(app)
 
 const PORT = process.env.PORT
 const HOST = process.env.HOST
