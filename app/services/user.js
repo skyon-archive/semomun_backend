@@ -101,7 +101,7 @@ exports.updateUser = async (uid, userInfo) => {
   })
 
   const target = await Users.findByPk(uid)
-  if (!target) throw new Error('wrong user')
+  if (!target) throw new CustomError('wrong user')
 
   await Users.update(userInfo, { where: { uid } })
 }

@@ -648,7 +648,7 @@ body에는 아래와 같은 값들이 주어집니다. 전부 optional하며, �
 <details>
 <summary>request 예시</summary>
 <pre language="json"><code class="language-json">{
-    "nickname": "yujin",
+    "username": "yujin",
     "name": "유진",
     "email": "mail@gmail.com",
     "gender": "male",
