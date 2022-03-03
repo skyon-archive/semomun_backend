@@ -162,5 +162,3 @@ CREATE TABLE `WorkbookHistory` (
     FOREIGN KEY (`wid`) REFERENCES `Workbooks` (`wid`) ON UPDATE CASCADE,
     FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`) ON UPDATE CASCADE
 );
-
-ALTER TABLE Users ADD CONSTRAINT credit_not_neg CHECK (`credit` >= 0);

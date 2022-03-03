@@ -1,7 +1,20 @@
-const useCredit = (sequelize, { payment, uid }, { transaction }) => sequelize.models.Users.update(
-  { credit: sequelize.literal(`credit - ${payment}`) },
-  { where: { uid }, transaction }
-)
+const useCredit = async (sequelize, orders, transaction) => {
+  const payments = {}
+  orders.forEach(({ uid, payment }) => {
+    payments[uid] = (payments[uid] ?? 0) + payment
+  })
+  const Users = sequelize.models.Users
+  for (const uid in payments) {
+    const user = await Users.findByPk(uid, { transaction })
+    if (user.credit < payments[uid]) {
+      throw new Error('NOT_ENOUGH_CREDIT')
+    }
+    Users.update(
+      { credit: sequelize.literal(`credit - ${payments[uid]}`) },
+      { where: { uid }, transaction }
+    )
+  }
+}
 
 module.exports = function (sequelize, DataTypes) {
   return sequelize.define('OrderHistory', {
@@ -59,13 +72,11 @@ module.exports = function (sequelize, DataTypes) {
       }
     ],
     hooks: {
-      afterCreate: (order, options) => {
-        return useCredit(sequelize, order, options)
+      afterCreate: async (order, options) => {
+        await useCredit(sequelize, [order], options.transaction)
       },
       afterBulkCreate: async (orders, options) => {
-        await Promise.all(
-          orders.map(order => useCredit(sequelize, order, options))
-        )
+        await useCredit(sequelize, orders, options.transaction)
       }
     }
   })
