@@ -1,3 +1,4 @@
+const { CustomError } = require('../errors')
 const { Users, sequelize } = require('../models/index')
 
 const getUserWithUsername = async (username, transaction = undefined) => {
@@ -48,26 +49,26 @@ exports.createUser = async (userInfo) => {
   ]
   Object.keys(userInfo).forEach(key => {
     if (!whiteList.includes(key)) {
-      return new Error(`${key} is not a valid key`)
+      throw new CustomError(`${key} is not a valid key`)
     }
   })
 
   if (!userInfo.googleId && !userInfo.appleId) {
-    return new Error('googleId and appleId missing')
+    throw new CustomError('googleId and appleId missing')
   }
 
   return await sequelize.transaction(async (t) => {
     if (userInfo.googleId && await getUserWithGoogleId(userInfo.googleId, t)) {
-      return new Error('USER_ALREADY_EXISTS')
+      throw new CustomError('USER_ALREADY_EXISTS')
     }
     if (userInfo.appleId && await getUserWithAppleId(userInfo.appleId, t)) {
-      return new Error('USER_ALREADY_EXISTS')
+      throw new CustomError('USER_ALREADY_EXISTS')
     }
     if (await getUserWithUsername(userInfo.username, t)) {
-      return new Error('USERNAME_NOT_AVAILABLE')
+      throw new CustomError('USERNAME_NOT_AVAILABLE')
     }
     if (await getUserWithPhone(userInfo.phone, t)) {
-      return new Error('PHONE_NOT_AVAILABLE')
+      throw new CustomError('PHONE_NOT_AVAILABLE')
     }
 
     userInfo.name = ''

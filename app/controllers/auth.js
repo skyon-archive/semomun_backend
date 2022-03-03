@@ -13,6 +13,7 @@ const {
   createUser
 } = require('../services/user')
 const redis = require('../services/redis')
+const { CustomError } = require('../errors')
 
 exports.createUser = async (req, res) => {
   try {
@@ -20,21 +21,21 @@ exports.createUser = async (req, res) => {
 
     if (type === AuthType.GOOGLE) {
       userInfo.googleId = await getGoogleId(token)
-      if (!userInfo.googleId) return res.status(400).send()
+      if (!userInfo.googleId) return res.status(400).send('INVALID_TOKEN')
     } else if (type === AuthType.APPLE) {
       userInfo.appleId = await getAppleId(token)
-      if (!userInfo.appleId) return res.status(400).send()
+      if (!userInfo.appleId) return res.status(400).send('INVALID_TOKEN')
     } else {
       return res.status(400).send('WRONG_TYPE')
     }
 
     const result = await createUser(userInfo)
-    if (result instanceof Error) return res.status(400).send(result.message)
 
     const tokens = await createJwt(result.uid)
     res.json(tokens)
   } catch (err) {
     console.log(err)
+    if (err instanceof CustomError) return res.status(400).send(err.message)
     res.status(500).send()
   }
 }
