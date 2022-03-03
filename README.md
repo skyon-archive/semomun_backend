@@ -423,7 +423,7 @@ Tag를 인기 순으로 정렬하여 페이지네이션하여 반환합니다. �
 <summary>request 예시</summary>
 <pre language="json"><code class="language-json">{
     "info": {
-        "nickname": "nickname1",
+        "username": "username",
         "phone": "+82-10-0000-0000",
         "school": "서울대학교",
         "major": "이과 계열",
@@ -446,7 +446,7 @@ Tag를 인기 순으로 정렬하여 페이지네이션하여 반환합니다. �
 - 400 Bad Request: 해당 토큰으로 가입한 유저가 이미 존재하는 경우입니다. 반환값은 `USER_ALREADY_EXISTS`입니다.
 - 400 Bad Request: 토큰이 유효하지 않은 경우입니다.
 - 400 Bad Request: 유저 정보가 유효하지 않은 경우입니다. 에러 내역을 반환합니다.
-- 409 Conflict: 이미 사용중인 닉네임인 경우입니다. 반환값은 `NICKNAME_NOT_AVAILABLE` 입니다.
+- 409 Conflict: 이미 사용중인 username인 경우입니다. 반환값은 `USERNAME_NOT_AVAILABLE` 입니다.
 - 409 Conflict: 이미 사용중인 전화번호인 경우입니다. 반환값은 `PHONE_NOT_AVAILABLE` 입니다.
 
 
