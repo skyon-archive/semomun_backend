@@ -1,3 +1,6 @@
+
+const { CustomError } = require('../errors')
+
 const useCredit = async (sequelize, orders, transaction) => {
   const payments = {}
   orders.forEach(({ uid, payment }) => {
@@ -6,9 +9,7 @@ const useCredit = async (sequelize, orders, transaction) => {
   const Users = sequelize.models.Users
   for (const uid in payments) {
     const user = await Users.findByPk(uid, { transaction })
-    if (user.credit < payments[uid]) {
-      throw new Error('NOT_ENOUGH_CREDIT')
-    }
+    if (user.credit < payments[uid]) throw new CustomError('NOT_ENOUGH_CREDIT')
     Users.update(
       { credit: sequelize.literal(`credit - ${payments[uid]}`) },
       { where: { uid }, transaction }

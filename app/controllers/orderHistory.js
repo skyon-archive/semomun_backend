@@ -1,3 +1,4 @@
+const { CustomError } = require('../errors')
 const { createOrders } = require('../services/orderHistory')
 const { getUser } = require('../services/user')
 
@@ -16,16 +17,15 @@ exports.createOrders = async (req, res) => {
       order.uid = uid
     })
 
-    try {
-      await createOrders(orders)
-    } catch (err) {
-      return res.status(400).send(err.message)
-    }
+    await createOrders(orders)
 
     const user = await getUser(uid)
     res.json({ credit: user.credit }).send()
   } catch (err) {
-    console.log(err)
-    res.status(500).send()
+    if (err instanceof CustomError) res.status(400).send(err.message)
+    else {
+      console.log(err)
+      res.status(500).send()
+    }
   }
 }
