@@ -34,9 +34,11 @@ exports.createUser = async (req, res) => {
     const tokens = await createJwt(result.uid)
     res.json(tokens)
   } catch (err) {
-    console.log(err)
-    if (err instanceof CustomError) return res.status(400).send(err.message)
-    res.status(500).send()
+    if (err instanceof CustomError) res.status(400).send(err.message)
+    else {
+      console.log(err)
+      res.status(500).send()
+    }
   }
 }
 

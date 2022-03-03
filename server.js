@@ -33,10 +33,6 @@ const accessLogStream = rfs.createStream('access.log', {
 })
 app.use(morgan('[:date[clf]] :method :url :status :res[content-length] - :response-time ms', { stream: accessLogStream }))
 
-app.get('/', (req, res) => {
-  res.json({ message: 'Semomun API.' })
-})
-
 require('./app/routes/index')(app)
 
 const PORT = process.env.PORT

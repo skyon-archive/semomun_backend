@@ -1,4 +1,7 @@
 module.exports = (app) => {
+  app.get('/', (req, res) => {
+    res.json({ message: 'Semomun API.' })
+  })
   require('./workbooks')(app)
   require('./sections')(app)
   require('./upload')(app)
