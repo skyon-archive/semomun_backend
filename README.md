@@ -30,7 +30,6 @@ Semomun API의 명세와 조건, 참고사항 및 예외들을 정리해 작성�
   - 프론트엔드에서 백엔드로 보낼 때는 `"2022-02-28T17:03:34Z"`와 같은 형식입니다.
 - 전화번호는 `+82-10-1234-5678`와 같은 형식으로 국가번호를 포함합니다. db에도 이러한 형식으로 저장되고, 프론트엔드와 소통할 때도 항상 이 형식을 사용합니다.
   - 정규표현식: `\+\d{2}-\d{1,2}-\d{3,4}-\d{3,4}`
-- Users 테이블의 username 필드는 db에는 `username` 필드로 저장되어 있지만, 1.0 버전과의 통일성을 위하여 프론트엔드와 소통할 때는 `nickname` 필드를 이용합니다.
 - 로그인 후 이루어지는 대부분의 (모든) api 호출에서 헤더에 access token을 담아주세요. key는 `Authorization`, value는 `Bearer eyJhbGciOiJIUzI1N`와 같은 형식의 값입니다.
 
 ## 자료형
@@ -269,7 +268,7 @@ Semomun에서 사용자의 입력은 다음 네 가지 중 하나의 형태로 �
 
 wid가 주어진 값인 문제집을 반환합니다.
 
-성공 시 아래 예시와 같은 형식의 json을 보냅니다. `GET /workbooks` api와 비교했을 때 `price`, `sales`, `sections`, `tags`의 필드가 추가되었습니다.
+성공 시 아래 예시와 같은 형식의 json을 보냅니다. `GET /workbooks` api와 비교했을 때 `price`, `sales`, `sections`, `tags` 필드가 추가되었습니다.
 
 <details>
 <summary>response 예시</summary>
@@ -394,12 +393,16 @@ Tag를 인기 순으로 정렬하여 페이지네이션하여 반환합니다. �
         {
             "tid": 2,
             "name": "name2",
+            "createdAt": "2022-03-04T06:41:51.000Z",
+            "updatedAt": "2022-03-04T06:41:52.000Z",
             "UserCount": 0,
             "WorkbookCount": 1
         },
         {
             "tid": 1,
             "name": "name",
+            "createdAt": "2022-03-04T06:41:51.000Z",
+            "updatedAt": "2022-03-04T06:41:52.000Z",
             "UserCount": 0,
             "WorkbookCount": 0
         }
@@ -488,7 +491,7 @@ accessToken과 refreshToken 모두 새로 생성된 값입니다.
 
 인증 코드는 5분이 지나면 삭제됩니다.
 
-- phone: 사용자의 전화번호입니다. string이며, 10개 또는 11개의 숫자로 구성되어야 합니다.
+- phone: 사용자의 전화번호입니다. string이며, 형식을 만족시켜야 합니다.
 
 <details>
 <summary>request 예시</summary>
@@ -534,7 +537,7 @@ accessToken과 refreshToken 모두 새로 생성된 값입니다.
 아이템(문제집 등)들을 세모페이를 이용해 구매합니다.
 
 - [ { id, payment } ]
-  - id: 구매하는 아이템의 id. (wid 아님)
+  - id: 구매하는 아이템의 id. (**wid 아님**)
   - payment: 구매에 사용되는 세모페이 금액
 
 <details>
@@ -564,8 +567,8 @@ accessToken과 refreshToken 모두 새로 생성된 값입니다.
 
 실패 시 처리는 다음과 같습니다.
 - 401 Unauthorized: access token이 주어지지 않았거나 만료된 경우입니다.
-- 400 Bad Request: 구매하려는 금액이 세모페이 잔액보다 많은 경우입니다. 반환값은 `Check constraint 'credit_not_neg' is violated.`와 같은 에러 메시지입니다.
-- 400 Bad Request: request body의 형식이 틀렸거나 id가 옳지 않은 경우입니다. 반환값은 에러 메시지 혹은 빈 문자열입니다.
+- 400 Bad Request: 구매하려는 금액이 세모페이 잔액보다 많은 경우입니다. 반환값은 `NOT_ENOUGH_CREDIT`입니다.
+- 400 Bad Request: request body의 형식이 틀렸거나 id가 옳지 않은 경우입니다.
 
 
 ### ~~GET /info/category~~
@@ -643,7 +646,7 @@ accessToken과 refreshToken 모두 새로 생성된 값입니다.
 
 로그인된 유저가 자신의 정보를 수정합니다. 헤더의 Authorization 필드에 access token이 `Bearer aaaa`와 같은 형태로 주어져야 합니다.
 
-body에는 아래와 같은 값들이 주어집니다. 전부 optional하며, 주어진 옳지 않은 key 값들은 무시됩니다.
+body에는 아래와 같은 값들이 주어집니다. 전부 optional하며, 옳지 않거나 변경할 수 없는 key 값들은 무시됩니다.
 
 <details>
 <summary>request 예시</summary>
