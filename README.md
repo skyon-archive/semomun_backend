@@ -529,6 +529,45 @@ accessToken과 refreshToken 모두 새로 생성된 값입니다.
 - 400 Bad Request: phone 의 형식이 맞지 않은 경우입니다. 반환값은 `PHONE_WRONG_FORMAT`입니다.
 
 
+### POST /orders
+
+아이템(문제집 등)들을 세모페이를 이용해 구매합니다.
+
+- [ { id, payment } ]
+  - id: 구매하는 아이템의 id. (wid 아님)
+  - payment: 구매에 사용되는 세모페이 금액
+
+<details>
+<summary>request 예시</summary>
+<pre language="json"><code class="language-json">[
+    {
+        "id": 1,
+        "payment": 2000
+    },
+    {
+        "id": 3,
+        "payment": 13000
+    }
+]
+</code></pre></details>
+<br/>
+
+성공 시 남은 세모페이 잔액을 반환합니다.
+
+<details>
+<summary>response 예시</summary>
+<pre language="json"><code class="language-json">{
+    "credit": 7000
+}
+</code></pre></details>
+<br/>
+
+실패 시 처리는 다음과 같습니다.
+- 401 Unauthorized: access token이 주어지지 않았거나 만료된 경우입니다.
+- 400 Bad Request: 구매하려는 금액이 세모페이 잔액보다 많은 경우입니다. 반환값은 `Check constraint 'credit_not_neg' is violated.`와 같은 에러 메시지입니다.
+- 400 Bad Request: request body의 형식이 틀렸거나 id가 옳지 않은 경우입니다. 반환값은 에러 메시지 혹은 빈 문자열입니다.
+
+
 ### ~~GET /info/category~~
 
 문제집이 속한 카테고리의 목록을 반환합니다.
