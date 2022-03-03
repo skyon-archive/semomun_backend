@@ -10,8 +10,6 @@ const {
 const {
   getUserWithGoogleId,
   getUserWithAppleId,
-  getUserWithPhone,
-  getUserWithNickname,
   createUser
 } = require('../services/user')
 const redis = require('../services/redis')
@@ -22,37 +20,17 @@ exports.createUser = async (req, res) => {
 
     if (type === AuthType.GOOGLE) {
       userInfo.googleId = await getGoogleId(token)
-      if (!userInfo.googleId) {
-        return res.status(400).send()
-      }
-      if (await getUserWithGoogleId(userInfo.googleId)) {
-        return res.status(400).send('USER_ALREADY_EXISTS')
-      }
+      if (!userInfo.googleId) return res.status(400).send()
     } else if (type === AuthType.APPLE) {
       userInfo.appleId = await getAppleId(token)
-      if (!userInfo.appleId) {
-        return res.status(400).send()
-      }
-      if (await getUserWithAppleId(userInfo.appleId)) {
-        return res.status(400).send('USER_ALREADY_EXISTS')
-      }
+      if (!userInfo.appleId) return res.status(400).send()
     } else {
       return res.status(400).send('WRONG_TYPE')
     }
 
-    if (await getUserWithNickname(userInfo.nickname)) {
-      return res.status(409).send('NICKNAME_NOT_AVAILABLE')
-    }
-    if (await getUserWithPhone(userInfo.phone)) {
-      return res.status(409).send('PHONE_NOT_AVAILABLE')
-    }
+    const result = await createUser(userInfo)
+    if (result instanceof Error) return res.status(400).send(result.message)
 
-    let result
-    try {
-      result = await createUser(userInfo)
-    } catch (err) {
-      return res.status(400).send(err.toString())
-    }
     const tokens = await createJwt(result.uid)
     res.json(tokens)
   } catch (err) {
