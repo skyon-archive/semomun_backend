@@ -15,7 +15,6 @@ CREATE TABLE `Users` (
     `degreeStatus` VARCHAR(32) NOT NULL,                                           /* 재학 상태                       */
     `credit` INT NOT NULL,                                                         /* 보유 캐시, 종속성 관리 필요        */
     `auth` INT NOT NULL,                                                           /* 유저 권한                       */
-    -- 결제 수단, 계정 연동 등은 테이블 따로 만들거나 redis로 --
     PRIMARY KEY (`uid`)
 );
 
@@ -158,9 +157,10 @@ CREATE TABLE `WorkbookHistory` (
     `uid` INT NOT NULL,                                                            /* 유저                           */
     `type` VARCHAR(32) NOT NULL,                                                   /* start, end, download 등등      */
     -- type == `start` 를 이용해서 최근에 이용한 문제집 판별 --
-    -- type == `purchased` 를 이용해서 문제집 별 구매 추이 등 판별 --
     -- type == `cart` 를 이용해서 장바구니에 담긴 상품 목록 알 수 있음 --
     PRIMARY KEY (`whid`),
     FOREIGN KEY (`wid`) REFERENCES `Workbooks` (`wid`) ON UPDATE CASCADE,
     FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`) ON UPDATE CASCADE
 );
+
+ALTER TABLE Users ADD CONSTRAINT credit_not_neg CHECK (`credit` >= 0);

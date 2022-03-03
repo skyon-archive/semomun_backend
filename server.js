@@ -16,9 +16,7 @@ app.use(
   express.urlencoded({ extended: true })
 )
 
-const db = require('./app/models/index')
-db.sequelize.sync()
-
+require('./app/models/index')
 require('./app/services/redis')
 
 app.use(express.static(path.join(process.env.DATA_SOURCE)))
@@ -39,15 +37,7 @@ app.get('/', (req, res) => {
   res.json({ message: 'Semomun API.' })
 })
 
-require('./app/routes/workbooks')(app)
-require('./app/routes/sections')(app)
-require('./app/routes/upload')(app)
-require('./app/routes/info')(app)
-require('./app/routes/auth')(app)
-require('./app/routes/user')(app)
-require('./app/routes/s3')(app)
-require('./app/routes/sms')(app)
-require('./app/routes/tags')(app)
+require('./app/routes/index')(app)
 
 const PORT = process.env.PORT
 const HOST = process.env.HOST

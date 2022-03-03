@@ -196,7 +196,6 @@ CREATE TABLE `WorkbookHistory` (
     `uid` INT NOT NULL,                                                            /* 유저                           */
     `type` VARCHAR(32) NOT NULL,                                                   /* start, end, download 등등      */
     -- type == `start` 를 이용해서 최근에 이용한 문제집 판별 --
-    -- type == `purchased` 를 이용해서 문제집 별 구매 추이 등 판별 --
     -- type == `cart` 를 이용해서 장바구니에 담긴 상품 목록 알 수 있음 --
     PRIMARY KEY (`whid`),
     FOREIGN KEY (`wid`) REFERENCES `Workbooks` (`wid`) ON UPDATE CASCADE,
