@@ -1,4 +1,5 @@
 const { createOrders } = require('../services/orderHistory')
+const { getUser } = require('../services/user')
 
 exports.createOrders = async (req, res) => {
   try {
@@ -20,7 +21,9 @@ exports.createOrders = async (req, res) => {
     } catch (err) {
       return res.status(400).send(err.message)
     }
-    res.json({}).send()
+
+    const user = await getUser(uid)
+    res.json({ credit: user.credit }).send()
   } catch (err) {
     console.log(err)
     res.status(500).send()
