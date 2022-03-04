@@ -11,5 +11,5 @@ module.exports = (app) => {
   require('./s3')(app)
   require('./sms')(app)
   require('./tags')(app)
-  require('./orders')(app)
+  require('./pay')(app)
 }

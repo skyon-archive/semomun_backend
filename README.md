@@ -188,7 +188,7 @@ CREATE TABLE `FavoriteTags` (
 
 -- 캐시 이용 내역 --
 CREATE TABLE `PayHistory` (
-    `chid` INT NOT NULL AUTO_INCREMENT,                                            /* 주문번호, 논의 필요                */
+    `phid` INT NOT NULL AUTO_INCREMENT,                                            /* 주문번호, 논의 필요                */
     `id` INT,                                                                      /* 구매품목                         */
     `uid` INT NOT NULL,                                                            /* 유저                            */
     `amount` INT NOT NULL,                                                         /* 양수면 충전, 음수 또는 0이면 구매     */
@@ -196,7 +196,7 @@ CREATE TABLE `PayHistory` (
     `type` VARCHAR(32) NOT NULL,                                                   /* charge 또는 order               */
     `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (`chid`),
+    PRIMARY KEY (`phid`),
     FOREIGN KEY (`id`) REFERENCES `Items` (`id`),
     FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`)
 );
@@ -428,38 +428,40 @@ sid가 주어진 값인 섹션을 반환합니다.
 <br/>
 
 
-### ~~GET /orders?page=1&limit=25 (orderHistory.js - getOrderHistory)~~
+### GET /pay?page=1&limit=25 (pay.js - getPaymentHistory)~~
 
-로그인된 유저의 구매 목록을 페이지네이션하여 반환합니다. 정렬 순서는 최신순입니다.
+로그인된 유저의 세모페이 이용내역을 페이지네이션하여 반환합니다. 정렬 순서는 최신순입니다.
 
 Query String
 - page: 페이지네이션에서 몇 번째 페이지를 받을지입니다. 1-base이며 default value는 1입니다.
-- limit: 페이지네이션에서 한 페이지에 몇 개의 OrderHistory를 받을지입니다. default value는 25입니다.
+- limit: 페이지네이션에서 한 페이지에 몇 개의 PayHistory를 받을지입니다. default value는 25입니다.
 
 Response
--  { count, orders }
+-  { count, payments }
   - count: 총 구매목록의 길이입니다. 페이지네이션과는 관련 없는 전체 값입니다.
-  - orders: OrderHistory의 list입니다.
+  - payments: PayHistory의 list입니다.
 
 <details>
 <summary>response 예시</summary>
 <pre language="json"><code class="language-json">{
-    "count": 16,
-    "orders": [
+    "count": 9,
+    "payments": [
         {
-            "ohid": 75,
+            "phid": 9,
+            "uid": 1,
             "id": 1,
-            "uid": 2,
-            "payment": 100,
-            "createdAt": "2022-03-04T07:20:57.000Z",
-            "updatedAt": "2022-03-04T07:20:57.000Z",
+            "amount": 1000,
+            "balance": 0,
+            "type": "order",
+            "createdAt": "2022-03-04T19:43:05.000Z",
+            "updatedAt": "2022-03-04T19:43:05.000Z",
             "item": {
                 "id": 1,
                 "type": "workbook",
                 "price": 1000,
-                "sales": 8,
+                "sales": 22,
                 "createdAt": "2022-03-03T21:23:16.000Z",
-                "updatedAt": "2022-03-04T07:20:57.000Z",
+                "updatedAt": "2022-03-04T19:43:05.000Z",
                 "workbook": {
                     "id": 1,
                     "wid": 1,
@@ -478,19 +480,21 @@ Response
             }
         },
         {
-            "ohid": 76,
+            "phid": 7,
+            "uid": 1,
             "id": 1,
-            "uid": 2,
-            "payment": 100,
-            "createdAt": "2022-03-04T07:20:57.000Z",
-            "updatedAt": "2022-03-04T07:20:57.000Z",
+            "amount": 1000,
+            "balance": 1000,
+            "type": "order",
+            "createdAt": "2022-03-04T19:38:11.000Z",
+            "updatedAt": "2022-03-04T19:38:11.000Z",
             "item": {
                 "id": 1,
                 "type": "workbook",
                 "price": 1000,
-                "sales": 8,
+                "sales": 22,
                 "createdAt": "2022-03-03T21:23:16.000Z",
-                "updatedAt": "2022-03-04T07:20:57.000Z",
+                "updatedAt": "2022-03-04T19:43:05.000Z",
                 "workbook": {
                     "id": 1,
                     "wid": 1,

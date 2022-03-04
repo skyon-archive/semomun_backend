@@ -151,7 +151,7 @@ CREATE TABLE `FavoriteTags` (
 
 -- 캐시 이용 내역 --
 CREATE TABLE `PayHistory` (
-    `chid` INT NOT NULL AUTO_INCREMENT,                                            /* 주문번호, 논의 필요                */
+    `phid` INT NOT NULL AUTO_INCREMENT,                                            /* 주문번호                         */
     `id` INT,                                                                      /* 구매품목                         */
     `uid` INT NOT NULL,                                                            /* 유저                            */
     `amount` INT NOT NULL,                                                         /* 양수면 충전, 음수 또는 0이면 구매     */
@@ -159,7 +159,7 @@ CREATE TABLE `PayHistory` (
     `type` VARCHAR(32) NOT NULL,                                                   /* charge 또는 order               */
     `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (`chid`),
+    PRIMARY KEY (`phid`),
     FOREIGN KEY (`id`) REFERENCES `Items` (`id`),
     FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`)
 );

@@ -42,7 +42,7 @@ function initModels (sequelize) {
   Tags.hasMany(WorkbookTags, { as: 'WorkbookTags', foreignKey: 'tid' })
   PayHistory.belongsTo(Users, { as: 'uid_User', foreignKey: 'uid' })
   Users.hasMany(PayHistory, { as: 'PayHistories', foreignKey: 'uid' })
-  PayHistory.belongsTo(Items, { as: 'id_Item', foreignKey: 'id' })
+  PayHistory.belongsTo(Items, { as: 'item', foreignKey: 'id' })
   Items.hasMany(PayHistory, { as: 'PayHistory', foreignKey: 'id' })
   FavoriteTags.belongsTo(Users, { as: 'uid_User', foreignKey: 'uid' })
   Users.FavoriteTags = Users.hasMany(FavoriteTags, { as: 'favoriteTags', foreignKey: 'uid' })

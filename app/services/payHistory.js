@@ -2,7 +2,7 @@ const { BadRequest, NotFound } = require('../errors')
 const { PayHistory, Items, Users, sequelize } = require('../models/index')
 
 exports.createOrders = async (uid, ids) => {
-  await sequelize.transaction(async (transaction) => {
+  return await sequelize.transaction(async (transaction) => {
     const now = new Date()
     let balance = (await Users.findByPk(uid, { transaction })).credit
     const orders = await Promise.all(ids.map(async (id) => {
@@ -21,16 +21,16 @@ exports.createOrders = async (uid, ids) => {
       }
     }))
     await PayHistory.bulkCreate(orders, { transaction })
+    return balance
   })
 }
 
-exports.getOrderHistory = async (uid, page, limit) => {
-  /*
-  const { count, rows } = await OrderHistory.findAndCountAll({
+exports.getPaymentHistory = async (uid, page, limit) => {
+  const { count, rows } = await PayHistory.findAndCountAll({
     where: { uid },
     order: [
       ['createdAt', 'DESC'],
-      ['ohid', 'ASC']
+      ['phid', 'ASC']
     ],
     include: {
       association: 'item',
@@ -39,6 +39,5 @@ exports.getOrderHistory = async (uid, page, limit) => {
     offset: (page - 1) * limit,
     limit
   })
-  return { count, orders: rows }
-  */
+  return { count, payments: rows }
 }
