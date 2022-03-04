@@ -1,5 +1,5 @@
 const db = require('../models/index')
-const { Workbooks, Sections, Items, WorkbookTags, Tags } = db
+const { Workbooks, Items, WorkbookTags } = db
 
 exports.fetchWorkbooks = async (req, res) => {
   try {
@@ -18,8 +18,7 @@ exports.fetchWorkbook = async (req, res) => {
     const workbook = await Workbooks.findOne({
       where: { wid },
       include: {
-        model: Sections,
-        as: 'sections',
+        association: 'sections',
         order: [['index', 'ASC']]
       }
     })
@@ -37,10 +36,7 @@ exports.fetchWorkbook = async (req, res) => {
     const workbookTags = await WorkbookTags.findAll({
       where: { wid },
       order: [['createdAt', 'ASC']],
-      include: {
-        model: Tags,
-        as: 'tid_Tag'
-      },
+      include: 'tid_Tag',
       raw: true,
       nest: true
     })

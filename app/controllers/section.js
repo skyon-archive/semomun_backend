@@ -1,5 +1,5 @@
 const { getUserWithGoogle, getUserWithApple } = require('../services/auth')
-const { Sections, Views, Problems, Submissions } = require('../models/index')
+const { Sections, Submissions } = require('../models/index')
 
 exports.fetchSection = async (req, res) => {
   try {
@@ -8,16 +8,14 @@ exports.fetchSection = async (req, res) => {
 
     const section = await Sections.findOne({
       where: { sid },
-      include: [{
-        model: Views,
-        as: 'views',
+      include: {
+        association: 'views',
         order: [['index', 'ASC']],
         include: {
-          model: Problems,
-          as: 'problems',
+          association: 'problems',
           order: [['index', 'ASC']]
         }
-      }]
+      }
     })
     if (!section) return res.status(404).send()
     res.json(section).send()

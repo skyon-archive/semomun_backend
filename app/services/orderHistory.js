@@ -23,9 +23,7 @@ exports.getOrderHistory = async (uid, page, limit) => {
     ],
     include: {
       association: 'item',
-      include: {
-        association: 'workbook'
-      }
+      include: 'workbook'
     },
     offset: (page - 1) * limit,
     limit
