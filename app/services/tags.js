@@ -1,6 +1,15 @@
 const { Tags, sequelize } = require('../models/index')
 
-exports.getTagsOrderByPopularity = async (page, limit) => {
+exports.getTagsOrderBy = async (orderBy) => {
+  const order = orderBy === 'popularity'
+    ? [
+        [sequelize.literal('UserCount'), 'DESC'],
+        [sequelize.literal('WorkbookCount'), 'DESC'],
+        ['tid', 'ASC']
+      ]
+    : orderBy === 'name'
+      ? [['name', 'ASC']]
+      : [['tid', 'ASC']]
   const { count, rows } = await Tags.findAndCountAll({
     attributes: {
       include: [
@@ -18,13 +27,7 @@ exports.getTagsOrderByPopularity = async (page, limit) => {
         ]
       ]
     },
-    order: [
-      [sequelize.literal('UserCount'), 'DESC'],
-      [sequelize.literal('WorkbookCount'), 'DESC'],
-      ['tid', 'ASC']
-    ],
-    offset: (page - 1) * limit,
-    limit
+    order
   })
   return { count, tags: rows }
 }

@@ -374,16 +374,17 @@ sid가 주어진 값인 섹션을 반환합니다.
 - 404 Not Found: 해당 wid에 대한 문제집이 없는 경우입니다.
 
 
-### GET /tags?page=1&limit=25 (tags.js - getTags)
+### GET /tags?order=popularity (tags.js - getTags)
 
-Tag를 인기 순으로 정렬하여 페이지네이션하여 반환합니다. 정렬 기준은 아래와 같습니다. 1번 기준이 가장 우선 순위가 높습니다.
-1. 해당 태그를 FavoriteTag로 선택한 유저가 많을수록
-2. 해당 태그를 가지는 Workbook이 많을수록
-3. tid 순으로 오름차순
+모든 Tag를 정렬하여 반환합니다. `order`가 가질 수 있는 값은 `popularity`와 `name`입니다.
+- `order=popularity`: 정렬 기준은 아래와 같습니다.
+  1. 해당 태그를 FavoriteTag로 선택한 유저가 많을수록
+  2. 해당 태그를 가지는 Workbook이 많을수록
+  3. tid 순으로 오름차순
+- `order=name`: name 순으로 오름차순
+- 그 외: tid 순으로 오름차순
 
-페이지네이션을 위한 값은 Query String으로 받습니다. page는 몇 번째 페이지를 가져올지(1-base)이고, limit은 한 페이지에 몇 개의 데이터를 보낼지입니다. page와 limit이 주어지지 않거나 number로 parse될 수 없다면 각각 1, 25로 처리합니다.
-
-성공 시 아래와 같은 형식의 json을 보냅니다. count는 페이지네이션과 상관 없는, 전체 Tag의 개수입니다. UserCount는 해당 태그를 FavoriteTag로 선택한 유저의 수이고, WorkbookCount는 해당 태그를 가지는 Workbook의 수입니다.
+성공 시 아래와 같은 형식의 json을 보냅니다. count는 전체 Tag의 개수입니다. UserCount는 해당 태그를 FavoriteTag로 선택한 유저의 수이고, WorkbookCount는 해당 태그를 가지는 Workbook의 수입니다.
 
 <details>
 <summary>response 예시</summary>

@@ -1,12 +1,9 @@
-const { getTagsOrderByPopularity } = require('../services/tags')
+const { getTagsOrderBy } = require('../services/tags')
 
 exports.getTags = async (req, res) => {
   try {
-    const { page, limit } = req.query
-    const result = await getTagsOrderByPopularity(
-      +page ? +page : 1,
-      +limit ? +limit : 25
-    )
+    const { order } = req.query
+    const result = await getTagsOrderBy(order)
     res.json(result)
   } catch (err) {
     console.log(err)
