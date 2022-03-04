@@ -1,29 +1,21 @@
-const { CustomError } = require('../errors')
+const { BadRequest, NotFound } = require('../errors')
 const { parseIntDefault } = require('../utils')
-const { createOrders, getOrderHistory } = require('../services/orderHistory')
-const { getUser } = require('../services/user')
+const { createOrders, getOrderHistory } = require('../services/payHistory')
 
 exports.createOrders = async (req, res) => {
   try {
     const uid = req.uid
     if (!uid) return res.status(401).send()
 
-    const orders = req.body
-    if (!Array.isArray(orders)) return res.status(400).send()
+    const ids = req.body
+    if (!Array.isArray(ids)) throw new BadRequest('WRONG_BODY')
 
-    const now = new Date()
-    orders.forEach((order) => {
-      order.createdAt = now
-      order.updatedAt = now
-      order.uid = uid
-    })
+    const balance = await createOrders(uid, ids)
 
-    await createOrders(orders)
-
-    const user = await getUser(uid)
-    res.json({ credit: user.credit }).send()
+    res.json({ balance }).send()
   } catch (err) {
-    if (err instanceof CustomError) res.status(400).send(err.message)
+    if (err instanceof BadRequest) res.status(400).send(err.message)
+    else if (err instanceof NotFound) res.status(404).send(err.message)
     else {
       console.log(err)
       res.status(500).send()

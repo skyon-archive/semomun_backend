@@ -1,4 +1,4 @@
-const { CustomError } = require('../errors')
+const { BadRequest } = require('../errors')
 const { updateUser, getUser } = require('../services/user')
 
 exports.fetchSelf = async (req, res) => {
@@ -23,7 +23,7 @@ exports.updateUser = async (req, res) => {
     await updateUser(uid, req.body)
     res.json({})
   } catch (err) {
-    if (err instanceof CustomError) res.status(400).send(err.message)
+    if (err instanceof BadRequest) res.status(400).send(err.message)
     else {
       console.log(err)
       res.status(500).send()

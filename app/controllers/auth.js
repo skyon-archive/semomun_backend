@@ -13,7 +13,7 @@ const {
   createUser
 } = require('../services/user')
 const redis = require('../services/redis')
-const { CustomError } = require('../errors')
+const { BadRequest } = require('../errors')
 
 exports.createUser = async (req, res) => {
   try {
@@ -35,7 +35,7 @@ exports.createUser = async (req, res) => {
     const tokens = await createJwt(result.uid, expire === 'short')
     res.json(tokens)
   } catch (err) {
-    if (err instanceof CustomError) res.status(400).send(err.message)
+    if (err instanceof BadRequest) res.status(400).send(err.message)
     else {
       console.log(err)
       res.status(500).send()

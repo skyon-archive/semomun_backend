@@ -1,5 +1,5 @@
 module.exports = (app) => {
-  const { createOrders, getOrderHistory } = require('../controllers/orderHistory.js')
+  const { createOrders, getOrderHistory } = require('../controllers/orders.js')
   const { authJwt } = require('../middleware/auth')
 
   const router = require('express').Router()

@@ -1,4 +1,4 @@
-const { CustomError } = require('../errors')
+const { BadRequest } = require('../errors')
 const { Users, sequelize } = require('../models/index')
 
 const getUserWithUsername = async (username, transaction = undefined) => {
@@ -49,26 +49,26 @@ exports.createUser = async (userInfo) => {
   ]
   Object.keys(userInfo).forEach(key => {
     if (!whiteList.includes(key)) {
-      throw new CustomError(`${key} is not a valid key`)
+      throw new BadRequest(`${key} is not a valid key`)
     }
   })
 
   if (!userInfo.googleId && !userInfo.appleId) {
-    throw new CustomError('googleId and appleId missing')
+    throw new BadRequest('googleId and appleId missing')
   }
 
   return await sequelize.transaction(async (t) => {
     if (userInfo.googleId && await getUserWithGoogleId(userInfo.googleId, t)) {
-      throw new CustomError('USER_ALREADY_EXISTS')
+      throw new BadRequest('USER_ALREADY_EXISTS')
     }
     if (userInfo.appleId && await getUserWithAppleId(userInfo.appleId, t)) {
-      throw new CustomError('USER_ALREADY_EXISTS')
+      throw new BadRequest('USER_ALREADY_EXISTS')
     }
     if (await getUserWithUsername(userInfo.username, t)) {
-      throw new CustomError('USERNAME_NOT_AVAILABLE')
+      throw new BadRequest('USERNAME_NOT_AVAILABLE')
     }
     if (await getUserWithPhone(userInfo.phone, t)) {
-      throw new CustomError('PHONE_NOT_AVAILABLE')
+      throw new BadRequest('PHONE_NOT_AVAILABLE')
     }
 
     userInfo.name = ''
@@ -101,7 +101,7 @@ exports.updateUser = async (uid, userInfo) => {
   })
 
   const target = await Users.findByPk(uid)
-  if (!target) throw new CustomError('wrong user')
+  if (!target) throw new BadRequest('wrong user')
 
   await Users.update(userInfo, { where: { uid } })
 }

@@ -37,7 +37,6 @@ const getAuthJwtKey = (refreshToken) => {
 exports.getAuthJwtKey = getAuthJwtKey
 
 exports.createJwt = async (uid, short = false) => {
-  console.log(short)
   const payload = { uid }
   const accessToken = jwt.sign(payload, secret, { algorithm: 'HS256', expiresIn: '10m' })
   const refreshToken = jwt.sign({}, secret, { algorithm: 'HS256', expiresIn: short ? '3h' : '30d' })

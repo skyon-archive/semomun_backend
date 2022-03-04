@@ -1,8 +1,16 @@
-function CustomError (message) {
+function BadRequest (message) {
   this.message = message
   this.stack = Error().stack
 }
-CustomError.prototype = Object.create(Error.prototype)
-CustomError.prototype.name = 'CustomError'
+BadRequest.prototype = Object.create(Error.prototype)
+BadRequest.prototype.name = 'BadRequest'
 
-exports.CustomError = CustomError
+function NotFound (message) {
+  this.message = message
+  this.stack = Error().stack
+}
+NotFound.prototype = Object.create(Error.prototype)
+NotFound.prototype.name = 'NotFound'
+
+exports.BadRequest = BadRequest
+exports.NotFound = NotFound
