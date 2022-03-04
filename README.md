@@ -522,7 +522,7 @@ Response
 - 401 Unauthorized: access token이 주어지지 않았거나 만료된 경우입니다.
 
 
-### POST /orders
+### POST /pay/orders (pay.js - createOrders)
 
 아이템(문제집 등)들을 세모페이를 이용해 구매합니다.
 
