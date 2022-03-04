@@ -5,7 +5,7 @@ CREATE TABLE `Users` (
     `name` VARCHAR(256) NOT NULL,                                                  /* 실명                          */
     `email` VARCHAR(256) NOT NULL,                                                 /* 이메일                         */
     `gender` VARCHAR(32) NOT NULL,                                                 /* 성별                          */
-    `birth` TIMESTAMP,
+    `birth` DATETIME,                                                              /* 생일                          */
     `googleId` VARCHAR(256),                                                       /* 구글 소셜로그인 id                */
     `appleId` VARCHAR(256),                                                        /* 애플 소셜로그인 id                */
     `phone` VARCHAR(32) NOT NULL,                                                  /* 전화번호, 국가코드 포함            */
@@ -39,7 +39,7 @@ CREATE TABLE `Workbooks` (
     `detail` VARCHAR(4096) NOT NULL,                                               /* 설명                            */
     `isbn` VARCHAR(32) NOT NULL,                                                   /* ISBN, 한국에선 부가기호도 있음        */
     `author` VARCHAR(32) NOT NULL,                                                 /* 저자                            */
-    `date` TIMESTAMP NOT NULL,                                                     /* 발행일                          */
+    `date` DATETIME NOT NULL,                                                     /* 발행일                          */
     `publishMan` VARCHAR(32) NOT NULL,                                             /* 발행인                          */
     `publishCompany` VARCHAR(32) NOT NULL,                                         /* 출판사                          */
     `originalPrice` VARCHAR(32) NOT NULL,                                          /* 정가                            */
