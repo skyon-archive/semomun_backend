@@ -1,5 +1,6 @@
 const { CustomError } = require('../errors')
-const { createOrders } = require('../services/orderHistory')
+const { parseIntDefault } = require('../utils')
+const { createOrders, getOrderHistory } = require('../services/orderHistory')
 const { getUser } = require('../services/user')
 
 exports.createOrders = async (req, res) => {
@@ -27,5 +28,24 @@ exports.createOrders = async (req, res) => {
       console.log(err)
       res.status(500).send()
     }
+  }
+}
+
+exports.getOrderHistory = async (req, res) => {
+  try {
+    const uid = req.uid
+    if (!uid) return res.status(401).send()
+
+    const { page, limit } = req.query
+
+    const result = await getOrderHistory(
+      uid,
+      parseIntDefault(page, 1),
+      parseIntDefault(limit, 25)
+    )
+    res.json(result).send()
+  } catch (err) {
+    console.log(err)
+    res.status(500).send()
   }
 }

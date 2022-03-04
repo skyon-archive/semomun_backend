@@ -413,6 +413,95 @@ sid가 주어진 값인 섹션을 반환합니다.
 <br/>
 
 
+### GET /orders?page=1&limit=25 (orderHistory.js - getOrderHistory)
+
+로그인된 유저의 구매 목록을 페이지네이션하여 반환합니다. 정렬 순서는 최신순입니다.
+
+Query String
+- page: 페이지네이션에서 몇 번째 페이지를 받을지입니다. 1-base이며 default value는 1입니다.
+- limit: 페이지네이션에서 한 페이지에 몇 개의 OrderHistory를 받을지입니다. default value는 25입니다.
+
+Response
+-  { count, orders }
+  - count: 총 구매목록의 길이입니다. 페이지네이션과는 관련 없는 전체 값입니다.
+  - orders: OrderHistory의 list입니다.
+
+<details>
+<summary>response 예시</summary>
+<pre language="json"><code class="language-json">{
+    "count": 16,
+    "orders": [
+        {
+            "ohid": 75,
+            "id": 1,
+            "uid": 2,
+            "payment": 100,
+            "createdAt": "2022-03-04T07:20:57.000Z",
+            "updatedAt": "2022-03-04T07:20:57.000Z",
+            "item": {
+                "id": 1,
+                "type": "workbook",
+                "price": 1000,
+                "sales": 8,
+                "createdAt": "2022-03-03T21:23:16.000Z",
+                "updatedAt": "2022-03-04T07:20:57.000Z",
+                "workbook": {
+                    "id": 1,
+                    "wid": 1,
+                    "title": "title",
+                    "detail": "detail",
+                    "isbn": "isbn",
+                    "author": "author",
+                    "date": "2022-03-04T16:39:44.000Z",
+                    "publishMan": "publishMan",
+                    "publishCompany": "publishCompany",
+                    "originalPrice": "10000",
+                    "bookcover": "50670920-68d0-47cd-be2e-cfe4e44be17c",
+                    "createdAt": "2022-03-04T16:40:07.000Z",
+                    "updatedAt": "2022-03-04T16:40:08.000Z"
+                }
+            }
+        },
+        {
+            "ohid": 76,
+            "id": 1,
+            "uid": 2,
+            "payment": 100,
+            "createdAt": "2022-03-04T07:20:57.000Z",
+            "updatedAt": "2022-03-04T07:20:57.000Z",
+            "item": {
+                "id": 1,
+                "type": "workbook",
+                "price": 1000,
+                "sales": 8,
+                "createdAt": "2022-03-03T21:23:16.000Z",
+                "updatedAt": "2022-03-04T07:20:57.000Z",
+                "workbook": {
+                    "id": 1,
+                    "wid": 1,
+                    "title": "title",
+                    "detail": "detail",
+                    "isbn": "isbn",
+                    "author": "author",
+                    "date": "2022-03-04T16:39:44.000Z",
+                    "publishMan": "publishMan",
+                    "publishCompany": "publishCompany",
+                    "originalPrice": "10000",
+                    "bookcover": "50670920-68d0-47cd-be2e-cfe4e44be17c",
+                    "createdAt": "2022-03-04T16:40:07.000Z",
+                    "updatedAt": "2022-03-04T16:40:08.000Z"
+                }
+            }
+        }
+    ]
+}
+</code></pre></details>
+<br/>
+
+실패 시 처리는 다음과 같습니다.
+- 401 Unauthorized: access token이 주어지지 않았거나 만료된 경우입니다.
+
+
 ### POST /auth/signup (auth.js - createUser)
 
 사용자의 정보를 받아 가입시킵니다

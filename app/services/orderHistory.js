@@ -13,3 +13,22 @@ exports.createOrders = async (orders) => {
     await OrderHistory.bulkCreate(orders, { transaction })
   })
 }
+
+exports.getOrderHistory = async (uid, page, limit) => {
+  const { count, rows } = await OrderHistory.findAndCountAll({
+    where: { uid },
+    order: [
+      ['createdAt', 'DESC'],
+      ['ohid', 'ASC']
+    ],
+    include: {
+      association: 'item',
+      include: {
+        association: 'workbook'
+      }
+    },
+    offset: (page - 1) * limit,
+    limit
+  })
+  return { count, orders: rows }
+}
