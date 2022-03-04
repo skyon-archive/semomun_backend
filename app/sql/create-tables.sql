@@ -15,6 +15,8 @@ CREATE TABLE `Users` (
     `degreeStatus` VARCHAR(32) NOT NULL,                                           /* 재학 상태                       */
     `credit` INT NOT NULL,                                                         /* 보유 캐시, 종속성 관리 필요        */
     `auth` INT NOT NULL,                                                           /* 유저 권한                       */
+    `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`uid`)
 );
 
@@ -24,6 +26,8 @@ CREATE TABLE `Items` (
     `type` VARCHAR(32) NOT NULL,                                                   /* 유형                            */
     `price` INT NOT NULL,                                                          /* 판매가                          */
     `sales` INT NOT NULL,                                                          /* 판매량, 종속성 관리 필요          */
+    `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`)
 );
 
@@ -40,6 +44,8 @@ CREATE TABLE `Workbooks` (
     `publishCompany` VARCHAR(32) NOT NULL,                                         /* 출판사                          */
     `originalPrice` VARCHAR(32) NOT NULL,                                          /* 정가                            */
     `bookcover` CHAR(36) NOT NULL,                                                 /* 표지 파일 식별자, uuid            */
+    `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`wid`),
     FOREIGN KEY (`id`) REFERENCES `Items` (`id`) ON UPDATE CASCADE
 );
@@ -56,6 +62,8 @@ CREATE TABLE `Sections` (
     `size` INT NOT NULL,                                                             /* 다운로드 파일 크기, 종속성 관리 필요 */
     `audio` CHAR(36),                                                               /* 음성파일, uuid                    */
     `audioDetail` JSON,                                                             /* 음성파일에 대한 각 view timestamp 등  */
+    `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`sid`),
     FOREIGN KEY (`wid`) REFERENCES `Workbooks` (`wid`) ON UPDATE CASCADE
 );
@@ -68,6 +76,8 @@ CREATE TABLE `Views` (
     `form` INT NOT NULL,                                                            /* 유형                            */
     `passage` CHAR(36),                                                             /* 지문 파일 식별자, uuid           */
     `attachment` CHAR(36),                                                          /* 자료 식별자, uuid               */
+    `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`vid`),
     FOREIGN KEY (`sid`) REFERENCES `Sections` (`sid`) ON UPDATE CASCADE
 );
@@ -84,6 +94,8 @@ CREATE TABLE `Problems` (
     `score` DOUBLE,                                                                 /* 배점                          */
     `content` CHAR(36) NOT NULL,                                                    /* 문제 파일 식별자, uuid           */
     `explanation` CHAR(36),                                                         /* 해설 파일 식별자, uuid           */ 
+    `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`pid`),
     FOREIGN KEY (`vid`) REFERENCES `Views` (`vid`) ON UPDATE CASCADE
 );
@@ -98,6 +110,8 @@ CREATE TABLE `Submissions` (
     `attempt` INT NOT NULL,                                                        /* 다시풀기 n회차                   */
     `note` MEDIUMBLOB,                                                          /* 필기                            */
     `type` VARCHAR(32) NOT NULL,                                                    /* problem 또는 view            */
+    `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     -- 중복 제출 가능하게 해야함 --
     PRIMARY KEY (`identifier` ),
     FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`) ON UPDATE CASCADE,
@@ -108,6 +122,8 @@ CREATE TABLE `Submissions` (
 CREATE TABLE `Tags` (
     `tid` INT NOT NULL AUTO_INCREMENT,                                             /* 식별자                          */
     `name` VARCHAR(32) NOT NULL,                                                   /* 이름                           */
+    `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`tid`)
 );
 
@@ -115,6 +131,8 @@ CREATE TABLE `Tags` (
 CREATE TABLE `WorkbookTags` (
     `wid` INT NOT NULL,                                                            /* 문제집                         */
     `tid` INT NOT NULL,                                                            /* 태그                           */
+    `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`wid`, `tid`),
     FOREIGN KEY (`wid`) REFERENCES `Workbooks` (`wid`) ON UPDATE CASCADE,
     FOREIGN KEY (`tid`) REFERENCES `Tags` (`tid`) ON UPDATE CASCADE
@@ -124,6 +142,8 @@ CREATE TABLE `WorkbookTags` (
 CREATE TABLE `FavoriteTags` (
     `uid` INT NOT NULL,                                                            /* 유저                          */
     `tid` INT NOT NULL,                                                            /* 태그                          */
+    `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`uid`, `tid`),
     FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`) ON UPDATE CASCADE,
     FOREIGN KEY (`tid`) REFERENCES `Tags` (`tid`) ON UPDATE CASCADE
@@ -135,6 +155,8 @@ CREATE TABLE `OrderHistory` (
     `id` INT NOT NULL,                                                             /* 구매품목                         */
     `uid` INT NOT NULL,                                                            /* 유저                            */
     `payment` INT NOT NULL,                                                        /* 총 지불금액                       */
+    `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`ohid`),
     FOREIGN KEY (`id`) REFERENCES `Items` (`id`) ON UPDATE CASCADE,
     FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`) ON UPDATE CASCADE
@@ -146,6 +168,8 @@ CREATE TABLE `ChargeHistory` (
     `uid` INT NOT NULL,                                                            /* 유저                            */
     `amount` INT NOT NULL,                                                         /* 충전량                           */
     `type` VARCHAR(32) NOT NULL,                                                   /* 이벤트, 쿠폰, 결제, 등등            */
+    `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`chid`),
     FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`) ON UPDATE CASCADE
 );
@@ -156,6 +180,8 @@ CREATE TABLE `WorkbookHistory` (
     `wid` INT NOT NULL,                                                            /* 문제집                         */
     `uid` INT NOT NULL,                                                            /* 유저                           */
     `type` VARCHAR(32) NOT NULL,                                                   /* start, end, download 등등      */
+    `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     -- type == `start` 를 이용해서 최근에 이용한 문제집 판별 --
     -- type == `cart` 를 이용해서 장바구니에 담긴 상품 목록 알 수 있음 --
     PRIMARY KEY (`whid`),
