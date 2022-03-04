@@ -17,6 +17,13 @@ const useCredit = async (sequelize, orders, transaction) => {
   }
 }
 
+const increaseSale = async (sequelize, orders, transaction) => {
+  await Promise.all(orders.map(({ id }) => sequelize.models.Items.update(
+    { sales: sequelize.literal('sales + 1') },
+    { where: { id }, transaction }
+  )))
+}
+
 module.exports = function (sequelize, DataTypes) {
   return sequelize.define('OrderHistory', {
     ohid: {
@@ -75,9 +82,11 @@ module.exports = function (sequelize, DataTypes) {
     hooks: {
       afterCreate: async (order, options) => {
         await useCredit(sequelize, [order], options.transaction)
+        await increaseSale(sequelize, [order], options.transaction)
       },
       afterBulkCreate: async (orders, options) => {
         await useCredit(sequelize, orders, options.transaction)
+        await increaseSale(sequelize, orders, options.transaction)
       }
     }
   })
