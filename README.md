@@ -502,16 +502,21 @@ Response
 - 401 Unauthorized: access token이 주어지지 않았거나 만료된 경우입니다.
 
 
-### POST /auth/signup (auth.js - createUser)
+### POST /auth/signup?expire=short (auth.js - createUser)
 
 사용자의 정보를 받아 가입시킵니다
 
+Query String
+- expire: short로 주어질 경우 refresh token의 expire time이 3시간이 되고, 그 외의 경우(주어지지 않은 경우 포함)에는 30일입니다.
+
+Request Body
 - info: 사용자 초기 정보입니다. 다음과 같은 객체입니다.
   - `{ nickname, phone, school, major, majorDetail, favoriteTags, graduationStatus }`
   - phone: `+82-10-1234-5678`과 같은 형식입니다.
   - favoriteTags: `[1, 2]`와 같은 형식으로 tid들의 목록입니다.
 - token: 사용자 식별 토큰입니다.
 - type: 소셜로그인 타입입니다. 그 값은 "google" 또는 "apple"입니다.
+
 <details>
 <summary>request 예시</summary>
 <pre language="json"><code class="language-json">{
@@ -543,9 +548,14 @@ Response
 - 409 Conflict: 이미 사용중인 전화번호인 경우입니다. 반환값은 `PHONE_NOT_AVAILABLE` 입니다.
 
 
-### POST /auth/login (auth.js - login)
+### POST /auth/login?expire=short (auth.js - login)
 
 google 또는 apple 토큰을 통해 로그인을 합니다.
+
+Query String
+- expire: short로 주어질 경우 refresh token의 expire time이 3시간이 되고, 그 외의 경우(주어지지 않은 경우 포함)에는 30일입니다.
+
+Request Body
 - token: google 또는 apple 토큰입니다.
 - type: "google" 또는 "apple"의 값입니다.
 
@@ -557,14 +567,17 @@ google 또는 apple 토큰을 통해 로그인을 합니다.
 - 400 Bad Request: 해당 토큰으로 가입한 유저가 없는 경우입니다. 반환값은 `USER_NOT_EXIST`입니다.
 
 
-### GET /auth/refresh (auth.js - refresh)
+### GET /auth/refresh?expire=short (auth.js - refresh)
 
 만료된 accessToken과 만료되지 않은 refreshToken을 통해 새로운 accessToken과 refreshToken을 생성합니다. 이전 refreshToken은 폐기됩니다.
 
-**헤더**에 다음과 같은 값을 담아야 합니다.
+Header
 - authorization: `Bearer aaa.bbb.ccc.`
   - accessToken을 일반적인 Bearer token과 같은 형태로 담습니다.
 - refresh: `rrr.bbb.ccc`
+
+Query String
+- expire: short로 주어질 경우 refresh token의 expire time이 3시간이 되고, 그 외의 경우(주어지지 않은 경우 포함)에는 30일입니다.
 
 성공 시 반환값은 JSON이며, `{ "accessToken": "asdf", "refreshToken": "abcd" }`와 같이 access token과 refresh token을 담은 객체입니다.
 accessToken과 refreshToken 모두 새로 생성된 값입니다.

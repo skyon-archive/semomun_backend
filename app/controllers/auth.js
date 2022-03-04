@@ -18,6 +18,7 @@ const { CustomError } = require('../errors')
 exports.createUser = async (req, res) => {
   try {
     const { token, type, info: userInfo } = req.body
+    const { expire } = req.query
 
     if (type === AuthType.GOOGLE) {
       userInfo.googleId = await getGoogleId(token)
@@ -31,7 +32,7 @@ exports.createUser = async (req, res) => {
 
     const result = await createUser(userInfo)
 
-    const tokens = await createJwt(result.uid)
+    const tokens = await createJwt(result.uid, expire === 'short')
     res.json(tokens)
   } catch (err) {
     if (err instanceof CustomError) res.status(400).send(err.message)
@@ -45,6 +46,7 @@ exports.createUser = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { token, type } = req.body
+    const { expire } = req.query
 
     let uid
     if (type === AuthType.GOOGLE) {
@@ -59,7 +61,7 @@ exports.login = async (req, res) => {
 
     if (!uid) return res.status(400).send('USER_NOT_EXIST')
 
-    const tokens = await createJwt(uid)
+    const tokens = await createJwt(uid, expire === 'short')
     res.json(tokens)
   } catch (err) {
     console.log(err)
@@ -94,7 +96,9 @@ exports.refresh = async (req, res) => {
       return res.status(400).send()
     }
 
-    const newTokens = await createJwt(accessDecoded.uid)
+    const { expire } = req.query
+
+    const newTokens = await createJwt(accessDecoded.uid, expire === 'short')
     res.json(newTokens)
   } catch (err) {
     console.log(err)
