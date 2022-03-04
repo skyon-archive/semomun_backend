@@ -47,7 +47,7 @@ CREATE TABLE `Workbooks` (
     `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`wid`),
-    FOREIGN KEY (`id`) REFERENCES `Items` (`id`) ON UPDATE CASCADE
+    FOREIGN KEY (`id`) REFERENCES `Items` (`id`)
 );
 
 -- 섹션 (문제집의 각 단원) --
@@ -65,7 +65,7 @@ CREATE TABLE `Sections` (
     `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`sid`),
-    FOREIGN KEY (`wid`) REFERENCES `Workbooks` (`wid`) ON UPDATE CASCADE
+    FOREIGN KEY (`wid`) REFERENCES `Workbooks` (`wid`)
 );
 
 -- 뷰 (섹션의 각 페이지) --
@@ -79,7 +79,7 @@ CREATE TABLE `Views` (
     `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`vid`),
-    FOREIGN KEY (`sid`) REFERENCES `Sections` (`sid`) ON UPDATE CASCADE
+    FOREIGN KEY (`sid`) REFERENCES `Sections` (`sid`)
 );
 
 -- 문제 --
@@ -97,7 +97,7 @@ CREATE TABLE `Problems` (
     `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`pid`),
-    FOREIGN KEY (`vid`) REFERENCES `Views` (`vid`) ON UPDATE CASCADE
+    FOREIGN KEY (`vid`) REFERENCES `Views` (`vid`)
 );
 
 -- 제출 기록 --
@@ -114,8 +114,8 @@ CREATE TABLE `Submissions` (
     `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     -- 중복 제출 가능하게 해야함 --
     PRIMARY KEY (`identifier` ),
-    FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`) ON UPDATE CASCADE,
-    FOREIGN KEY (`pid`) REFERENCES `Problems` (`pid`) ON UPDATE CASCADE
+    FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`),
+    FOREIGN KEY (`pid`) REFERENCES `Problems` (`pid`)
 );
 
 -- 태그 --
@@ -134,8 +134,8 @@ CREATE TABLE `WorkbookTags` (
     `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`wid`, `tid`),
-    FOREIGN KEY (`wid`) REFERENCES `Workbooks` (`wid`) ON UPDATE CASCADE,
-    FOREIGN KEY (`tid`) REFERENCES `Tags` (`tid`) ON UPDATE CASCADE
+    FOREIGN KEY (`wid`) REFERENCES `Workbooks` (`wid`),
+    FOREIGN KEY (`tid`) REFERENCES `Tags` (`tid`)
 );
 
 -- 나의 태그 (관심 태그) -- 
@@ -145,33 +145,23 @@ CREATE TABLE `FavoriteTags` (
     `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`uid`, `tid`),
-    FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`) ON UPDATE CASCADE,
-    FOREIGN KEY (`tid`) REFERENCES `Tags` (`tid`) ON UPDATE CASCADE
+    FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`),
+    FOREIGN KEY (`tid`) REFERENCES `Tags` (`tid`)
 )
 
--- 주문 내역 (캐시 사용 내역) --
-CREATE TABLE `OrderHistory` (
-    `ohid` INT NOT NULL AUTO_INCREMENT,
-    `id` INT NOT NULL,                                                             /* 구매품목                         */
-    `uid` INT NOT NULL,                                                            /* 유저                            */
-    `payment` INT NOT NULL,                                                        /* 총 지불금액                       */
-    `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (`ohid`),
-    FOREIGN KEY (`id`) REFERENCES `Items` (`id`) ON UPDATE CASCADE,
-    FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`) ON UPDATE CASCADE
-);
-
--- 캐시 충전 내역 --
-CREATE TABLE `ChargeHistory` (
+-- 캐시 이용 내역 --
+CREATE TABLE `PayHistory` (
     `chid` INT NOT NULL AUTO_INCREMENT,                                            /* 주문번호, 논의 필요                */
+    `id` INT,                                                                      /* 구매품목                         */
     `uid` INT NOT NULL,                                                            /* 유저                            */
-    `amount` INT NOT NULL,                                                         /* 충전량                           */
-    `type` VARCHAR(32) NOT NULL,                                                   /* 이벤트, 쿠폰, 결제, 등등            */
+    `amount` INT NOT NULL,                                                         /* 양수면 충전, 음수 또는 0이면 구매     */
+    `balance` INT NOT NULL,                                                        /* 충전 또는 구매 후 남은 잔액          */
+    `type` VARCHAR(32) NOT NULL,                                                   /* charge 또는 order               */
     `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`chid`),
-    FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`) ON UPDATE CASCADE
+    FOREIGN KEY (`id`) REFERENCES `Items` (`id`),
+    FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`)
 );
 
 -- 학습 기록 --
@@ -179,12 +169,12 @@ CREATE TABLE `WorkbookHistory` (
     `whid` INT NOT NULL AUTO_INCREMENT,
     `wid` INT NOT NULL,                                                            /* 문제집                         */
     `uid` INT NOT NULL,                                                            /* 유저                           */
-    `type` VARCHAR(32) NOT NULL,                                                   /* start, end, download 등등      */
-    `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `type` VARCHAR(32) NOT NULL,                                                   /* start, cart 등등               */
     -- type == `start` 를 이용해서 최근에 이용한 문제집 판별 --
     -- type == `cart` 를 이용해서 장바구니에 담긴 상품 목록 알 수 있음 --
+    `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`whid`),
-    FOREIGN KEY (`wid`) REFERENCES `Workbooks` (`wid`) ON UPDATE CASCADE,
-    FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`) ON UPDATE CASCADE
+    FOREIGN KEY (`wid`) REFERENCES `Workbooks` (`wid`),
+    FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`)
 );

@@ -1,8 +1,7 @@
 const DataTypes = require('sequelize').DataTypes
-const _ChargeHistory = require('./ChargeHistory')
+const _PayHistory = require('./PayHistory')
 const _FavoriteTags = require('./FavoriteTags')
 const _Items = require('./Items')
-const _OrderHistory = require('./OrderHistory')
 const _Problems = require('./Problems')
 const _Sections = require('./Sections')
 const _Submissions = require('./Submissions')
@@ -14,10 +13,9 @@ const _WorkbookTags = require('./WorkbookTags')
 const _Workbooks = require('./Workbooks')
 
 function initModels (sequelize) {
-  const ChargeHistory = _ChargeHistory(sequelize, DataTypes)
+  const PayHistory = _PayHistory(sequelize, DataTypes)
   const FavoriteTags = _FavoriteTags(sequelize, DataTypes)
   const Items = _Items(sequelize, DataTypes)
-  const OrderHistory = _OrderHistory(sequelize, DataTypes)
   const Problems = _Problems(sequelize, DataTypes)
   const Sections = _Sections(sequelize, DataTypes)
   const Submissions = _Submissions(sequelize, DataTypes)
@@ -32,8 +30,6 @@ function initModels (sequelize) {
   Tags.belongsToMany(Workbooks, { as: 'wid_Workbooks', through: WorkbookTags, foreignKey: 'tid', otherKey: 'wid' })
   Users.belongsToMany(Tags, { as: 'tid_Tags', through: FavoriteTags, foreignKey: 'uid', otherKey: 'tid' })
   Workbooks.belongsToMany(Tags, { as: 'tid_Tags_WorkbookTags', through: WorkbookTags, foreignKey: 'wid', otherKey: 'tid' })
-  Items.hasMany(OrderHistory, { as: 'OrderHistotry', foreignKey: 'id' })
-  OrderHistory.belongsTo(Items, { as: 'item', foreignKey: 'id' })
   Workbooks.belongsTo(Items, { as: 'id_Item', foreignKey: 'id' })
   Items.hasOne(Workbooks, { as: 'workbook', foreignKey: 'id' })
   Submissions.belongsTo(Problems, { as: 'pid_Problem', foreignKey: 'pid' })
@@ -44,10 +40,10 @@ function initModels (sequelize) {
   Tags.hasMany(FavoriteTags, { as: 'FavoriteTags', foreignKey: 'tid' })
   WorkbookTags.belongsTo(Tags, { as: 'tid_Tag', foreignKey: 'tid' })
   Tags.hasMany(WorkbookTags, { as: 'WorkbookTags', foreignKey: 'tid' })
-  ChargeHistory.belongsTo(Users, { as: 'uid_User', foreignKey: 'uid' })
-  Users.hasMany(ChargeHistory, { as: 'ChargeHistories', foreignKey: 'uid' })
-  OrderHistory.belongsTo(Users, { as: 'uid_User', foreignKey: 'uid' })
-  Users.hasMany(OrderHistory, { as: 'OrderHistotry', foreignKey: 'uid' })
+  PayHistory.belongsTo(Users, { as: 'uid_User', foreignKey: 'uid' })
+  Users.hasMany(PayHistory, { as: 'PayHistories', foreignKey: 'uid' })
+  PayHistory.belongsTo(Items, { as: 'id_Item', foreignKey: 'id' })
+  Items.hasMany(PayHistory, { as: 'PayHistory', foreignKey: 'id' })
   FavoriteTags.belongsTo(Users, { as: 'uid_User', foreignKey: 'uid' })
   Users.FavoriteTags = Users.hasMany(FavoriteTags, { as: 'favoriteTags', foreignKey: 'uid' })
   Submissions.belongsTo(Users, { as: 'uid_User', foreignKey: 'uid' })
@@ -64,10 +60,9 @@ function initModels (sequelize) {
   Workbooks.hasMany(WorkbookTags, { as: 'WorkbookTags', foreignKey: 'wid' })
 
   return {
-    ChargeHistory,
+    PayHistory,
     FavoriteTags,
     Items,
-    OrderHistory,
     Problems,
     Sections,
     Submissions,

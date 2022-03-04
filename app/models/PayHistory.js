@@ -1,5 +1,5 @@
 module.exports = function (sequelize, DataTypes) {
-  return sequelize.define('ChargeHistory', {
+  return sequelize.define('PayHistory', {
     chid: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
@@ -14,7 +14,19 @@ module.exports = function (sequelize, DataTypes) {
         key: 'uid'
       }
     },
+    id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'Items',
+        key: 'id'
+      }
+    },
     amount: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    balance: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
@@ -24,7 +36,7 @@ module.exports = function (sequelize, DataTypes) {
     }
   }, {
     sequelize,
-    tableName: 'ChargeHistory',
+    tableName: 'PayHistory',
     indexes: [
       {
         name: 'PRIMARY',
