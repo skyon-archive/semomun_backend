@@ -25,9 +25,9 @@ exports.createOrders = async (uid, ids) => {
   })
 }
 
-exports.getPaymentHistory = async (uid, page, limit) => {
+exports.getPayHistory = async (uid, page, limit, onlyOrder = false) => {
   const { count, rows } = await PayHistory.findAndCountAll({
-    where: { uid },
+    where: onlyOrder ? { uid } : { uid, type: 'order' },
     order: [
       ['createdAt', 'DESC'],
       ['phid', 'ASC']
@@ -39,5 +39,5 @@ exports.getPaymentHistory = async (uid, page, limit) => {
     offset: (page - 1) * limit,
     limit
   })
-  return { count, payments: rows }
+  return { count, history: rows }
 }

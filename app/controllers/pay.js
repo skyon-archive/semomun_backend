@@ -1,6 +1,6 @@
 const { BadRequest, NotFound } = require('../errors')
 const { parseIntDefault } = require('../utils')
-const { createOrders, getPaymentHistory } = require('../services/payHistory')
+const { createOrders, getPayHistory } = require('../services/payHistory')
 
 exports.createOrders = async (req, res) => {
   try {
@@ -23,12 +23,17 @@ exports.createOrders = async (req, res) => {
   }
 }
 
-exports.getPaymentHistory = async (req, res) => {
+exports.getPayHistory = async (req, res) => {
   try {
     const uid = req.uid
     if (!uid) return res.status(401).send()
-    const { page, limit } = req.query
-    const result = await getPaymentHistory(uid, parseIntDefault(page, 1), parseIntDefault(limit, 25))
+    const { type, page, limit } = req.query
+    const result = await getPayHistory(
+      uid,
+      parseIntDefault(page, 1),
+      parseIntDefault(limit, 25),
+      type === 'order'
+    )
     res.json(result)
   } catch (err) {
     console.log(err)
