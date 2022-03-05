@@ -1,5 +1,5 @@
 const { BadRequest } = require('../errors')
-const { updateUser, getUser } = require('../services/user')
+const { updateUser, getUser, getUserByUsername } = require('../services/user')
 
 exports.fetchSelf = async (req, res) => {
   try {
@@ -22,6 +22,21 @@ exports.updateUser = async (req, res) => {
 
     await updateUser(uid, req.body)
     res.json({})
+  } catch (err) {
+    if (err instanceof BadRequest) res.status(400).send(err.message)
+    else {
+      console.log(err)
+      res.status(500).send()
+    }
+  }
+}
+
+exports.existByUsername = async (req, res) => {
+  try {
+    const { username } = req.query
+    if (!username) throw new BadRequest()
+    if (await getUserByUsername(username)) res.json({ exist: true })
+    else res.json({ exist: false })
   } catch (err) {
     if (err instanceof BadRequest) res.status(400).send(err.message)
     else {

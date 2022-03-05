@@ -2,37 +2,21 @@ const { ValidationError } = require('sequelize')
 const { BadRequest } = require('../errors')
 const { Users, sequelize } = require('../models/index')
 
-const getUserWithUsername = async (username, transaction = undefined) => {
-  try {
-    const user = await Users.findOne({ where: { username }, transaction })
-    return user.uid
-  } catch (err) {
-    return null
-  }
+const getUserByUsername = async (username, transaction = undefined) => {
+  const user = await Users.findOne({ where: { username }, transaction })
+  return user ? user.uid : null
 }
-exports.getUserWithUsername = getUserWithUsername
-
-const getUserWithPhone = async (phone, transaction = undefined) => {
-  try {
-    const user = await Users.findOne({ where: { phone: phone }, transaction })
-    return user.uid
-  } catch (err) {
-    return null
-  }
-}
-exports.getUserWithPhone = getUserWithPhone
+exports.getUserByUsername = getUserByUsername
 
 const getUserWithGoogleId = async (googleId, transaction = undefined) => {
   const user = await Users.findOne({ where: { googleId }, transaction })
-  if (user) return user.uid
-  return null
+  return user ? user.uid : null
 }
 exports.getUserWithGoogleId = getUserWithGoogleId
 
 const getUserWithAppleId = async (appleId, transaction = undefined) => {
   const user = await Users.findOne({ where: { appleId }, transaction })
-  if (user) return user.uid
-  return null
+  return user ? user.uid : null
 }
 exports.getUserWithAppleId = getUserWithAppleId
 
@@ -65,7 +49,7 @@ exports.createUser = async (userInfo) => {
     if (userInfo.appleId && await getUserWithAppleId(userInfo.appleId, t)) {
       throw new BadRequest('USER_ALREADY_EXISTS')
     }
-    if (await getUserWithUsername(userInfo.username, t)) {
+    if (await getUserByUsername(userInfo.username, t)) {
       throw new BadRequest('USERNAME_NOT_AVAILABLE')
     }
 
