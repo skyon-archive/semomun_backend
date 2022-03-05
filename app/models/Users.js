@@ -37,7 +37,10 @@ module.exports = function (sequelize, DataTypes) {
     },
     phone: {
       type: DataTypes.STRING(32),
-      allowNull: false
+      allowNull: false,
+      validate: {
+        is: /^\+\d{1,4}-\d{1,3}-\d{3,4}-\d{3,4}$/i
+      }
     },
     major: {
       type: DataTypes.STRING(32),

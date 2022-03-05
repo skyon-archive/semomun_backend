@@ -17,6 +17,7 @@ CREATE TABLE `Users` (
     `auth` INT NOT NULL,                                                           /* 유저 권한                       */
     `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE (`username`),
     PRIMARY KEY (`uid`)
 );
 

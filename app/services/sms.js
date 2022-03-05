@@ -44,5 +44,5 @@ exports.sendSms = async (phone, message) => {
 }
 
 exports.verifyPhoneFormat = (phone) => {
-  return phone.match(/^\+\d{2}-\d{1,2}-\d{3,4}-\d{3,4}$/)
+  return phone.match(/^\+\d{1,4}-\d{1,3}-\d{3,4}-\d{3,4}$/)
 }

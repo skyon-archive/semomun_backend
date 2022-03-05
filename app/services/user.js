@@ -1,3 +1,4 @@
+const { ValidationError } = require('sequelize')
 const { BadRequest } = require('../errors')
 const { Users, sequelize } = require('../models/index')
 
@@ -22,7 +23,7 @@ const getUserWithPhone = async (phone, transaction = undefined) => {
 exports.getUserWithPhone = getUserWithPhone
 
 const getUserWithGoogleId = async (googleId, transaction = undefined) => {
-  const user = await Users.findOne({ where: { googleId } })
+  const user = await Users.findOne({ where: { googleId }, transaction })
   if (user) return user.uid
   return null
 }
@@ -67,9 +68,6 @@ exports.createUser = async (userInfo) => {
     if (await getUserWithUsername(userInfo.username, t)) {
       throw new BadRequest('USERNAME_NOT_AVAILABLE')
     }
-    if (await getUserWithPhone(userInfo.phone, t)) {
-      throw new BadRequest('PHONE_NOT_AVAILABLE')
-    }
 
     userInfo.name = ''
     userInfo.email = ''
@@ -78,8 +76,14 @@ exports.createUser = async (userInfo) => {
     userInfo.credit = 0
     userInfo.favoriteTags = userInfo.favoriteTags.map((tid) => ({ tid }))
 
-    return await Users.create(userInfo,
-      { include: [{ association: Users.FavoriteTags }] })
+    try {
+      return await Users.create(userInfo,
+        { include: [{ association: Users.FavoriteTags }] })
+    } catch (err) {
+      if (err instanceof ValidationError) {
+        throw new BadRequest(err.message)
+      } else throw err
+    }
   })
 }
 
@@ -100,10 +104,18 @@ exports.updateUser = async (uid, userInfo) => {
     if (!whiteList.includes(key)) delete userInfo[key]
   })
 
-  const target = await Users.findByPk(uid)
-  if (!target) throw new BadRequest('wrong user')
+  await sequelize.transaction(async (transaction) => {
+    const target = await Users.findByPk(uid, { transaction })
+    if (!target) throw new BadRequest('WRONG_UID')
 
-  await Users.update(userInfo, { where: { uid } })
+    try {
+      await Users.update(userInfo, { where: { uid } })
+    } catch (err) {
+      if (err instanceof ValidationError) {
+        throw new BadRequest(err.message)
+      } else throw err
+    }
+  })
 }
 
 exports.getUser = async (uid) => {

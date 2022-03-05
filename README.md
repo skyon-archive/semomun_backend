@@ -29,7 +29,7 @@ Semomun API의 명세와 조건, 참고사항 및 예외들을 정리해 작성�
   - 백엔드에서 프론트엔드로 보낼 때는 `"2022-02-28T17:03:34.000Z"`와 같은 형식입니다.
   - 프론트엔드에서 백엔드로 보낼 때는 `"2022-02-28T17:03:34Z"`와 같은 형식입니다.
 - 전화번호는 `+82-10-1234-5678`와 같은 형식으로 국가번호를 포함합니다. db에도 이러한 형식으로 저장되고, 프론트엔드와 소통할 때도 항상 이 형식을 사용합니다.
-  - 정규표현식: `\+\d{2}-\d{1,2}-\d{3,4}-\d{3,4}`
+  - 정규표현식: `/^\+\d{1,4}-\d{1,3}-\d{3,4}-\d{3,4}$/`
 - 로그인 후 이루어지는 대부분의 (모든) api 호출에서 헤더에 access token을 담아주세요. key는 `Authorization`, value는 `Bearer eyJhbGciOiJIUzI1N`와 같은 형식의 값입니다.
 
 ## 자료형
@@ -54,6 +54,7 @@ CREATE TABLE `Users` (
     `auth` INT NOT NULL,                                                           /* 유저 권한                       */
     `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE (`username`),
     PRIMARY KEY (`uid`)
 );
 
@@ -561,7 +562,8 @@ Query String
 
 Request Body
 - info: 사용자 초기 정보입니다. 다음과 같은 객체입니다.
-  - `{ nickname, phone, school, major, majorDetail, favoriteTags, graduationStatus }`
+  - `{ username, phone, school, major, majorDetail, favoriteTags, graduationStatus }`
+  - username: 닉네임입니다. unique해야합니다.
   - phone: `+82-10-1234-5678`과 같은 형식입니다.
   - favoriteTags: `[1, 2]`와 같은 형식으로 tid들의 목록입니다.
 - token: 사용자 식별 토큰입니다.
@@ -633,7 +635,7 @@ Query String
 accessToken과 refreshToken 모두 새로 생성된 값입니다.
 
 실패 시 처리는 다음과 같습니다.
-- 400 Bad Request: 토큰이 주어지지 않았거나, 파싱에 실패했거나, 서버에서 알고 있는 값이 아니거나, accessToken이 만료되지 않았거나, refreshToken이 만료된 경우에 해당합니다. 정상적인 로직 상에서 (해커의 공격이 아닌) status code 400을 받았다면 그것은 refreshToken의 expire time인 30일이 경과하여 로그인이 풀린 것입니다.
+- 400 Bad Request: 토큰이 주어지지 않았거나, 파싱에 실패했거나, 서버에서 알고 있는 값이 아니거나, accessToken이 만료되지 않았거나, refreshToken이 만료된 경우에 해당합니다. 정상적인 로직 상에서 (해커의 공격이 아닌) status code 400을 받았다면 그것은 refreshToken이 만료되었거나, 서버 측에서 토큰 정보가 유실된 경우입니다. 두 경우 모두 로그아웃 처리하면 됩니다.
 
 
 ### POST /sms/code (sms.js - sendCode)
@@ -729,25 +731,27 @@ accessToken과 refreshToken 모두 새로 생성된 값입니다.
 
 해당 요청을 한 사용자 본인의 정보를 반환합니다. 헤더의 Authorization 필드에 access token이 `Bearer aaaa`와 같은 형태로 주어져야 합니다.
 
-성공 시 반환값은 JSON이며, 아래와 객체입니다.
+성공 시 반환값은 JSON이며, 아래 예시와 같은 객체입니다.
+- username: 닉네임
+- name: 실제 이름 (결제에 이용되는 정보)
 
 <details>
 <summary>response 예시</summary>
 <pre language="json"><code class="language-json">{
     "uid": 1,
+    "username": "username",
     "name": "name",
     "email": "email",
     "gender": "gender",
     "birth": null,
-    "phone": "010-23023319",
+    "phone": "+82-10-2302-3319",
     "major": "major",
     "majorDetail": "majorDetail",
     "school": "school",
     "graduationStatus": "graduationStatus",
     "credit": 0,
     "createdAt": "2022-03-01T01:43:51.000Z",
-    "updatedAt": "2022-02-28T17:03:34.000Z",
-    "nickname": "nickname"
+    "updatedAt": "2022-02-28T17:03:34.000Z"
 }
 </code></pre></details>
 <br/>
@@ -760,15 +764,15 @@ accessToken과 refreshToken 모두 새로 생성된 값입니다.
 
 로그인된 유저가 자신의 정보를 수정합니다. 헤더의 Authorization 필드에 access token이 `Bearer aaaa`와 같은 형태로 주어져야 합니다.
 
-body에는 아래와 같은 값들이 주어집니다. 전부 optional하며, 옳지 않거나 변경할 수 없는 key 값들은 무시됩니다.
+body에는 아래와 같은 값들이 주어져야 합니다. 전부 optional하며, 옳지 않거나 변경할 수 없는 key 값들은 무시됩니다.
 
 <details>
 <summary>request 예시</summary>
 <pre language="json"><code class="language-json">{
     "username": "yujin",
-    "name": "유진",
-    "email": "mail@gmail.com",
-    "gender": "male",
+    "name": "임유진",
+    "email": "email@gmail.com",
+    "gender": "female",
     "birth": "2001-01-01T00:00:00Z",
     "phone": "+82-10-1234-5678",
     "major": "이과 계열",
@@ -782,7 +786,7 @@ body에는 아래와 같은 값들이 주어집니다. 전부 optional하며, �
 성공 시 반환값은 JSON이며, 빈 객체입니다.
 
 실패 시 처리는 다음과 같습니다.
-- 400 Bad Request: 주어진 유저 정보가 옳지 않은 경우입니다.
+- 400 Bad Request: 주어진 유저 정보가 옳지 않은 경우입니다. 반환값은 빈 스트링 혹은 에러 메시지입니다.
 - 401 Unauthorized: 로그인에 실패한 경우입니다. 토큰을 잘 담아서 보냈다면 access token이 만료된 것입니다.
 
 
