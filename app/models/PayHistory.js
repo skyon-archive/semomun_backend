@@ -16,11 +16,15 @@ const updateCredit = async (sequelize, payHistories, transaction) => {
   }
 }
 
-const increaseSale = async (sequelize, orders, transaction) => {
-  await Promise.all(orders.map(({ id }) => sequelize.models.Items.update(
-    { sales: sequelize.literal('sales + 1') },
-    { where: { id }, transaction }
-  )))
+const increaseSale = async (sequelize, payHistories, transaction) => {
+  await Promise.all(payHistories.map(async ({ type, id }) => {
+    if (type.startsWith('order') && id) {
+      await sequelize.models.Items.update(
+        { sales: sequelize.literal('sales + 1') },
+        { where: { id }, transaction }
+      )
+    }
+  }))
 }
 
 module.exports = function (sequelize, DataTypes) {

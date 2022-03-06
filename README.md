@@ -194,7 +194,7 @@ CREATE TABLE `PayHistory` (
     `uid` INT NOT NULL,                                                            /* 유저                            */
     `amount` INT NOT NULL,                                                         /* 양수면 충전, 음수 또는 0이면 구매     */
     `balance` INT NOT NULL,                                                        /* 충전 또는 구매 후 남은 잔액          */
-    `type` VARCHAR(32) NOT NULL,                                                   /* charge 또는 order               */
+    `type` VARCHAR(32) NOT NULL,                                                   /* prefix가 charge 또는 order       */
     `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`phid`),
