@@ -35,8 +35,8 @@ exports.existByUsername = async (req, res) => {
   try {
     const { username } = req.query
     if (!username) throw new BadRequest()
-    if (await getUserByUsername(username)) res.json({ exist: true })
-    else res.json({ exist: false })
+    if (await getUserByUsername(username)) res.json({ result: false })
+    else res.json({ result: true })
   } catch (err) {
     if (err instanceof BadRequest) res.status(400).send(err.message)
     else {
