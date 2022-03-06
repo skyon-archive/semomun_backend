@@ -270,7 +270,7 @@ Semomun에서 사용자의 입력은 다음 네 가지 중 하나의 형태로 �
             "date": "2022-02-28T17:39:49.000Z",
             "publishMan": "publishMan",
             "publishCompany": "publishCompany",
-            "originalPrice": "10000",
+            "originalPrice": 10000,
             "bookcover": "uuid",
             "createdAt": "2022-02-28T17:39:56.000Z",
             "updatedAt": "2022-02-28T17:39:58.000Z"
@@ -298,7 +298,7 @@ wid가 주어진 값인 문제집을 반환합니다.
     "date": "2022-02-28T16:06:18.000Z",
     "publishMan": "publishMan",
     "publishCompany": "publishCompany",
-    "originalPrice": "10000",
+    "originalPrice": 10000,
     "bookcover": "bookcover",
     "createdAt": "2022-02-28T16:06:36.000Z",
     "updatedAt": "2022-02-28T16:06:37.000Z",
@@ -474,7 +474,7 @@ Response
                     "date": "2022-03-04T16:39:44.000Z",
                     "publishMan": "publishMan",
                     "publishCompany": "publishCompany",
-                    "originalPrice": "10000",
+                    "originalPrice": 10000,
                     "bookcover": "50670920-68d0-47cd-be2e-cfe4e44be17c",
                     "createdAt": "2022-03-04T16:40:07.000Z",
                     "updatedAt": "2022-03-04T16:40:08.000Z"
@@ -507,7 +507,7 @@ Response
                     "date": "2022-03-04T16:39:44.000Z",
                     "publishMan": "publishMan",
                     "publishCompany": "publishCompany",
-                    "originalPrice": "10000",
+                    "originalPrice": 10000,
                     "bookcover": "50670920-68d0-47cd-be2e-cfe4e44be17c",
                     "createdAt": "2022-03-04T16:40:07.000Z",
                     "updatedAt": "2022-03-04T16:40:08.000Z"

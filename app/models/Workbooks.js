@@ -43,7 +43,7 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false
     },
     originalPrice: {
-      type: DataTypes.STRING(32),
+      type: DataTypes.INTEGER,
       allowNull: false
     },
     bookcover: {

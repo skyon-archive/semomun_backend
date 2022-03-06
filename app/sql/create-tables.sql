@@ -43,7 +43,7 @@ CREATE TABLE `Workbooks` (
     `date` DATETIME NOT NULL,                                                     /* 발행일                          */
     `publishMan` VARCHAR(32) NOT NULL,                                             /* 발행인                          */
     `publishCompany` VARCHAR(32) NOT NULL,                                         /* 출판사                          */
-    `originalPrice` VARCHAR(32) NOT NULL,                                          /* 정가                            */
+    `originalPrice` INT NOT NULL,                                                  /* 정가                            */
     `bookcover` CHAR(36) NOT NULL,                                                 /* 표지 파일 식별자, uuid            */
     `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
