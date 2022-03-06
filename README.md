@@ -210,6 +210,7 @@ CREATE TABLE `WorkbookHistory` (
     `type` VARCHAR(32) NOT NULL,                                                   /* start, cart 등등               */
     -- type == `start` 를 이용해서 최근에 이용한 문제집 판별 --
     -- type == `cart` 를 이용해서 장바구니에 담긴 상품 목록 알 수 있음 --
+    `datetime` DATETIME NOT NULL,                                                  /* 이벤트가 일어난 시각               */
     `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`whid`),
@@ -427,6 +428,29 @@ sid가 주어진 값인 섹션을 반환합니다.
 }
 </code></pre></details>
 <br/>
+
+
+## PUT /workbook-history/start (workbookHistory.js - startWorkbook)
+
+특정 문제집의 학습공간에 진입했음을 기록합니다.
+
+- { wid, datetime }
+  - datetime: 문제집을 진입한 시각입니다.
+
+<details>
+<summary>request 예시</summary>
+<pre language="json"><code class="language-json">{
+    "wid": 2,
+    "datetime": "2022-03-09T17:03:34Z"
+}
+</code></pre></details>
+<br/>
+
+성공 시 반환값은 빈 json입니다.
+
+실패 시 처리는 다음과 같습니다.
+- 401 Unauthorized: access token이 주어지지 않았거나 만료된 경우입니다.
+- 400 Bad Request: request body의 형식이 옳지 않은 경우입니다.
 
 
 ### GET /pay?type=order&page=1&limit=25 (pay.js - getPayHistory)~~

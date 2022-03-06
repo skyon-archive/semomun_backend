@@ -25,6 +25,10 @@ module.exports = function (sequelize, DataTypes) {
     type: {
       type: DataTypes.STRING(32),
       allowNull: false
+    },
+    datetime: {
+      type: DataTypes.DATE,
+      allowNull: false
     }
   }, {
     sequelize,
