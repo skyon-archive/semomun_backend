@@ -55,7 +55,7 @@ function initModels (sequelize) {
   Sections.belongsTo(Workbooks, { as: 'wid_Workbook', foreignKey: 'wid' })
   Workbooks.hasMany(Sections, { as: 'sections', foreignKey: 'wid' })
   WorkbookHistory.belongsTo(Workbooks, { as: 'wid_Workbook', foreignKey: 'wid' })
-  Workbooks.hasMany(WorkbookHistory, { as: 'WorkbookHistories', foreignKey: 'wid' })
+  Workbooks.hasMany(WorkbookHistory, { as: 'workbookHistories', foreignKey: 'wid' })
   WorkbookTags.belongsTo(Workbooks, { as: 'wid_Workbook', foreignKey: 'wid' })
   Workbooks.hasMany(WorkbookTags, { as: 'WorkbookTags', foreignKey: 'wid' })
 

@@ -336,7 +336,37 @@ wid가 주어진 값인 문제집을 반환합니다.
 - 404 Not Found: 해당 wid에 대한 문제집이 없는 경우입니다.
 
 
-## PUT /workbooks/start (workbookHistory.js - startWorkbook)
+## GET /workbooks/recent/solve (workbooks.js - getRecentSolveWorkbooks)
+
+푼 적이 있는 (`PUT /workbooks/start` api 호출을 한 적이 있는) 문제집들을 가장 최근 푼 것 순으로 정렬하여 반환합니다.
+
+성공 시 아래 예시와 같은 형식의 json을 보냅니다. `GET /workbooks` api와 비교했을 때, 가장 최근에 학습공간에 진입한 시각을 의미하는 `solve` 필드가 추가되었습니다.
+
+<details>
+<summary>response 예시</summary>
+<pre language="json"><code class="language-json">[
+    {
+        "id": 1,
+        "wid": 2,
+        "title": "title",
+        "detail": "detail",
+        "isbn": "isbn",
+        "author": "author",
+        "date": "2022-03-06T19:12:11.000Z",
+        "publishMan": "publishMan",
+        "publishCompany": "publishCompany",
+        "originalPrice": 10000,
+        "bookcover": "uuid",
+        "createdAt": "2022-03-06T19:12:24.000Z",
+        "updatedAt": "2022-03-06T19:12:25.000Z",
+        "solve": "2022-03-14T17:03:34.000Z"
+    }
+]
+</code></pre></details>
+
+
+
+## PUT /workbooks/start (workbooks.js - startWorkbook)
 
 특정 문제집의 학습공간에 진입했음을 기록합니다.
 

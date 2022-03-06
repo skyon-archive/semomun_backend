@@ -87,6 +87,29 @@ exports.startWorkbook = async (req, res) => {
   }
 }
 
+exports.getRecentSolveWorkbooks = async (req, res) => {
+  try {
+    const uid = req.uid
+    if (!uid) return res.status(401).send()
+
+    const workbooks = await Workbooks.findAll({
+      include: {
+        association: 'workbookHistories',
+        attributes: [],
+        where: { uid, type: 'start' }
+      },
+      attributes: {
+        include: [[sequelize.col('datetime'), 'solve']]
+      },
+      order: [[{ association: 'workbookHistories' }, 'datetime', 'DESC']]
+    })
+    res.json(workbooks)
+  } catch (err) {
+    console.log(err)
+    res.status(500).send()
+  }
+}
+
 /*
 exports.put = (req, res) => {
   req.body.index
