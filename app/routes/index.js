@@ -12,5 +12,4 @@ module.exports = (app) => {
   require('./sms')(app)
   require('./tags')(app)
   require('./pay')(app)
-  require('./workbookHistory')(app)
 }
