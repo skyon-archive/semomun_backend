@@ -846,9 +846,9 @@ body에는 아래와 같은 값들이 주어져야 합니다. 전부 optional하
 
 ### GET /users/username?username=username
 
-해당 username을 가지는 유저가 존재하는지 확인합니다.
+해당 username을 사용할 수 있는지 확인합니다.
 
-성공 시 반환값은 json이며, `{ "exist": true }` 또는 `{ "exist": false }`입니다.
+성공 시 반환값은 json이며, 사용할 수 있는 username의 경우에는 `{ "result": true }`를, 이미 사용된 username의 경우에는 `{ "result": false }`를 반환합니다.
 
 실패 시 처리는 다음과 같습니다.
 - 400 Bad Request: Query string으로 username이 주어지지 않은 경우입니다.
