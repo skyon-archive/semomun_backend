@@ -1,3 +1,4 @@
+const { ForeignKeyConstraintError } = require('sequelize')
 const { BadRequest } = require('../errors')
 const { Workbooks, Items, WorkbookTags, WorkbookHistory, sequelize } = require('../models/index')
 
@@ -79,7 +80,10 @@ exports.solveWorkbook = async (req, res) => {
     })
     res.json({})
   } catch (err) {
-    if (err instanceof BadRequest) res.status(400).send(err.message)
+    if (err instanceof ForeignKeyConstraintError) {
+      console.log(err.fields)
+      res.status(404).send(`Wrong ${err.fields}`)
+    } else if (err instanceof BadRequest) res.status(400).send(err.message)
     else {
       console.log(err)
       res.status(500).send()
