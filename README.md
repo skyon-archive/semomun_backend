@@ -687,12 +687,14 @@ Response
 
 아이템(문제집 등)들을 세모페이를 이용해 구매합니다.
 
-- [ id ]
+- { ids: [ id ] }
   - id: 구매하는 아이템의 id. (**wid 아님**)
 
 <details>
 <summary>request 예시</summary>
-<pre language="json"><code class="language-json">[1, 3, 1]
+<pre language="json"><code class="language-json">{
+    "ids": [1, 3, 1]
+}
 </code></pre></details>
 <br/>
 

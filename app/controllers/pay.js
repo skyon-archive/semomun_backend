@@ -7,7 +7,7 @@ exports.createOrders = async (req, res) => {
     const uid = req.uid
     if (!uid) return res.status(401).send()
 
-    const ids = req.body
+    const { ids } = req.body
     if (!Array.isArray(ids)) throw new BadRequest('WRONG_BODY')
 
     const balance = await createOrders(uid, ids)
