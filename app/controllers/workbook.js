@@ -49,7 +49,7 @@ exports.fetchWorkbook = async (req, res) => {
   }
 }
 
-exports.startWorkbook = async (req, res) => {
+exports.solveWorkbook = async (req, res) => {
   try {
     const uid = req.uid
     if (!uid) return res.status(401).send()
@@ -59,7 +59,7 @@ exports.startWorkbook = async (req, res) => {
 
     await sequelize.transaction(async (transaction) => {
       const history = await WorkbookHistory.findOne({
-        where: { uid, wid, type: 'start' },
+        where: { uid, wid, type: 'solve' },
         transaction
       })
       const date = new Date(datetime)
@@ -72,7 +72,7 @@ exports.startWorkbook = async (req, res) => {
         }
       } else {
         await WorkbookHistory.create(
-          { uid, wid, type: 'start', datetime: date },
+          { uid, wid, type: 'solve', datetime: date },
           { transaction }
         )
       }
@@ -96,12 +96,55 @@ exports.getRecentSolveWorkbooks = async (req, res) => {
       include: {
         association: 'workbookHistories',
         attributes: [],
-        where: { uid, type: 'start' }
+        where: { uid, type: 'solve' }
       },
       attributes: {
         include: [[sequelize.col('datetime'), 'solve']]
       },
       order: [[{ association: 'workbookHistories' }, 'datetime', 'DESC']]
+    })
+    res.json(workbooks)
+  } catch (err) {
+    console.log(err)
+    res.status(500).send()
+  }
+}
+
+exports.getPurchasedWorkbooks = async (req, res) => {
+  try {
+    const uid = req.uid
+    if (!uid) return res.status(401).send()
+
+    const { order } = req.query
+
+    const orderBy = order === 'solve'
+      ? [{ association: 'workbookHistories' }, 'datetime', 'DESC']
+      : order === 'purchase'
+        ? [sequelize.literal('`item->payHistory`.`createdAt`'), 'DESC']
+        : ['title', 'ASC']
+
+    const workbooks = await Workbooks.findAll({
+      include: [
+        {
+          association: 'item',
+          required: true,
+          include: {
+            association: 'payHistory',
+            where: { uid },
+            required: true
+          }
+        },
+        {
+          association: 'workbookHistories',
+          attributes: [],
+          where: { uid, type: 'solve' },
+          required: false
+        }
+      ],
+      attributes: {
+        include: [[sequelize.col('datetime'), 'solve']]
+      },
+      order: [orderBy, ['wid', 'ASC']]
     })
     res.json(workbooks)
   } catch (err) {

@@ -1,17 +1,19 @@
-module.exports = (app) => {
-  const { authJwt } = require('../middleware/auth')
-  const {
-    fetchWorkbook,
-    fetchWorkbooks,
-    startWorkbook,
-    getRecentSolveWorkbooks
-  } = require('../controllers/workbook')
+const { authJwt } = require('../middleware/auth')
+const {
+  fetchWorkbook,
+  fetchWorkbooks,
+  solveWorkbook,
+  getRecentSolveWorkbooks,
+  getPurchasedWorkbooks
+} = require('../controllers/workbook')
 
+module.exports = (app) => {
   const router = require('express').Router()
 
-  router.get('/:wid', authJwt, fetchWorkbook)
-  router.put('/start', authJwt, startWorkbook)
+  router.put('/solve', authJwt, solveWorkbook)
   router.get('/recent/solve', authJwt, getRecentSolveWorkbooks)
+  router.get('/purchased', authJwt, getPurchasedWorkbooks)
+  router.get('/:wid', authJwt, fetchWorkbook)
   router.get('/', fetchWorkbooks)
 
   app.use('/workbooks', router)

@@ -207,8 +207,8 @@ CREATE TABLE `WorkbookHistory` (
     `whid` INT NOT NULL AUTO_INCREMENT,
     `wid` INT NOT NULL,                                                            /* 문제집                         */
     `uid` INT NOT NULL,                                                            /* 유저                           */
-    `type` VARCHAR(32) NOT NULL,                                                   /* start, cart 등등               */
-    -- type == `start` 를 이용해서 최근에 이용한 문제집 판별 --
+    `type` VARCHAR(32) NOT NULL,                                                   /* solve, cart 등등               */
+    -- type == `solve` 를 이용해서 최근에 이용한 문제집 판별 --
     -- type == `cart` 를 이용해서 장바구니에 담긴 상품 목록 알 수 있음 --
     `datetime` DATETIME NOT NULL,                                                  /* 이벤트가 일어난 시각               */
     `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -336,9 +336,9 @@ wid가 주어진 값인 문제집을 반환합니다.
 - 404 Not Found: 해당 wid에 대한 문제집이 없는 경우입니다.
 
 
-## GET /workbooks/recent/solve (workbooks.js - getRecentSolveWorkbooks)
+### GET /workbooks/recent/solve (workbooks.js - getRecentSolveWorkbooks)
 
-푼 적이 있는 (`PUT /workbooks/start` api 호출을 한 적이 있는) 문제집들을 가장 최근 푼 것 순으로 정렬하여 반환합니다.
+푼 적이 있는 (`PUT /workbooks/solve` api 호출을 한 적이 있는) 문제집들을 가장 최근 푼 것 순으로 정렬하여 반환합니다.
 
 성공 시 아래 예시와 같은 형식의 json을 보냅니다. `GET /workbooks` api와 비교했을 때, 가장 최근에 학습공간에 진입한 시각을 의미하는 `solve` 필드가 추가되었습니다.
 
@@ -363,10 +363,116 @@ wid가 주어진 값인 문제집을 반환합니다.
     }
 ]
 </code></pre></details>
+<br/>
+
+실패 시 처리는 아래와 같습니다.
+- 401 Unauthorized: access token이 주어지지 않았거나 만료된 경우입니다.
 
 
+### GET /workbooks/purchased?order=solve (workbooks.js - getPurchasedWorkbooks)
 
-## PUT /workbooks/start (workbooks.js - startWorkbook)
+구매한 문제집들의 목록을 반환합니다.
+정렬 기준은 query string인 order의 값에 따라 아래와 같이 정해집니다. 아래의 기준으로 구분되지 않을 경우 wid에 대한 오름차순으로 정렬합니다.
+- order == solve: 해당 문제집의 학습공간에 진입한 시각(solve)에 대한 내림차순으로 정렬
+- order == purchase: 해당 문제집을 구입한 시각에 대한 내림차순으로 정렬
+- 그 외: title에 대한 오름차순으로 정렬
+
+성공 시 아래 예시와 같은 형식의 json을 보냅니다. `GET /workbooks` api와 비교했을 때, 가장 최근에 학습공간에 진입한 시각을 의미하는 `solve`와 `item` 필드가 추가되었습니다.
+- solve: 해당 문제집의 학습공간에 가장 마지막으로 진입한 시각을 의미합니다. 진입한 적이 없을 경우 그 값은 null입니다.
+- item: `id`, `type`, `price`, `sales`, `createdAt`, `updatedAt`, `payHistory`의 값을 가집니다.
+  - payHistory: 해당 문제집을 구매한 기록입니다. 길이 1의 배열입니다.
+
+<details>
+<summary>response 예시</summary>
+<pre language="json"><code class="language-json">[
+    {
+        "id": 2,
+        "wid": 3,
+        "title": "title",
+        "detail": "detail",
+        "isbn": "isbn",
+        "author": "author",
+        "date": "2022-03-06T19:12:11.000Z",
+        "publishMan": "publishMan",
+        "publishCompany": "publishCompany",
+        "originalPrice": 10000,
+        "bookcover": "uuid",
+        "createdAt": "2022-03-06T19:12:24.000Z",
+        "updatedAt": "2022-03-06T19:12:25.000Z",
+        "solve": "2022-03-14T17:03:34.000Z",
+        "item": {
+            "id": 2,
+            "type": "workbook",
+            "price": 1000,
+            "sales": 24,
+            "createdAt": "2022-03-03T21:23:16.000Z",
+            "updatedAt": "2022-03-07T00:19:37.000Z",
+            "payHistory": [
+                {
+                    "phid": 11,
+                    "uid": 1,
+                    "id": 2,
+                    "amount": 1000,
+                    "balance": 98000,
+                    "type": "order",
+                    "createdAt": "2022-03-07T00:19:37.000Z",
+                    "updatedAt": "2022-03-07T00:19:37.000Z"
+                }
+            ]
+        }
+    },
+    {
+        "id": 1,
+        "wid": 2,
+        "title": "title",
+        "detail": "detail",
+        "isbn": "isbn",
+        "author": "author",
+        "date": "2022-03-06T19:12:11.000Z",
+        "publishMan": "publishMan",
+        "publishCompany": "publishCompany",
+        "originalPrice": 10000,
+        "bookcover": "uuid",
+        "createdAt": "2022-03-06T19:12:24.000Z",
+        "updatedAt": "2022-03-06T19:12:25.000Z",
+        "solve": null,
+        "item": {
+            "id": 1,
+            "type": "workbook",
+            "price": 1000,
+            "sales": 23,
+            "createdAt": "2022-03-03T21:23:16.000Z",
+            "updatedAt": "2022-03-04T20:10:55.000Z",
+            "payHistory": [
+                {
+                    "phid": 1,
+                    "uid": 1,
+                    "id": 1,
+                    "amount": 1000,
+                    "balance": 7000,
+                    "type": "order",
+                    "createdAt": "2022-03-04T19:37:11.000Z",
+                    "updatedAt": "2022-03-04T19:37:11.000Z"
+                },
+                {
+                    "phid": 2,
+                    "uid": 1,
+                    "id": 1,
+                    "amount": 1000,
+                    "balance": 6000,
+                    "type": "order",
+                    "createdAt": "2022-03-04T19:37:11.000Z",
+                    "updatedAt": "2022-03-04T19:37:11.000Z"
+                }
+            ]
+        }
+    }
+]
+</code></pre></details>
+<br/>
+
+
+### PUT /workbooks/solve (workbooks.js - solveWorkbook)
 
 특정 문제집의 학습공간에 진입했음을 기록합니다.
 

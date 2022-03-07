@@ -170,8 +170,8 @@ CREATE TABLE `WorkbookHistory` (
     `whid` INT NOT NULL AUTO_INCREMENT,
     `wid` INT NOT NULL,                                                            /* 문제집                         */
     `uid` INT NOT NULL,                                                            /* 유저                           */
-    `type` VARCHAR(32) NOT NULL,                                                   /* start, cart 등등               */
-    -- type == `start` 를 이용해서 최근에 이용한 문제집 판별 --
+    `type` VARCHAR(32) NOT NULL,                                                   /* solve, cart 등등               */
+    -- type == `solve` 를 이용해서 최근에 이용한 문제집 판별 --
     -- type == `cart` 를 이용해서 장바구니에 담긴 상품 목록 알 수 있음 --
     `datetime` DATETIME NOT NULL,                                                  /* 이벤트가 일어난 시각               */
     `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
