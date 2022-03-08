@@ -1,6 +1,7 @@
 const { ForeignKeyConstraintError } = require('sequelize')
 const { BadRequest } = require('../errors')
 const { Workbooks, Items, WorkbookTags, WorkbookHistory, sequelize } = require('../models/index')
+const { getPurchasedWorkbooks } = require('../services/workbooks')
 
 exports.fetchWorkbooks = async (req, res) => {
   try {
@@ -91,65 +92,14 @@ exports.solveWorkbook = async (req, res) => {
   }
 }
 
-exports.getRecentSolveWorkbooks = async (req, res) => {
-  try {
-    const uid = req.uid
-    if (!uid) return res.status(401).send()
-
-    const workbooks = await Workbooks.findAll({
-      include: {
-        association: 'workbookHistories',
-        attributes: [],
-        where: { uid, type: 'solve' }
-      },
-      attributes: {
-        include: [[sequelize.col('datetime'), 'solve']]
-      },
-      order: [[{ association: 'workbookHistories' }, 'datetime', 'DESC']]
-    })
-    res.json(workbooks)
-  } catch (err) {
-    console.log(err)
-    res.status(500).send()
-  }
-}
-
 exports.getPurchasedWorkbooks = async (req, res) => {
   try {
     const uid = req.uid
     if (!uid) return res.status(401).send()
 
     const { order } = req.query
+    const workbooks = await getPurchasedWorkbooks(uid, order)
 
-    const orderBy = order === 'solve'
-      ? [{ association: 'workbookHistories' }, 'datetime', 'DESC']
-      : order === 'purchase'
-        ? [sequelize.literal('`item->payHistory`.`createdAt`'), 'DESC']
-        : ['title', 'ASC']
-
-    const workbooks = await Workbooks.findAll({
-      include: [
-        {
-          association: 'item',
-          required: true,
-          include: {
-            association: 'payHistory',
-            where: { uid },
-            required: true
-          }
-        },
-        {
-          association: 'workbookHistories',
-          attributes: [],
-          where: { uid, type: 'solve' },
-          required: false
-        }
-      ],
-      attributes: {
-        include: [[sequelize.col('datetime'), 'solve']]
-      },
-      order: [orderBy, ['wid', 'ASC']]
-    })
     res.json(workbooks)
   } catch (err) {
     console.log(err)
