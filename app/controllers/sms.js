@@ -31,8 +31,8 @@ exports.verifyCode = async (req, res) => {
       return res.status(400).send('PHONE_WRONG_FORMAT')
     }
     const redisCode = await redis.get(`code:${phone}`)
-    if (code === redisCode) res.json({ result: 'ok' })
-    else res.json({ result: 'fail' })
+    if (code === redisCode) res.json({ result: true })
+    else res.json({ result: false })
   } catch (err) {
     console.log(err)
     res.status(500).send()
