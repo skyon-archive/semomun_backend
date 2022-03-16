@@ -23,12 +23,12 @@ exports.get_presignedUrl = async (req, res) => {
     // TODO: authorization
     if (type === 'bookcover') key = `bookcover/${uuid}.png`
     else if (type === 'sectioncover') key = `sectioncover/${uuid}.png`
-    else if (type === 'material') key = `material/${uuid}.png`
+    else if (type === 'passage') key = `passage/${uuid}.png`
     else if (type === 'explanation') key = `explanation/${uuid}.png`
     else if (type === 'content') key = `content/${uuid}.png`
     else {
       res.status(400)
-        .send('type should be one of bookcover, sectioncover, material, explanation or content')
+        .send('type should be one of bookcover, sectioncover, passage, explanation or content')
       return
     }
 

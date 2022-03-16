@@ -82,10 +82,8 @@ exports.migrateWorkbooks = async (wids) => {
       if (!viewBySections[+view.sid]) viewBySections[+view.sid] = []
       viewBySections[+view.sid].push(view)
     })
-    console.log(viewBySections)
     for (const sid in viewBySections) {
       const viewSection = viewBySections[sid]
-      console.log(viewSection)
       viewSection.sort((v1, v2) => +v1.index_start - +v2.index_start)
     }
     await Promise.all(Object.values(viewBySections).map((viewSection) => {

@@ -911,7 +911,7 @@ body에는 아래와 같은 값들이 주어져야 합니다. 전부 optional하
 특정 uuid의 파일을 조회하기 위한 url을 조회합니다. url은 1시간(3600초)가 경과될 경우 expire됩니다. 해당 유저가 파일에 대한 열람 권한을 가지고 있지 않을 경우 status code 403을 반환합니다.
 
 - uuid: 조회하고자 하는 파일의 uuid입니다. 파일 확장자 없이 36자의 string입니다.
-- type: `bookcover`, `sectioncover`, `material`, `explanation`, `content` 중 하나의 값입니다. 조회하고자 하는 파일의 종류를 나타냅니다.
+- type: `bookcover`, `sectioncover`, `passage`, `explanation`, `content` 중 하나의 값입니다. 조회하고자 하는 파일의 종류를 나타냅니다.
 
 반환값은 url string입니다. (**JSON 아님**)
 
