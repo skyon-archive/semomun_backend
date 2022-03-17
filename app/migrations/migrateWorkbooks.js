@@ -1,7 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const csv = require('fast-csv')
-const { Items, Workbooks, Sections, Views, Problems } = require('../models/index')
+const { Items, Workbooks, Sections, Views, Problems, Tags, WorkbookTags } = require('../models/index')
 
 const readCsv = (filepath, processor) => {
   return new Promise((resolve, reject) => {
@@ -41,11 +41,24 @@ exports.migrateWorkbooks = async (wids) => {
           author: '',
           date: `${workbook.year}-${workbook.month.padStart(2, '0')}-01 09:00:00`,
           publishMan: '',
-          publishCompany: '',
+          publishCompany: workbook.publisher,
           originalPrice: 0,
           bookcover: workbook.bookcover.slice(0, 36)
         })
       }
+      const workbookTags = await WorkbookTags.findAll({
+        where: { wid: workbook.wid },
+        include: 'tid_Tag'
+      })
+      const newTags = [workbook.category, workbook.subject, workbook.grade]
+      const tagNames = workbookTags.map((workbookTag) => workbookTag.tid_Tag.name)
+      await Promise.all(newTags.map(async (newTag) => {
+        if (!tagNames.includes(newTag)) {
+          const tag = await Tags.create({ name: newTag })
+          await WorkbookTags.create({ wid: workbook.wid, tid: tag.tid })
+        }
+      }))
+
       console.log(`done migrating workbook ${workbook.wid}`)
     }))
 
