@@ -1,7 +1,14 @@
 const fs = require('fs')
 const path = require('path')
 const csv = require('fast-csv')
+const { S3 } = require('aws-sdk')
 const { Items, Workbooks, Sections, Views, Problems, Tags, WorkbookTags } = require('../models/index')
+
+const s3 = new S3({
+  region: process.env.AWS_REGION,
+  accessKeyId: process.env.AWS_ACCESS_KEY,
+  secretAccessKey: process.env.AWS_SECRET_KEY
+})
 
 const readCsv = (filepath, processor) => {
   return new Promise((resolve, reject) => {
@@ -15,6 +22,12 @@ const readCsv = (filepath, processor) => {
       })
       .on('end', () => resolve(data))
   })
+}
+
+const getFileSize = (key) => {
+  return s3.headObject({ Key: key, Bucket: process.env.S3_BUCKET })
+    .promise()
+    .then(res => res.ContentLength)
 }
 
 exports.migrateWorkbooks = async (wids) => {
@@ -149,4 +162,32 @@ exports.migrateWorkbooks = async (wids) => {
   } catch (e) {
     console.log(e)
   }
+}
+
+exports.updateSectionSize = async (wids) => {
+  const sections = await Sections.findAll({
+    where: { wid: wids },
+    include: {
+      association: 'views',
+      include: 'problems'
+    }
+  })
+  await Promise.all(sections.map(async (section) => {
+    console.log(`updating section ${section.sid}`)
+    const sizes = await Promise.all(section.views.map(async (view) => {
+      let size = 0
+      if (view.passage) size += await getFileSize(`passage/${view.passage}.png`)
+      if (view.attachment) size += await getFileSize(`attachment/${view.attachment}.mp3`)
+      const sizes = await Promise.all(view.problems.map(async (problem) => {
+        let size = 0
+        if (problem.content) size += await getFileSize(`content/${problem.content}.png`)
+        if (problem.explanation) size += await getFileSize(`explanation/${problem.explanation}.png`)
+        return size
+      }))
+      return sizes.reduce((previous, current) => previous + current, size)
+    }))
+    const size = sizes.reduce((previous, current) => previous + current, 0)
+    if (size !== section.size) await section.update({ size })
+    console.log(`done updating section ${section.sid}`)
+  }))
 }

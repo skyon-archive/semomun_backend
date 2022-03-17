@@ -1,4 +1,6 @@
 require('dotenv').config()
-const { migrateWorkbooks } = require('./app/migrations/migrateWorkbooks')
+const { updateSectionSize } = require('./app/migrations/migrateWorkbooks')
+updateSectionSize([30])
 
-migrateWorkbooks([30])
+// const { migrateWorkbooks } = require('./app/migrations/migrateWorkbooks')
+// migrateWorkbooks([30])
