@@ -713,7 +713,7 @@ Query String
 
 Request Body
 - token: google 또는 apple 토큰입니다.
-- type: "google" 또는 "apple"의 값입니다.
+- type: "google" 또는 "apple"의 값입니다. 그 외의 값일 경우 백엔드에서 자체적으로 토큰의 종류를 파악합니다. 그러나 type을 "google", "apple" 외의 값으로 주는 것은 1.x에서 migration을 할 때를 제외하고는 권장하지 않습니다.
 
 성공 시 반환값은 JSON이며, `{ "accessToken": "asdf", "refreshToken": "abcd" }`와 같이 access token과 refresh token을 담은 객체입니다.
 
