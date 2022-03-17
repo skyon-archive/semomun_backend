@@ -10,10 +10,10 @@ exports.fetchSection = async (req, res) => {
       where: { sid },
       include: {
         association: 'views',
-        order: [['index', 'ASC']],
+        order: [['views.index', 'ASC']],
         include: {
           association: 'problems',
-          order: [['index', 'ASC']]
+          order: [['problems.index', 'ASC']]
         }
       }
     })
