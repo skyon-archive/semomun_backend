@@ -58,8 +58,13 @@ exports.login = async (req, res) => {
       if (!appleId) return res.status(400).send()
       uid = await getUserWithAppleId(appleId)
     } else {
-      uid = await getGoogleId(token)
-      if (!uid) uid = await getAppleId(token)
+      const googleId = await getGoogleId(token)
+      if (googleId) uid = await getUserWithGoogleId(googleId)
+      else {
+        const appleId = await getAppleId(token)
+        if (!appleId) return res.status(400).send()
+        uid = await getUserWithAppleId(appleId)
+      }
     }
 
     if (!uid) return res.status(400).send('USER_NOT_EXIST')
