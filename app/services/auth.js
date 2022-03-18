@@ -22,6 +22,15 @@ exports.getGoogleId = async (token) => {
   }
 }
 
+exports.getGoogleIdLegacy = async (token) => {
+  try {
+    const { aud, sub } = jwt.decode(token)
+    return aud === process.env.CLIENT_ID ? sub : null
+  } catch (err) {
+    return null
+  }
+}
+
 exports.getAppleId = async (token) => {
   try {
     const sub = jwt.decode(token).sub
@@ -61,5 +70,6 @@ exports.verifyJwt = (token) => {
 
 exports.AuthType = ({
   GOOGLE: 'google',
-  APPLE: 'apple'
+  APPLE: 'apple',
+  LEGACY: 'legacy'
 })

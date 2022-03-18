@@ -713,12 +713,12 @@ Query String
 
 Request Body
 - token: google 또는 apple 토큰입니다.
-- type: "google" 또는 "apple"의 값입니다. 그 외의 값일 경우 백엔드에서 자체적으로 토큰의 종류를 파악합니다. 그러나 type을 "google", "apple" 외의 값으로 주는 것은 1.x에서 migration을 할 때를 제외하고는 권장하지 않습니다.
+- type: "google", "apple" 또는 "legacy"의 값입니다. "legacy"는 1.0에서 가입한 유저가 2.0에서 로그인을 하는 경우입니다.
 
 성공 시 반환값은 JSON이며, `{ "accessToken": "asdf", "refreshToken": "abcd" }`와 같이 access token과 refresh token을 담은 객체입니다.
 
 실패 시 처리는 다음과 같습니다.
-- 400 Bad Request: type이 "google" 또는 "apple"이 아닌 경우입니다. 반환값은 `WRONG_TYPE`입니다.
+- 400 Bad Request: type이 "google", "apple" 또는 "legacy"가 아닌 경우입니다. 반환값은 `WRONG_TYPE`입니다.
 - 400 Bad Request: 토큰 파싱에 실패한 경우입니다.
 - 400 Bad Request: 해당 토큰으로 가입한 유저가 없는 경우입니다. 반환값은 `USER_NOT_EXIST`입니다.
 

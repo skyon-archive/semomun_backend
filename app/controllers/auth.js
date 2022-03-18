@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt')
 const {
   getGoogleId,
+  getGoogleIdLegacy,
   getAppleId,
   getAuthJwtKey,
   createJwt,
@@ -57,15 +58,15 @@ exports.login = async (req, res) => {
       const appleId = await getAppleId(token)
       if (!appleId) return res.status(400).send()
       uid = await getUserWithAppleId(appleId)
-    } else {
-      const googleId = await getGoogleId(token)
+    } else if (type === AuthType.LEGACY) {
+      const googleId = await getGoogleIdLegacy(token)
       if (googleId) uid = await getUserWithGoogleId(googleId)
       else {
         const appleId = await getAppleId(token)
         if (!appleId) return res.status(400).send()
         uid = await getUserWithAppleId(appleId)
       }
-    }
+    } else return res.status(400).send('WRONG_TYPE')
 
     if (!uid) return res.status(400).send('USER_NOT_EXIST')
 
