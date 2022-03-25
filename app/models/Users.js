@@ -39,7 +39,7 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING(32),
       allowNull: false,
       validate: {
-        is: /^\+\d{1,4}-\d{1,3}-\d{3,4}-\d{3,4}$/i
+        is: /(^\+\d{1,4}-\d{1,3}-\d{3,4}-\d{3,4}$)|(^$)/i
       }
     },
     major: {
