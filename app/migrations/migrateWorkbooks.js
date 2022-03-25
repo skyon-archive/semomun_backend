@@ -154,7 +154,8 @@ exports.migrateWorkbooks = async (wids) => {
             : problem.content.slice(0, 36),
           explanation: problem.explanation === 'NULL'
             ? null
-            : problem.explanation.slice(0, 36)
+            : problem.explanation.slice(0, 36),
+          score: +problem.score
         })
       }
       console.log(`done migrating problem ${problem.pid}`)
