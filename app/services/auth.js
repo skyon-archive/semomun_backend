@@ -2,17 +2,17 @@ const { OAuth2Client } = require('google-auth-library')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const env = process.env
-const client_id = env.CLIENT_ID
+const clientId = [env.CLIENT_ID_APP, env.CLIENT_ID_WEB]
 const secret = env.JWT_SECRET
 const salt = env.SALT
-const client = new OAuth2Client(client_id)
+const client = new OAuth2Client(clientId)
 const redis = require('./redis')
 
 exports.getGoogleId = async (token) => {
   try {
     const ticket = await client.verifyIdToken({
       idToken: token,
-      audience: client_id
+      audience: clientId
     })
     const payload = ticket.getPayload()
     const sub = payload.sub
@@ -25,7 +25,7 @@ exports.getGoogleId = async (token) => {
 exports.getGoogleIdLegacy = async (token) => {
   try {
     const { aud, sub } = jwt.decode(token)
-    return aud === process.env.CLIENT_ID ? sub : null
+    return clientId.includes(aud) ? sub : null
   } catch (err) {
     return null
   }
