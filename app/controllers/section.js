@@ -10,12 +10,12 @@ exports.fetchSection = async (req, res) => {
       where: { sid },
       include: {
         association: 'views',
-        order: [['views.index', 'ASC']],
-        include: {
-          association: 'problems',
-          order: [['problems.index', 'ASC']]
-        }
-      }
+        include: 'problems'
+      },
+      order: [
+        ['views', 'index', 'ASC'],
+        ['views', 'problems', 'index', 'ASC']
+      ]
     })
     if (!section) return res.status(404).send()
     res.json(section).send()
