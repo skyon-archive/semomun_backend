@@ -122,7 +122,7 @@ exports.migrateWorkbooks = async (wids) => {
             vid: +view.vid,
             index: idx + 1,
             form: view.form,
-            passage: view.material === 'NULL' ? null : view.material
+            passage: view.material === 'NULL' ? null : view.material.slice(0, 36)
           })
         }
         console.log(`done migrating view ${view.vid}`)

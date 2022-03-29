@@ -1,6 +1,5 @@
 require('dotenv').config()
-// const { updateSectionSize } = require('./app/migrations/migrateWorkbooks')
-// updateSectionSize([30])
+const { migrateWorkbooks, updateSectionSize } = require('./app/migrations/migrateWorkbooks')
 
-const { migrateWorkbooks } = require('./app/migrations/migrateWorkbooks')
-migrateWorkbooks([30])
+const wids = [169]
+migrateWorkbooks(wids).then(() => updateSectionSize(wids))
