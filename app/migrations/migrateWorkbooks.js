@@ -67,7 +67,7 @@ exports.migrateWorkbooks = async (wids) => {
       const tagNames = workbookTags.map((workbookTag) => workbookTag.tid_Tag.name)
       await Promise.all(newTags.map(async (newTag) => {
         if (!tagNames.includes(newTag)) {
-          const tag = await Tags.create({ name: newTag })
+          const [tag] = await Tags.findOrCreate({ where: { name: newTag } })
           await WorkbookTags.create({ wid: workbook.wid, tid: tag.tid })
         }
       }))
