@@ -1,12 +1,16 @@
 const { ForeignKeyConstraintError } = require('sequelize')
+const { parseIntDefault } = require('../utils')
 const { BadRequest } = require('../errors')
 const { Workbooks, Items, WorkbookTags, WorkbookHistory, sequelize } = require('../models/index')
-const { getPurchasedWorkbooks } = require('../services/workbooks')
+const { getPurchasedWorkbooks, fetchWorkbooks } = require('../services/workbooks')
 
 exports.fetchWorkbooks = async (req, res) => {
   try {
-    const result = await Workbooks.findAndCountAll()
-    res.json({ count: result.count, workbooks: result.rows })
+    const { page, limit } = req.query
+    res.json(await fetchWorkbooks(
+      parseIntDefault(page, 1),
+      parseIntDefault(limit, 25)
+    ))
   } catch (err) {
     console.log(err)
     res.status(500).send()

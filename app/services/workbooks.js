@@ -1,4 +1,13 @@
-const { Items, sequelize } = require('../models/index')
+const { Items, Workbooks, sequelize } = require('../models/index')
+
+exports.fetchWorkbooks = async (page, limit) => {
+  const { count, rows } = await Workbooks.findAndCountAll({
+    offset: (page - 1) * limit,
+    limit,
+    order: [['wid', 'ASC']]
+  })
+  return { count, workbooks: rows }
+}
 
 exports.getPurchasedWorkbooks = async (uid, orderType) => {
   const order = orderType === 'solve'
