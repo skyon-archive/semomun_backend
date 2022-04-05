@@ -504,6 +504,31 @@ sid가 주어진 값인 섹션을 반환합니다.
 - 404 Not Found: 해당 wid에 대한 문제집이 없는 경우입니다.
 
 
+### POST /submissions
+
+유저가 문제를 풀고 필기한 내용을 제출합니다. 헤더에는 access token이 담겨있어야 합니다.
+
+<details>
+<summary>request 예시</summary>
+<pre language="json"><code class="language-json">[
+    {
+        "pid": 721,
+        "elapsed": 10,
+        "answer": 5,
+        "attempt": 1,
+        "note": "blob"
+    },
+    {
+        "pid": 722,
+        "elapsed": 13,
+        "answer": 4,
+        "attempt": 1,
+        "note": "blob"
+    }
+]
+</code></pre></details>
+<br/>
+
 ### GET /tags?order=popularity (tags.js - getTags)
 
 모든 Tag를 정렬하여 반환합니다. `order`가 가질 수 있는 값은 `popularity`와 `name`입니다.
@@ -914,9 +939,6 @@ body에는 아래와 같은 값들이 주어져야 합니다. 전부 optional하
 
 실패 시 처리는 다음과 같습니다.
 - 400 Bad Request: Query string으로 username이 주어지지 않은 경우입니다.
-
-
-### ~~PUT /sections/:sid/submit~~
 
 
 ### GET /s3/presignedUrl?uuid=uuid&type=type
