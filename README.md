@@ -529,6 +529,31 @@ sid가 주어진 값인 섹션을 반환합니다.
 </code></pre></details>
 <br/>
 
+
+### POST /view-submissions
+
+유저가 View의 passage에 필기한 내용을 제출합니다. 헤더에는 access token이 담겨있어야 합니다.
+
+<details>
+<summary>request 예시</summary>
+<pre language="json"><code class="language-json">[
+    {
+        "vid": 680,
+        "elapsed": 10,
+        "attempt": 1,
+        "note": "blob"
+    },
+    {
+        "vid": 681,
+        "elapsed": 14,
+        "attempt": 1,
+        "note": "blob"
+    }
+]
+</code></pre></details>
+<br/>
+
+
 ### GET /tags?order=popularity (tags.js - getTags)
 
 모든 Tag를 정렬하여 반환합니다. `order`가 가질 수 있는 값은 `popularity`와 `name`입니다.
