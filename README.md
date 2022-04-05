@@ -80,7 +80,7 @@ CREATE TABLE `Workbooks` (
     `date` DATETIME NOT NULL,                                                     /* 발행일                          */
     `publishMan` VARCHAR(32) NOT NULL,                                             /* 발행인                          */
     `publishCompany` VARCHAR(32) NOT NULL,                                         /* 출판사                          */
-    `originalPrice` VARCHAR(32) NOT NULL,                                          /* 정가                            */
+    `originalPrice` INT NOT NULL,                                                  /* 정가                            */
     `bookcover` CHAR(36) NOT NULL,                                                 /* 표지 파일 식별자, uuid            */
     `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -140,20 +140,32 @@ CREATE TABLE `Problems` (
 
 -- 제출 기록 --
 CREATE TABLE `Submissions` (
-    `identifier` INT NOT NULL AUTO_INCREMENT,
+    `sbid` INT NOT NULL AUTO_INCREMENT,
     `uid` INT NOT NULL,                                                            /* 유저                           */
-    `targetId` INT NOT NULL,                                                       /* pid 또는 vid                   */
+    `pid` INT NOT NULL,
     `elapsed` INT,                                                        /* 소요 시간                       */
     `answer` VARCHAR(256),                                                         /* 유저가 제출한 답                 */
     `attempt` INT NOT NULL,                                                        /* 다시풀기 n회차                   */
     `note` MEDIUMBLOB,                                                          /* 필기                            */
-    `type` VARCHAR(32) NOT NULL,                                                    /* problem 또는 view            */
     `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    -- 중복 제출 가능하게 해야함 --
-    PRIMARY KEY (`identifier` ),
+    PRIMARY KEY (`sbid` ),
     FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`),
     FOREIGN KEY (`pid`) REFERENCES `Problems` (`pid`)
+);
+
+-- Passage 필기 제출 기록 --
+CREATE TABLE `ViewSubmissions` (
+    `vsbid` INT NOT NULL AUTO_INCREMENT,
+    `uid` INT NOT NULL,                                                            /* 유저                           */
+    `vid` INT NOT NULL,                                                       /* pid 또는 vid                   */
+    `attempt` INT NOT NULL,                                                        /* 다시풀기 n회차                   */
+    `note` MEDIUMBLOB,                                                          /* 필기                            */
+    `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`vsbid` ),
+    FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`),
+    FOREIGN KEY (`vid`) REFERENCES `Problems` (`vid`)
 );
 
 -- 태그 --
@@ -189,7 +201,7 @@ CREATE TABLE `FavoriteTags` (
 
 -- 캐시 이용 내역 --
 CREATE TABLE `PayHistory` (
-    `phid` INT NOT NULL AUTO_INCREMENT,                                            /* 주문번호, 논의 필요                */
+    `phid` INT NOT NULL AUTO_INCREMENT,                                            /* 주문번호                         */
     `id` INT,                                                                      /* 구매품목                         */
     `uid` INT NOT NULL,                                                            /* 유저                            */
     `amount` INT NOT NULL,                                                         /* 양수면 충전, 음수 또는 0이면 구매     */

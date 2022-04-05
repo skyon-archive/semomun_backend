@@ -1,6 +1,6 @@
 module.exports = function (sequelize, DataTypes) {
-  return sequelize.define('Submissions', {
-    sbid: {
+  return sequelize.define('ViewSubmissions', {
+    vsbid: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -14,21 +14,13 @@ module.exports = function (sequelize, DataTypes) {
         key: 'uid'
       }
     },
-    pid: {
+    vid: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'Problems',
-        key: 'pid'
+        model: 'Views',
+        key: 'vid'
       }
-    },
-    elapsed: {
-      type: DataTypes.INTEGER,
-      allowNull: true
-    },
-    answer: {
-      type: DataTypes.STRING(256),
-      allowNull: true
     },
     attempt: {
       type: DataTypes.INTEGER,
@@ -40,14 +32,14 @@ module.exports = function (sequelize, DataTypes) {
     }
   }, {
     sequelize,
-    tableName: 'Submissions',
+    tableName: 'ViewSubmissions',
     indexes: [
       {
         name: 'PRIMARY',
         unique: true,
         using: 'BTREE',
         fields: [
-          { name: 'sbid' }
+          { name: 'vsbid' }
         ]
       },
       {
@@ -58,10 +50,10 @@ module.exports = function (sequelize, DataTypes) {
         ]
       },
       {
-        name: 'pid',
+        name: 'vid',
         using: 'BTREE',
         fields: [
-          { name: 'pid' }
+          { name: 'vid' }
         ]
       }
     ]

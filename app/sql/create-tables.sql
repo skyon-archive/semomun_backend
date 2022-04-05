@@ -103,20 +103,32 @@ CREATE TABLE `Problems` (
 
 -- 제출 기록 --
 CREATE TABLE `Submissions` (
-    `identifier` INT NOT NULL AUTO_INCREMENT,
+    `sbid` INT NOT NULL AUTO_INCREMENT,
     `uid` INT NOT NULL,                                                            /* 유저                           */
-    `targetId` INT NOT NULL,                                                       /* pid 또는 vid                   */
+    `pid` INT NOT NULL,
     `elapsed` INT,                                                        /* 소요 시간                       */
     `answer` VARCHAR(256),                                                         /* 유저가 제출한 답                 */
     `attempt` INT NOT NULL,                                                        /* 다시풀기 n회차                   */
     `note` MEDIUMBLOB,                                                          /* 필기                            */
-    `type` VARCHAR(32) NOT NULL,                                                    /* problem 또는 view            */
     `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    -- 중복 제출 가능하게 해야함 --
-    PRIMARY KEY (`identifier` ),
+    PRIMARY KEY (`sbid` ),
     FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`),
     FOREIGN KEY (`pid`) REFERENCES `Problems` (`pid`)
+);
+
+-- Passage 필기 제출 기록 --
+CREATE TABLE `ViewSubmissions` (
+    `vsbid` INT NOT NULL AUTO_INCREMENT,
+    `uid` INT NOT NULL,                                                            /* 유저                           */
+    `vid` INT NOT NULL,                                                       /* pid 또는 vid                   */
+    `attempt` INT NOT NULL,                                                        /* 다시풀기 n회차                   */
+    `note` MEDIUMBLOB,                                                          /* 필기                            */
+    `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`vsbid` ),
+    FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`),
+    FOREIGN KEY (`vid`) REFERENCES `Problems` (`vid`)
 );
 
 -- 태그 --

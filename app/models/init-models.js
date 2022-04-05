@@ -8,6 +8,7 @@ const _Submissions = require('./Submissions')
 const _Tags = require('./Tags')
 const _Users = require('./Users')
 const _Views = require('./Views')
+const _ViewSubmissions = require('./ViewSubmissions')
 const _WorkbookHistory = require('./WorkbookHistory')
 const _WorkbookTags = require('./WorkbookTags')
 const _Workbooks = require('./Workbooks')
@@ -22,6 +23,7 @@ function initModels (sequelize) {
   const Tags = _Tags(sequelize, DataTypes)
   const Users = _Users(sequelize, DataTypes)
   const Views = _Views(sequelize, DataTypes)
+  const ViewSubmissions = _ViewSubmissions(sequelize, DataTypes)
   const WorkbookHistory = _WorkbookHistory(sequelize, DataTypes)
   const WorkbookTags = _WorkbookTags(sequelize, DataTypes)
   const Workbooks = _Workbooks(sequelize, DataTypes)
@@ -34,6 +36,8 @@ function initModels (sequelize) {
   Items.hasOne(Workbooks, { as: 'workbook', foreignKey: 'id' })
   Submissions.belongsTo(Problems, { as: 'pid_Problem', foreignKey: 'pid' })
   Problems.hasMany(Submissions, { as: 'Submissions', foreignKey: 'pid' })
+  ViewSubmissions.belongsTo(Views, { as: 'vid_View', foreignKey: 'vid' })
+  Views.hasMany(ViewSubmissions, { as: 'ViewSubmissions', foreignKey: 'vid' })
   Views.belongsTo(Sections, { as: 'sid_Section', foreignKey: 'sid' })
   Sections.hasMany(Views, { as: 'views', foreignKey: 'sid' })
   FavoriteTags.belongsTo(Tags, { as: 'tid_Tag', foreignKey: 'tid' })
@@ -48,6 +52,8 @@ function initModels (sequelize) {
   Users.FavoriteTags = Users.hasMany(FavoriteTags, { as: 'favoriteTags', foreignKey: 'uid' })
   Submissions.belongsTo(Users, { as: 'uid_User', foreignKey: 'uid' })
   Users.hasMany(Submissions, { as: 'Submissions', foreignKey: 'uid' })
+  ViewSubmissions.belongsTo(Users, { as: 'uid_User', foreignKey: 'uid' })
+  Users.hasMany(ViewSubmissions, { as: 'ViewSubmissions', foreignKey: 'uid' })
   WorkbookHistory.belongsTo(Users, { as: 'uid_User', foreignKey: 'uid' })
   Users.hasMany(WorkbookHistory, { as: 'WorkbookHistories', foreignKey: 'uid' })
   Problems.belongsTo(Views, { as: 'vid_View', foreignKey: 'vid' })
@@ -69,6 +75,7 @@ function initModels (sequelize) {
     Tags,
     Users,
     Views,
+    ViewSubmissions,
     WorkbookHistory,
     WorkbookTags,
     Workbooks
