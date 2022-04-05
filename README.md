@@ -31,6 +31,7 @@ Semomun API의 명세와 조건, 참고사항 및 예외들을 정리해 작성�
 - 전화번호는 `+82-10-1234-5678`와 같은 형식으로 국가번호를 포함합니다. db에도 이러한 형식으로 저장되고, 프론트엔드와 소통할 때도 항상 이 형식을 사용합니다.
   - 정규표현식: `/^\+\d{1,4}-\d{1,3}-\d{3,4}-\d{3,4}$/`
 - 로그인 후 이루어지는 대부분의 (모든) api 호출에서 헤더에 access token을 담아주세요. key는 `Authorization`, value는 `Bearer eyJhbGciOiJIUzI1N`와 같은 형식의 값입니다.
+- 하나의 request의 크기는 10MB 미만이어야 합니다.
 
 ## 자료형
 
@@ -539,13 +540,11 @@ sid가 주어진 값인 섹션을 반환합니다.
 <pre language="json"><code class="language-json">[
     {
         "vid": 680,
-        "elapsed": 10,
         "attempt": 1,
         "note": "blob"
     },
     {
         "vid": 681,
-        "elapsed": 14,
         "attempt": 1,
         "note": "blob"
     }
