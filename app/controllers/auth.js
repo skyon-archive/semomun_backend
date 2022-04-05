@@ -83,24 +83,28 @@ exports.refresh = async (req, res) => {
     const refreshToken = req.headers.refresh
     if (!refreshToken) return res.status(400).send()
     const { ok: refreshOk, result: refreshDecoded } = verifyJwt(refreshToken)
+    console.log(refreshOk, refreshDecoded)
     if (!refreshOk || !refreshDecoded) return res.status(400).send()
     const redisKey = getAuthJwtKey(refreshToken)
 
     const authorization = req.headers.authorization
     const accessToken = authorization ? authorization.split('Bearer ')[1] : null
+    console.log(accessToken, refreshToken)
     if (!accessToken) {
       await redis.del(redisKey)
       return res.status(400).send()
     }
 
-    const { ok: accessOk, result: accessDecoded } = verifyJwt(accessToken)
-    if (accessOk || !accessDecoded) {
+    const { message: accessMessage, result: accessDecoded } = verifyJwt(accessToken)
+    console.log(accessMessage, accessDecoded)
+    if (accessMessage !== 'jwt expired' || !accessDecoded) {
       await redis.del(redisKey)
       return res.status(400).send()
     }
 
     const redisValue = await redis.get(redisKey)
     await redis.del(redisKey)
+    console.log(redisKey, redisValue)
     if (!redisValue || !await bcrypt.compare(accessToken, redisValue)) {
       return res.status(400).send()
     }

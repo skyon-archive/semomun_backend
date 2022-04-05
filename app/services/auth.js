@@ -50,7 +50,9 @@ exports.createJwt = async (uid, short = false) => {
   const accessToken = jwt.sign(payload, secret, { algorithm: 'HS256', expiresIn: '10m' })
   const refreshToken = jwt.sign({}, secret, { algorithm: 'HS256', expiresIn: short ? '3h' : '30d' })
   const accessHash = bcrypt.hashSync(accessToken, +salt)
-  await redis.set(getAuthJwtKey(refreshToken), accessHash, { EX: 60 * 60 * 24 * 30 + 15 })
+  const redisKey = getAuthJwtKey(refreshToken)
+  await redis.set(redisKey, accessHash, { EX: 60 * 60 * 24 * 30 + 15 })
+  console.log(redisKey, await redis.get(redisKey))
   return { accessToken, refreshToken }
 }
 
@@ -60,7 +62,7 @@ exports.verifyJwt = (token) => {
     return { ok: true, result }
   } catch (e) {
     try {
-      const result = jwt.decode(token, secret)
+      const result = jwt.verify(token, secret, { ignoreExpiration: true })
       return { ok: false, result, message: e.message }
     } catch {
       return { ok: false, result: null, message: e.message }

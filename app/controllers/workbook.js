@@ -58,7 +58,7 @@ exports.fetchWorkbook = async (req, res) => {
 exports.solveWorkbook = async (req, res) => {
   try {
     const uid = req.uid
-    if (!uid) return res.status(401).send()
+    if (!uid) return res.status(401).send(req.jwtMessage)
 
     const { wid, datetime } = req.body
     if (!wid || !datetime) throw new BadRequest()
@@ -99,7 +99,7 @@ exports.solveWorkbook = async (req, res) => {
 exports.getPurchasedWorkbooks = async (req, res) => {
   try {
     const uid = req.uid
-    if (!uid) return res.status(401).send()
+    if (!uid) return res.status(401).send(req.jwtMessage)
 
     const { order } = req.query
     const workbooks = await getPurchasedWorkbooks(uid, order)

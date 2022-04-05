@@ -5,7 +5,7 @@ const { createOrders, getPayHistory } = require('../services/payHistory')
 exports.createOrders = async (req, res) => {
   try {
     const uid = req.uid
-    if (!uid) return res.status(401).send()
+    if (!uid) return res.status(401).send(req.jwtMessage)
 
     const { ids } = req.body
     if (!Array.isArray(ids)) throw new BadRequest('WRONG_BODY')
@@ -26,7 +26,7 @@ exports.createOrders = async (req, res) => {
 exports.getPayHistory = async (req, res) => {
   try {
     const uid = req.uid
-    if (!uid) return res.status(401).send()
+    if (!uid) return res.status(401).send(req.jwtMessage)
     const { type, page, limit } = req.query
     const result = await getPayHistory(
       uid,

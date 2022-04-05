@@ -6,7 +6,7 @@ const { getGoogleIdLegacy } = require('../services/auth')
 exports.fetchSelf = async (req, res) => {
   try {
     const uid = req.uid
-    if (!uid) return res.status(401).send()
+    if (!uid) return res.status(401).send(req.jwtMessage)
 
     const user = await getUser(uid)
     if (!user) return res.status(404).send()
@@ -20,7 +20,7 @@ exports.fetchSelf = async (req, res) => {
 exports.updateUser = async (req, res) => {
   try {
     const uid = req.uid
-    if (!uid) return res.status(401).send()
+    if (!uid) return res.status(401).send(req.jwtMessage)
 
     await updateUser(uid, req.body)
     res.json({})
