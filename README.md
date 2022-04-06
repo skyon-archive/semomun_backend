@@ -511,22 +511,24 @@ sid가 주어진 값인 섹션을 반환합니다.
 
 <details>
 <summary>request 예시</summary>
-<pre language="json"><code class="language-json">[
-    {
-        "pid": 721,
-        "elapsed": 10,
-        "answer": 5,
-        "attempt": 1,
-        "note": "blob"
-    },
-    {
-        "pid": 722,
-        "elapsed": 13,
-        "answer": 4,
-        "attempt": 1,
-        "note": "blob"
-    }
-]
+<pre language="json"><code class="language-json">{
+    "submissions": [
+        {
+            "pid": 721,
+            "elapsed": 10,
+            "answer": 5,
+            "attempt": 1,
+            "note": "blob"
+        },
+        {
+            "pid": 722,
+            "elapsed": 13,
+            "answer": 4,
+            "attempt": 1,
+            "note": "blob"
+        }
+    ]
+}
 </code></pre></details>
 <br/>
 
@@ -537,18 +539,20 @@ sid가 주어진 값인 섹션을 반환합니다.
 
 <details>
 <summary>request 예시</summary>
-<pre language="json"><code class="language-json">[
-    {
-        "vid": 680,
-        "attempt": 1,
-        "note": "blob"
-    },
-    {
-        "vid": 681,
-        "attempt": 1,
-        "note": "blob"
-    }
-]
+<pre language="json"><code class="language-json">{
+    "submissions": [
+        {
+            "vid": 680,
+            "attempt": 1,
+            "note": "blob"
+        },
+        {
+            "vid": 681,
+            "attempt": 1,
+            "note": "blob"
+        }
+    ]
+}
 </code></pre></details>
 <br/>
 
