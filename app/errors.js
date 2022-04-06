@@ -12,5 +12,13 @@ function NotFound (message) {
 NotFound.prototype = Object.create(Error.prototype)
 NotFound.prototype.name = 'NotFound'
 
+function Conflict (message) {
+  this.message = message
+  this.stack = Error().stack
+}
+Conflict.prototype = Object.create(Error.prototype)
+Conflict.prototype.name = 'Conflict'
+
 exports.BadRequest = BadRequest
 exports.NotFound = NotFound
+exports.Conflict = Conflict

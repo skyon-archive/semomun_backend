@@ -14,7 +14,7 @@ const {
   createUser
 } = require('../services/user')
 const redis = require('../services/redis')
-const { BadRequest } = require('../errors')
+const { BadRequest, Conflict } = require('../errors')
 
 exports.createUser = async (req, res) => {
   try {
@@ -37,6 +37,7 @@ exports.createUser = async (req, res) => {
     res.json(tokens)
   } catch (err) {
     if (err instanceof BadRequest) res.status(400).send(err.message)
+    else if (err instanceof Conflict) res.status(409).send(err.message)
     else {
       console.log(err)
       res.status(500).send()

@@ -1,5 +1,5 @@
 const { ValidationError } = require('sequelize')
-const { BadRequest } = require('../errors')
+const { BadRequest, Conflict } = require('../errors')
 const { Users, sequelize } = require('../models/index')
 
 const getUserByUsername = async (username, transaction = undefined) => {
@@ -50,7 +50,7 @@ exports.createUser = async (userInfo) => {
       throw new BadRequest('USER_ALREADY_EXISTS')
     }
     if (await getUserByUsername(userInfo.username, t)) {
-      throw new BadRequest('USERNAME_NOT_AVAILABLE')
+      throw new Conflict('USERNAME_NOT_AVAILABLE')
     }
 
     userInfo.name = ''

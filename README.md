@@ -762,7 +762,6 @@ Request Body
 - 400 Bad Request: 토큰이 유효하지 않은 경우입니다. 반환값은 `INVALID_TOKEN`입니다.
 - 400 Bad Request: 유저 정보가 유효하지 않은 경우입니다. 에러 내역을 반환합니다.
 - 409 Conflict: 이미 사용중인 username인 경우입니다. 반환값은 `USERNAME_NOT_AVAILABLE` 입니다.
-- 409 Conflict: 이미 사용중인 전화번호인 경우입니다. 반환값은 `PHONE_NOT_AVAILABLE` 입니다.
 
 
 ### POST /auth/login?expire=short (auth.js - login)
