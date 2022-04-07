@@ -14,4 +14,5 @@ module.exports = (app) => {
   require('./pay')(app)
   require('./submissions')(app)
   require('./viewSubmissions')(app)
+  require('./notices')(app)
 }

@@ -998,3 +998,28 @@ body에는 아래와 같은 값들이 주어져야 합니다. 전부 optional하
 
 반환값은 url string입니다. (**JSON 아님**)
 
+
+### GET /notices
+공지사항의 리스트를 받아옵니다. 정렬 기준은 createdAt에 대한 내림차순입니다.
+
+<details>
+<summary>response 예시</summary>
+<pre language="json"><code class="language-json">[
+    {
+        "nid": 1,
+        "title": "제목",
+        "text": "내용",
+        "image": null,
+        "createdAt": "2022-04-07T08:09:57.000Z",
+        "updatedAt": "2022-04-07T08:09:59.000Z"
+    },
+    {
+        "nid": 2,
+        "title": "서버 점검 공지",
+        "text": "서버 점검이 있을 예정입니다~~",
+        "image": null,
+        "createdAt": "2022-04-07T08:09:57.000Z",
+        "updatedAt": "2022-04-07T08:09:59.000Z"
+    }
+]
+</code></pre></details>
