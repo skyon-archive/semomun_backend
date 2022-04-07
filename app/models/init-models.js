@@ -2,6 +2,7 @@ const DataTypes = require('sequelize').DataTypes
 const _PayHistory = require('./PayHistory')
 const _FavoriteTags = require('./FavoriteTags')
 const _Items = require('./Items')
+const _Notices = require('./Notices.js')
 const _Problems = require('./Problems')
 const _Sections = require('./Sections')
 const _Submissions = require('./Submissions')
@@ -17,6 +18,7 @@ function initModels (sequelize) {
   const PayHistory = _PayHistory(sequelize, DataTypes)
   const FavoriteTags = _FavoriteTags(sequelize, DataTypes)
   const Items = _Items(sequelize, DataTypes)
+  const Notices = _Notices(sequelize, DataTypes)
   const Problems = _Problems(sequelize, DataTypes)
   const Sections = _Sections(sequelize, DataTypes)
   const Submissions = _Submissions(sequelize, DataTypes)
@@ -69,6 +71,7 @@ function initModels (sequelize) {
     PayHistory,
     FavoriteTags,
     Items,
+    Notices,
     Problems,
     Sections,
     Submissions,

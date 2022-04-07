@@ -192,3 +192,14 @@ CREATE TABLE `WorkbookHistory` (
     FOREIGN KEY (`wid`) REFERENCES `Workbooks` (`wid`),
     FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`)
 );
+
+-- 공지사항 --
+CREATE TABLE `Notices` (
+    `nid` INT NOT NULL AUTO_INCREMENT,                                             /* 식별자                          */
+    `title` TINYTEXT NOT NULL,                                                     /* 제목                           */
+    `text` TEXT NOT NULL,                                                         /* 내용                           */
+    `image` VARCHAR(256),                                                          /* 이미지 url                       */
+    `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`nid`)
+);
