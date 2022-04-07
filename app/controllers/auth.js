@@ -85,7 +85,8 @@ exports.refresh = async (req, res) => {
     if (!refreshToken) return res.status(400).send()
     const { ok: refreshOk, result: refreshDecoded } = verifyJwt(refreshToken)
     console.log(refreshOk, refreshDecoded)
-    if (!refreshOk || !refreshDecoded) return res.status(400).send()
+    if (!refreshOk) throw new BadRequest('refresh token expired')
+    if (!refreshDecoded) throw new BadRequest('failed to decode refresh token')
     const redisKey = getAuthJwtKey(refreshToken)
 
     const authorization = req.headers.authorization
@@ -93,21 +94,25 @@ exports.refresh = async (req, res) => {
     console.log(accessToken, refreshToken)
     if (!accessToken) {
       await redis.del(redisKey)
-      return res.status(400).send()
+      throw new BadRequest('access token missing')
     }
 
     const { message: accessMessage, result: accessDecoded } = verifyJwt(accessToken)
     console.log(accessMessage, accessDecoded)
-    if (accessMessage !== 'jwt expired' || !accessDecoded) {
+    if (accessMessage !== 'jwt expired') {
       await redis.del(redisKey)
-      return res.status(400).send()
+      throw new BadRequest('access token not expired')
+    }
+    if (!accessDecoded) {
+      await redis.del(redisKey)
+      throw new BadRequest('failed to decode access token')
     }
 
     const redisValue = await redis.get(redisKey)
     await redis.del(redisKey)
     console.log(redisKey, redisValue)
     if (!redisValue || !await bcrypt.compare(accessToken, redisValue)) {
-      return res.status(400).send()
+      throw new BadRequest('access token and refresh token not match')
     }
 
     const { expire } = req.query
@@ -115,7 +120,10 @@ exports.refresh = async (req, res) => {
     const newTokens = await createJwt(accessDecoded.uid, expire === 'short')
     res.json(newTokens)
   } catch (err) {
-    console.log(err)
-    res.status(500).send()
+    if (err instanceof BadRequest) res.status(400).send(err.message)
+    else {
+      console.log(err)
+      res.status(500).send()
+    }
   }
 }
