@@ -596,6 +596,28 @@ sid가 주어진 값인 섹션을 반환합니다.
 <br/>
 
 
+### GET /tags/self (tags.js - getMyTags)
+
+로그인한 유저가 선택했던 태그를 반환합니다. 정렬 기준은 각 태그를 선택한 시점에 대한 오름차순입니다. response의 createdAt은 유저가 해당 태그를 선택한 시점입니다.
+
+<details>
+<summary>response 예시</summary>
+<pre language="json"><code class="language-json">[
+    {
+        "tid": 1,
+        "name": "name",
+        "createdAt": "2022-04-07T16:49:43.000Z"
+    },
+    {
+        "tid": 2,
+        "name": "a",
+        "createdAt": "2022-04-07T16:49:48.000Z"
+    }
+]
+</code></pre></details>
+<br/>
+
+
 ### GET /pay?type=order&page=1&limit=25 (pay.js - getPayHistory)~~
 
 로그인된 유저의 세모페이 이용내역을 페이지네이션하여 반환합니다. 정렬 순서는 최신순입니다.
