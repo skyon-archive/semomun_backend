@@ -1,4 +1,4 @@
-const { Tags, sequelize } = require('../models/index')
+const { Tags, FavoriteTags, sequelize } = require('../models/index')
 
 exports.getTagsOrderBy = async (orderBy) => {
   const order = orderBy === 'popularity'
@@ -30,4 +30,12 @@ exports.getTagsOrderBy = async (orderBy) => {
     order
   })
   return { count, tags: rows }
+}
+
+exports.getTagsByUid = (uid) => {
+  return FavoriteTags.findAll({
+    where: { uid },
+    include: 'tid_Tag',
+    order: [['createdAt', 'ASC']]
+  })
 }
