@@ -15,4 +15,5 @@ module.exports = (app) => {
   require('./submissions')(app)
   require('./viewSubmissions')(app)
   require('./notices')(app)
+  require('./banners')(app)
 }
