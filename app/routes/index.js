@@ -16,4 +16,5 @@ module.exports = (app) => {
   require('./viewSubmissions')(app)
   require('./notices')(app)
   require('./banners')(app)
+  require('./popups')(app)
 }

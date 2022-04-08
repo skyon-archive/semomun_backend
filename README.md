@@ -1016,3 +1016,18 @@ body에는 아래와 같은 값들이 주어져야 합니다. 전부 optional하
     }
 ]
 </code></pre></details>
+<br/>
+
+
+### GET /popups
+팝업 공지로 띄울 이미지의 url을 가져옵니다. 그 반환값은 이미지의 url 또는 `null`입니다. url은 presignedUrl과 달리 만료되지 않습니다.
+
+<details>
+<summary>response 예시</summary>
+예시 1
+<pre language="json"><code class="language-json">https://semomun-data.s3.ap-northeast-2.amazonaws.com/banner/semopay.png
+</code></pre>
+
+예시 2
+<pre language="json"><code class="language-json">null
+</code></pre></details>
