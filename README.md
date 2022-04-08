@@ -618,7 +618,7 @@ sid가 주어진 값인 섹션을 반환합니다.
 <br/>
 
 
-### GET /pay?type=order&page=1&limit=25 (pay.js - getPayHistory)~~
+### GET /pay?type=order&page=1&limit=25 (pay.js - getPayHistory)
 
 로그인된 유저의 세모페이 이용내역을 페이지네이션하여 반환합니다. 정렬 순서는 최신순입니다.
 
@@ -825,7 +825,14 @@ Query String
 accessToken과 refreshToken 모두 새로 생성된 값입니다.
 
 실패 시 처리는 다음과 같습니다.
-- 400 Bad Request: 토큰이 주어지지 않았거나, 파싱에 실패했거나, 서버에서 알고 있는 값이 아니거나, accessToken이 만료되지 않았거나, refreshToken이 만료된 경우에 해당합니다. 정상적인 로직 상에서 (해커의 공격이 아닌) status code 400을 받았다면 그것은 refreshToken이 만료되었거나, 서버 측에서 토큰 정보가 유실된 경우입니다. 두 경우 모두 로그아웃 처리하면 됩니다.
+- 400 Bad Request: 토큰을 재발급해줄 수 없는 경우입니다. 반환값은 다음과 같습니다.
+  - `access token missing`: refreshToken이 header에 주어지지 않은 경우입니다.
+  - `refresh token expired`: refreshToken이 만료된 경우입니다. 유저에게 다시 로그인하기를 요청하면 됩니다.
+  - `failed to decode refresh token`: refreshToken이 옳지 않은 경우입니다.
+  - `access token missing`: header에 accessToken이 주어지지 않거나 그 형식 (`Bearer abcd`)이 옳지 않은 경우입니다.
+  - `access token not expired`: accessToken이 만료되지 않은 경우입니다.
+  - `failed to decode access token`: accessToken이 옳지 않은 경우입니다.
+  - `access token and refresh token not match`: accessToken과 refreshToken의 쌍이 서버에서 알고 있는 것과 일치하지 않는 경우입니다. 간혹 서버 측에서 토큰 정보가 유실되어 해당 에러가 발생할 수 있습니다.
 
 
 ### POST /sms/code (sms.js - sendCode)
@@ -876,46 +883,6 @@ accessToken과 refreshToken 모두 새로 생성된 값입니다.
 - 400 Bad Request: phone 필드가 body에 주어지지 않은 경우입니다. 반환값은 `PHONE_MISSING`입니다.
 - 400 Bad Request: phone 의 형식이 맞지 않은 경우입니다. 반환값은 `PHONE_WRONG_FORMAT`입니다.
 
-
-### ~~GET /info/category~~
-
-문제집이 속한 카테고리의 목록을 반환합니다.
-
-정렬 기준은 현재는 무작위입니다.
-
-성공 시 반환값은 JSON이며, 다음과 같은 객체입니다.
-
-- { category }
-
-
-### ~~GET /info/buttons~~
-
-문제집이 속한 카테고리의 버튼 정보를 반환합니다.
-
-- c(ategory)
-
-성공 시 반환값은 JSON이며, 다음과 같은 객체입니다.
-
-- { queryButtons }
-  - queryButtons: 카테고리의 버튼 정보입니다. 다음과 같은 객체입니다.
-    - { title, queryParamKey, queryParamValues }
-      - queryParamValues: 카테고리에 포함된 각 attr의 목록입니다.
-
-
-### ~~GET /info/major~~
-
-회원 가입 시 요구되는 계열 및 전공의 목록입니다.
-
-- { major }
-  - major: 계열의 목록입니다. 각 계열은 다음과 같이 구성되어 있습니다.
-    - { majorName: majorDetail }
-      - majorDetail: 세부 전공의 목록입니다.
-
-현재는 아래와 같은 json이 항상 반환됩니다.
-
-```json
-{ major: [{ '문과 계열': ['인문', '상경', '사회', '교육', '기타'] }, { '이과 계열': ['공학', '자연', '의약', '생활과학', '기타'] }, { 예체능계열: ['미술', '음악', '체육', '기타'] }] }
-```
 
 ### GET /users/self
 

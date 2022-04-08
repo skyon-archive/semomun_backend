@@ -82,7 +82,7 @@ exports.login = async (req, res) => {
 exports.refresh = async (req, res) => {
   try {
     const refreshToken = req.headers.refresh
-    if (!refreshToken) return res.status(400).send()
+    if (!refreshToken) throw new BadRequest('refresh token missing')
     const { ok: refreshOk, result: refreshDecoded } = verifyJwt(refreshToken)
     console.log(refreshOk, refreshDecoded)
     if (!refreshOk) throw new BadRequest('refresh token expired')
