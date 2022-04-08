@@ -618,6 +618,17 @@ sid가 주어진 값인 섹션을 반환합니다.
 <br/>
 
 
+### PUT /tags/self (tags.js - updateMyTags)
+
+유저가 관심있다 선택한 태그의 목록을 수정합니다. request body는 tid의 리스트입니다. 서버에서는 새로 추가되거나 삭제된 태그를 판별하여 db에 적용합니다.
+
+<details>
+<summary>request 예시</summary>
+<pre language="json"><code class="language-json">[1, 3, 2]
+</code></pre></details>
+<br/>
+
+
 ### GET /pay?type=order&page=1&limit=25 (pay.js - getPayHistory)
 
 로그인된 유저의 세모페이 이용내역을 페이지네이션하여 반환합니다. 정렬 순서는 최신순입니다.
