@@ -990,3 +990,29 @@ body에는 아래와 같은 값들이 주어져야 합니다. 전부 optional하
     }
 ]
 </code></pre></details>
+<br/>
+
+
+### GET /banners
+앱의 배너에 띄울 정보를 가져옵니다.
+
+- image: 배너 이미지의 url입니다. presignedUrl과 달리, 만료되지 않는 url입니다.
+- url: 배너 이미지를 터치했을 때 연결되어야 하는 링크입니다.
+
+<details>
+<summary>response 예시</summary>
+<pre language="json"><code class="language-json">[
+    {
+        "image": "https://semomun-data.s3.ap-northeast-2.amazonaws.com/banner/semopay.png",
+        "url": "https://semomun.com/charge"
+    },
+    {
+        "image": "https://semomun-data.s3.ap-northeast-2.amazonaws.com/banner/skyon.png",
+        "url": "https://skyon.kr"
+    },
+    {
+        "image": "https://semomun-data.s3.ap-northeast-2.amazonaws.com/banner/error.png",
+        "url": "https://forms.gle/suXByYKEied6RcSd8"
+    }
+]
+</code></pre></details>
