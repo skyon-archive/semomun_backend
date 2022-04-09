@@ -61,13 +61,11 @@ exports.migrate = async (req, res) => {
     } = req.body
 
     const userInfo = {
-      username: nickName,
       name: '',
       email: '',
-      gender: '',
       phone: '',
-      credit: 0,
-      auth: 1,
+      address: '',
+      addressDetail: '',
       major,
       majorDetail,
       school,
@@ -81,7 +79,14 @@ exports.migrate = async (req, res) => {
       else userInfo.googleId = socialId
     }
 
-    await Users.create(userInfo)
+    await Users.create({
+      username: nickName,
+      credit: 0,
+      role: 'USER',
+      deleted: 0,
+      userInfo
+    }, { include: ['userInfo'] }
+    )
     res.json({})
   } catch (err) {
     console.log(err)
