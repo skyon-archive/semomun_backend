@@ -949,21 +949,19 @@ accessToken과 refreshToken 모두 새로 생성된 값입니다.
 <summary>response 예시</summary>
 <pre language="json"><code class="language-json">{
     "uid": 1,
-    "username": "username",
+    "username": "yujin",
     "credit": 97000,
-    "createdAt": "2022-04-09T06:24:17.000Z",
-    "updatedAt": "2022-04-09T06:24:17.000Z",
-    "name": "name",
-    "email": "email",
+    "createdAt": "2022-03-03T21:22:20.000Z",
+    "updatedAt": "2022-04-09T07:31:23.000Z",
+    "name": "임유진",
+    "email": "email@gmail.com",
     "address": "",
     "addressDetail": "",
-    "birth": "2022-03-03T21:22:27.000Z",
-    "googleId": "googleId",
-    "appleId": null,
-    "phone": "+82-10-2302-3319",
-    "major": "major",
-    "majorDetail": "majorDetail",
-    "school": "school",
+    "birth": "2001-01-01T00:00:00.000Z",
+    "phone": "+82-10-1234-5678",
+    "major": "이과 계열",
+    "majorDetail": "의약",
+    "school": "서울대학교",
     "graduationStatus": "재학"
 }
 </code></pre></details>

@@ -113,10 +113,9 @@ exports.updateUser = async (uid, { username, ...userInfo }) => {
   })
 }
 
-exports.getUser = (uid) => {
+exports.getUserByUid = (uid) => {
   return Users.findOne({
     where: { uid },
-    attributes: { exclude: ['googleId', 'appleId', 'role'] },
     raw: true
   })
 }
@@ -126,9 +125,11 @@ exports.getUserWithInfo = async (uid) => {
     where: { uid },
     include: {
       association: 'userInfo',
-      exclude: ['uid', 'createdAt', 'updatedAt']
+      attributes: {
+        exclude: ['uid', 'createdAt', 'updatedAt', 'googleId', 'appleId']
+      }
     },
-    attributes: { exclude: ['googleId', 'appleId', 'role', 'deleted'] },
+    attributes: { exclude: ['role', 'deleted'] },
     raw: true,
     nest: true
   })

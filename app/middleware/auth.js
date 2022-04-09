@@ -1,5 +1,5 @@
 const { verifyJwt } = require('../services/auth')
-const { getUser } = require('../services/user')
+const { getUserByUid } = require('../services/user')
 
 exports.authJwt = async (req, res, next) => {
   try {
@@ -11,7 +11,7 @@ exports.authJwt = async (req, res, next) => {
     } else {
       const { ok, result, message } = verifyJwt(accessToken)
       if (ok) {
-        const user = await getUser(result.uid)
+        const user = await getUserByUid(result.uid)
         if (!user) {
           req.uid = null
           req.jwtMessage = 'user not exist'
