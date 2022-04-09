@@ -9,6 +9,10 @@ exports.fetchWorkbooks = async (page, limit) => {
   return { count, workbooks: rows }
 }
 
+exports.fetchWorkbooksByWids = async (wids) => {
+  return Promise.all(wids.map((wid) => Workbooks.findOne({ where: { wid } })))
+}
+
 exports.getPurchasedWorkbooks = async (uid, orderType) => {
   const order = orderType === 'solve'
     ? [

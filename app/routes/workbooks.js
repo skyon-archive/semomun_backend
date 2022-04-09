@@ -3,7 +3,8 @@ const {
   fetchWorkbook,
   fetchWorkbooks,
   solveWorkbook,
-  getPurchasedWorkbooks
+  getPurchasedWorkbooks,
+  getBestsellers
 } = require('../controllers/workbook')
 
 module.exports = (app) => {
@@ -11,6 +12,7 @@ module.exports = (app) => {
 
   router.put('/solve', authJwt, solveWorkbook)
   router.get('/purchased', authJwt, getPurchasedWorkbooks)
+  router.get('/bestseller', getBestsellers)
   router.get('/:wid', authJwt, fetchWorkbook)
   router.get('/', fetchWorkbooks)
 

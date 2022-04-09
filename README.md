@@ -427,6 +427,48 @@ wid가 주어진 값인 문제집을 반환합니다.
 <br/>
 
 
+### GET /workboks/bestseller (workbooks.js - getBestsellers)
+
+베스트셀러인 문제집의 목록을 반환합니다. 정렬 기준은 인기 순으로 내림차순입니다. '베스트셀러'란 통계를 통해 나온 결론이 아닌, 어드민에서 직접 입력한 내용입니다.
+
+<details>
+<summary>response 예시</summary>
+<pre language="json"><code class="language-json">[
+    {
+        "id": 1,
+        "wid": 2,
+        "title": "title",
+        "detail": "detail",
+        "isbn": "isbn",
+        "author": "author",
+        "date": "2022-03-06T19:12:11.000Z",
+        "publishMan": "publishMan",
+        "publishCompany": "publishCompany",
+        "originalPrice": 10000,
+        "bookcover": "uuid",
+        "createdAt": "2022-03-06T19:12:24.000Z",
+        "updatedAt": "2022-03-06T19:12:25.000Z"
+    },
+    {
+        "id": 2,
+        "wid": 4,
+        "title": "2021년도 11월 고1 전국연합학력평가 국어영역",
+        "detail": "",
+        "isbn": "",
+        "author": "",
+        "date": "2022-03-06T19:12:11.000Z",
+        "publishMan": "",
+        "publishCompany": "교육청",
+        "originalPrice": 10000,
+        "bookcover": "c87adefe-315b-4333-9e1d-bd921189293c",
+        "createdAt": "2022-03-06T19:12:24.000Z",
+        "updatedAt": "2022-03-06T19:12:25.000Z"
+    }
+]
+</code></pre></details>
+<br/>
+
+
 ### PUT /workbooks/solve (workbooks.js - solveWorkbook)
 
 특정 문제집의 학습공간에 진입했음을 기록합니다.

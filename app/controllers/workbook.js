@@ -1,8 +1,9 @@
 const { ForeignKeyConstraintError } = require('sequelize')
+const redis = require('../services/redis')
 const { parseIntDefault } = require('../utils')
 const { BadRequest } = require('../errors')
 const { Workbooks, Items, WorkbookTags, WorkbookHistory, sequelize } = require('../models/index')
-const { getPurchasedWorkbooks, fetchWorkbooks } = require('../services/workbooks')
+const { getPurchasedWorkbooks, fetchWorkbooks, fetchWorkbooksByWids } = require('../services/workbooks')
 
 exports.fetchWorkbooks = async (req, res) => {
   try {
@@ -105,6 +106,18 @@ exports.getPurchasedWorkbooks = async (req, res) => {
     const workbooks = await getPurchasedWorkbooks(uid, order)
 
     res.json(workbooks)
+  } catch (err) {
+    console.log(err)
+    res.status(500).send()
+  }
+}
+
+exports.getBestsellers = async (req, res) => {
+  try {
+    const wids = await redis.lRange('workbook:bestseller', 0, -1)
+    console.log(wids)
+    const result = await fetchWorkbooksByWids(wids.map((wid) => +wid))
+    res.json(result)
   } catch (err) {
     console.log(err)
     res.status(500).send()
