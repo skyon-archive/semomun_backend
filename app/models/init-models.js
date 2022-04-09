@@ -55,7 +55,7 @@ function initModels (sequelize) {
   FavoriteTags.belongsTo(Users, { as: 'uid_User', foreignKey: 'uid' })
   Users.hasOne(UserInfo, { as: 'userInfo', foreignKey: 'uid' })
   UserInfo.belongsTo(Users, { as: 'user', foreignKey: 'uid' })
-  Users.FavoriteTags = Users.hasMany(FavoriteTags, { as: 'favoriteTags', foreignKey: 'uid' })
+  Users.hasMany(FavoriteTags, { as: 'favoriteTags', foreignKey: 'uid' })
   Submissions.belongsTo(Users, { as: 'uid_User', foreignKey: 'uid' })
   Users.hasMany(Submissions, { as: 'Submissions', foreignKey: 'uid' })
   ViewSubmissions.belongsTo(Users, { as: 'uid_User', foreignKey: 'uid' })
