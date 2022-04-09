@@ -1,4 +1,4 @@
-const { BadRequest } = require('../errors')
+const { BadRequest, Conflict } = require('../errors')
 const { Users } = require('../models/index')
 const { updateUser, getUserWithInfo, getUserByUsername } = require('../services/user')
 const { getGoogleIdLegacy } = require('../services/auth')
@@ -26,6 +26,7 @@ exports.updateUser = async (req, res) => {
     res.json({})
   } catch (err) {
     if (err instanceof BadRequest) res.status(400).send(err.message)
+    else if (err instanceof Conflict) res.status(409).send(err.message)
     else {
       console.log(err)
       res.status(500).send()

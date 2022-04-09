@@ -1,6 +1,6 @@
 const { ValidationError } = require('sequelize')
 const { BadRequest, Conflict } = require('../errors')
-const { Users, sequelize } = require('../models/index')
+const { Users, UserInfo, sequelize } = require('../models/index')
 
 const getUserByUsername = async (username, transaction = undefined) => {
   const user = await Users.findOne({ where: { username }, transaction })
@@ -71,16 +71,16 @@ exports.createUser = async (userInfo) => {
   })
 }
 
-exports.updateUser = async (uid, userInfo) => {
+exports.updateUser = async (uid, { username, ...userInfo }) => {
   const whiteList = [
-    'username',
     'name',
     'email',
-    'gender',
     'birth',
     'phone',
     'major',
     'majorDetail',
+    'address',
+    'addressDetail',
     'school',
     'graduationStatus'
   ]
@@ -89,11 +89,17 @@ exports.updateUser = async (uid, userInfo) => {
   })
 
   await sequelize.transaction(async (transaction) => {
-    const target = await Users.findByPk(uid, { transaction })
-    if (!target) throw new BadRequest('WRONG_UID')
-
     try {
-      await Users.update(userInfo, { where: { uid } })
+      if (username) {
+        const usernameUid = await getUserByUsername(username, transaction)
+        if (usernameUid && usernameUid !== uid) {
+          throw new Conflict('username not available')
+        }
+        await Users.update({ username }, { where: { uid }, transaction })
+      }
+      if (userInfo) {
+        await UserInfo.update(userInfo, { where: { uid }, transaction })
+      }
     } catch (err) {
       if (err instanceof ValidationError) {
         throw new BadRequest(err.message)
