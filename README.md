@@ -949,19 +949,20 @@ accessToken과 refreshToken 모두 새로 생성된 값입니다.
 <summary>response 예시</summary>
 <pre language="json"><code class="language-json">{
     "uid": 1,
-    "username": "username",
-    "name": "name",
-    "email": "email",
-    "gender": "gender",
-    "birth": null,
-    "phone": "+82-10-2302-3319",
-    "major": "major",
-    "majorDetail": "majorDetail",
-    "school": "school",
-    "graduationStatus": "graduationStatus",
-    "credit": 0,
-    "createdAt": "2022-03-01T01:43:51.000Z",
-    "updatedAt": "2022-02-28T17:03:34.000Z"
+    "username": "yujin",
+    "credit": 97000,
+    "createdAt": "2022-03-03T21:22:20.000Z",
+    "updatedAt": "2022-04-09T07:31:23.000Z",
+    "name": "임유진",
+    "email": "email@gmail.com",
+    "address": "",
+    "addressDetail": "",
+    "birth": "2001-01-01T00:00:00.000Z",
+    "phone": "+82-10-1234-5678",
+    "major": "이과 계열",
+    "majorDetail": "의약",
+    "school": "서울대학교",
+    "graduationStatus": "재학"
 }
 </code></pre></details>
 <br/>
@@ -987,6 +988,8 @@ body에는 아래와 같은 값들이 주어져야 합니다. 전부 optional하
     "phone": "+82-10-1234-5678",
     "major": "이과 계열",
     "majorDetail": "의약",
+    "address": "주소",
+    "addressDetail": "상세주소",
     "school": "서울대학교",
     "graduationStatus": "재학"
 }
@@ -997,7 +1000,7 @@ body에는 아래와 같은 값들이 주어져야 합니다. 전부 optional하
 
 실패 시 처리는 다음과 같습니다.
 - 400 Bad Request: 주어진 유저 정보가 옳지 않은 경우입니다. 반환값은 빈 스트링 혹은 에러 메시지입니다.
-- 401 Unauthorized: 로그인에 실패한 경우입니다. 토큰을 잘 담아서 보냈다면 access token이 만료된 것입니다.
+- 409 Conflict: username을 수정하려 하였으나 다른 유저와 겹치는 경우입니다. 반환값은 `username not available`입니다.
 
 
 ### GET /users/username?username=username

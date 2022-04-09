@@ -7,6 +7,7 @@ const _Problems = require('./Problems')
 const _Sections = require('./Sections')
 const _Submissions = require('./Submissions')
 const _Tags = require('./Tags')
+const _UserInfo = require('./UserInfo')
 const _Users = require('./Users')
 const _Views = require('./Views')
 const _ViewSubmissions = require('./ViewSubmissions')
@@ -23,6 +24,7 @@ function initModels (sequelize) {
   const Sections = _Sections(sequelize, DataTypes)
   const Submissions = _Submissions(sequelize, DataTypes)
   const Tags = _Tags(sequelize, DataTypes)
+  const UserInfo = _UserInfo(sequelize, DataTypes)
   const Users = _Users(sequelize, DataTypes)
   const Views = _Views(sequelize, DataTypes)
   const ViewSubmissions = _ViewSubmissions(sequelize, DataTypes)
@@ -51,7 +53,9 @@ function initModels (sequelize) {
   PayHistory.belongsTo(Items, { as: 'item', foreignKey: 'id' })
   Items.hasMany(PayHistory, { as: 'payHistory', foreignKey: 'id' })
   FavoriteTags.belongsTo(Users, { as: 'uid_User', foreignKey: 'uid' })
-  Users.FavoriteTags = Users.hasMany(FavoriteTags, { as: 'favoriteTags', foreignKey: 'uid' })
+  Users.hasOne(UserInfo, { as: 'userInfo', foreignKey: 'uid' })
+  UserInfo.belongsTo(Users, { as: 'user', foreignKey: 'uid' })
+  Users.hasMany(FavoriteTags, { as: 'favoriteTags', foreignKey: 'uid' })
   Submissions.belongsTo(Users, { as: 'uid_User', foreignKey: 'uid' })
   Users.hasMany(Submissions, { as: 'Submissions', foreignKey: 'uid' })
   ViewSubmissions.belongsTo(Users, { as: 'uid_User', foreignKey: 'uid' })
@@ -76,6 +80,7 @@ function initModels (sequelize) {
     Sections,
     Submissions,
     Tags,
+    UserInfo,
     Users,
     Views,
     ViewSubmissions,

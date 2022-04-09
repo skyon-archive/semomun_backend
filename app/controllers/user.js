@@ -1,6 +1,6 @@
-const { BadRequest } = require('../errors')
+const { BadRequest, Conflict } = require('../errors')
 const { Users } = require('../models/index')
-const { updateUser, getUser, getUserByUsername } = require('../services/user')
+const { updateUser, getUserWithInfo, getUserByUsername } = require('../services/user')
 const { getGoogleIdLegacy } = require('../services/auth')
 
 exports.fetchSelf = async (req, res) => {
@@ -8,7 +8,7 @@ exports.fetchSelf = async (req, res) => {
     const uid = req.uid
     if (!uid) return res.status(401).send(req.jwtMessage)
 
-    const user = await getUser(uid)
+    const user = await getUserWithInfo(uid)
     if (!user) return res.status(404).send()
     res.json(user)
   } catch (err) {
@@ -26,6 +26,7 @@ exports.updateUser = async (req, res) => {
     res.json({})
   } catch (err) {
     if (err instanceof BadRequest) res.status(400).send(err.message)
+    else if (err instanceof Conflict) res.status(409).send(err.message)
     else {
       console.log(err)
       res.status(500).send()
@@ -60,13 +61,11 @@ exports.migrate = async (req, res) => {
     } = req.body
 
     const userInfo = {
-      username: nickName,
       name: '',
       email: '',
-      gender: '',
       phone: '',
-      credit: 0,
-      auth: 1,
+      address: '',
+      addressDetail: '',
       major,
       majorDetail,
       school,
@@ -80,7 +79,14 @@ exports.migrate = async (req, res) => {
       else userInfo.googleId = socialId
     }
 
-    await Users.create(userInfo)
+    await Users.create({
+      username: nickName,
+      credit: 0,
+      role: 'USER',
+      deleted: 0,
+      userInfo
+    }, { include: ['userInfo'] }
+    )
     res.json({})
   } catch (err) {
     console.log(err)
