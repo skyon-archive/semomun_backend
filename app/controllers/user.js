@@ -93,3 +93,14 @@ exports.migrate = async (req, res) => {
     res.status(500).send()
   }
 }
+
+exports.withdraw = async (req, res) => {
+  try {
+    if (!req.uid) return res.status(401).send(req.jwtMessage)
+    await Users.update({ deleted: 1 }, { where: { uid: req.uid } })
+    res.json({})
+  } catch (err) {
+    console.log(err)
+    res.status(500).send()
+  }
+}

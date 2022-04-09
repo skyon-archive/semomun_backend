@@ -1013,6 +1013,11 @@ body에는 아래와 같은 값들이 주어져야 합니다. 전부 optional하
 - 400 Bad Request: Query string으로 username이 주어지지 않은 경우입니다.
 
 
+### DELETE /users/self
+
+로그인된 유저가 탈퇴합니다. 유저의 정보가 영구 삭제되는 것은 아니지만, 기능 상으로는 삭제된 것과 같은 결과입니다. (soft-delete)
+
+
 ### GET /s3/presignedUrl?uuid=uuid&type=type
 특정 uuid의 파일을 조회하기 위한 url을 조회합니다. url은 1시간(3600초)가 경과될 경우 expire됩니다. 해당 유저가 파일에 대한 열람 권한을 가지고 있지 않을 경우 status code 403을 반환합니다.
 
