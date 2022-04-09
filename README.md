@@ -950,18 +950,21 @@ accessToken과 refreshToken 모두 새로 생성된 값입니다.
 <pre language="json"><code class="language-json">{
     "uid": 1,
     "username": "username",
+    "credit": 97000,
+    "createdAt": "2022-04-09T06:24:17.000Z",
+    "updatedAt": "2022-04-09T06:24:17.000Z",
     "name": "name",
     "email": "email",
-    "gender": "gender",
-    "birth": null,
+    "address": "",
+    "addressDetail": "",
+    "birth": "2022-03-03T21:22:27.000Z",
+    "googleId": "googleId",
+    "appleId": null,
     "phone": "+82-10-2302-3319",
     "major": "major",
     "majorDetail": "majorDetail",
     "school": "school",
-    "graduationStatus": "graduationStatus",
-    "credit": 0,
-    "createdAt": "2022-03-01T01:43:51.000Z",
-    "updatedAt": "2022-02-28T17:03:34.000Z"
+    "graduationStatus": "재학"
 }
 </code></pre></details>
 <br/>

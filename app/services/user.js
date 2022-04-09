@@ -102,11 +102,25 @@ exports.updateUser = async (uid, userInfo) => {
   })
 }
 
-exports.getUser = async (uid) => {
-  const user = await Users.findOne({
+exports.getUser = (uid) => {
+  return Users.findOne({
     where: { uid },
-    attributes: { exclude: ['googleId', 'appleId', 'auth'] },
+    attributes: { exclude: ['googleId', 'appleId', 'role'] },
     raw: true
   })
+}
+
+exports.getUserWithInfo = async (uid) => {
+  const { userInfo, ...user } = await Users.findOne({
+    where: { uid },
+    include: {
+      association: 'userInfo',
+      exclude: ['uid', 'createdAt', 'updatedAt']
+    },
+    attributes: { exclude: ['googleId', 'appleId', 'role', 'deleted'] },
+    raw: true,
+    nest: true
+  })
+  for (const key in userInfo) user[key] = userInfo[key]
   return user
 }

@@ -1,6 +1,6 @@
 const { BadRequest } = require('../errors')
 const { Users } = require('../models/index')
-const { updateUser, getUser, getUserByUsername } = require('../services/user')
+const { updateUser, getUserWithInfo, getUserByUsername } = require('../services/user')
 const { getGoogleIdLegacy } = require('../services/auth')
 
 exports.fetchSelf = async (req, res) => {
@@ -8,7 +8,7 @@ exports.fetchSelf = async (req, res) => {
     const uid = req.uid
     if (!uid) return res.status(401).send(req.jwtMessage)
 
-    const user = await getUser(uid)
+    const user = await getUserWithInfo(uid)
     if (!user) return res.status(404).send()
     res.json(user)
   } catch (err) {
