@@ -15,7 +15,7 @@ exports.getTags = async (req, res) => {
 
 exports.getMyTags = async (req, res) => {
   try {
-    if (!req.uid) return res.status(401).send()
+    if (!req.uid) return res.status(401).send(req.jwtMessage)
     const result = await getTagsByUid(req.uid)
     res.json(result.map(({ tid_Tag, createdAt }) => ({
       tid: tid_Tag.tid,
@@ -30,7 +30,7 @@ exports.getMyTags = async (req, res) => {
 
 exports.updateMyTags = async (req, res) => {
   try {
-    if (!req.uid) return res.status(401).send()
+    if (!req.uid) return res.status(401).send(req.jwtMessage)
     const prevTags = (await getTagsByUid(req.uid)).map(({ tid }) => tid)
     const newTags = req.body
     if (!Array.isArray(newTags)) throw new BadRequest('request body is not array')
