@@ -1,8 +1,9 @@
 const DataTypes = require('sequelize').DataTypes
-const _PayHistory = require('./PayHistory')
+const _ErrorReports = require('./ErrorReports')
 const _FavoriteTags = require('./FavoriteTags')
 const _Items = require('./Items')
 const _Notices = require('./Notices.js')
+const _PayHistory = require('./PayHistory')
 const _Problems = require('./Problems')
 const _Sections = require('./Sections')
 const _Submissions = require('./Submissions')
@@ -16,10 +17,11 @@ const _WorkbookTags = require('./WorkbookTags')
 const _Workbooks = require('./Workbooks')
 
 function initModels (sequelize) {
-  const PayHistory = _PayHistory(sequelize, DataTypes)
+  const ErrorReports = _ErrorReports(sequelize, DataTypes)
   const FavoriteTags = _FavoriteTags(sequelize, DataTypes)
   const Items = _Items(sequelize, DataTypes)
   const Notices = _Notices(sequelize, DataTypes)
+  const PayHistory = _PayHistory(sequelize, DataTypes)
   const Problems = _Problems(sequelize, DataTypes)
   const Sections = _Sections(sequelize, DataTypes)
   const Submissions = _Submissions(sequelize, DataTypes)
@@ -32,6 +34,10 @@ function initModels (sequelize) {
   const WorkbookTags = _WorkbookTags(sequelize, DataTypes)
   const Workbooks = _Workbooks(sequelize, DataTypes)
 
+  ErrorReports.belongsTo(Problems, { as: 'pid_Problem', foreignKey: 'pid' })
+  Problems.hasMany(ErrorReports, { as: 'errorReports', foreignKey: 'pid' })
+  ErrorReports.belongsTo(Users, { as: 'uid_User', foreignKey: 'uid' })
+  Users.hasMany(ErrorReports, { as: 'errorReports', foreignKey: 'uid' })
   Tags.belongsToMany(Users, { as: 'uid_Users', through: FavoriteTags, foreignKey: 'tid', otherKey: 'uid' })
   Tags.belongsToMany(Workbooks, { as: 'wid_Workbooks', through: WorkbookTags, foreignKey: 'tid', otherKey: 'wid' })
   Users.belongsToMany(Tags, { as: 'tid_Tags', through: FavoriteTags, foreignKey: 'uid', otherKey: 'tid' })
@@ -72,13 +78,14 @@ function initModels (sequelize) {
   Workbooks.hasMany(WorkbookTags, { as: 'WorkbookTags', foreignKey: 'wid' })
 
   return {
-    PayHistory,
+    ErrorReports,
     FavoriteTags,
     Items,
     Notices,
     Problems,
     Sections,
     Submissions,
+    PayHistory,
     Tags,
     UserInfo,
     Users,

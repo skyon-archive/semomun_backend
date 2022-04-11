@@ -172,7 +172,7 @@ CREATE TABLE `FavoriteTags` (
     PRIMARY KEY (`uid`, `tid`),
     FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`),
     FOREIGN KEY (`tid`) REFERENCES `Tags` (`tid`)
-)
+);
 
 -- 캐시 이용 내역 --
 CREATE TABLE `PayHistory` (
@@ -214,4 +214,17 @@ CREATE TABLE `Notices` (
     `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`nid`)
+);
+
+-- 문제 오류 신고 --
+CREATE TABLE `ErrorReports` (
+    `erid` INT NOT NULL AUTO_INCREMENT,
+    `pid` INT NOT NULL,
+    `uid` INT NOT NULL,
+    `content` TEXT NOT NULL,                                                       /* 내용                           */
+    `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`erid`),
+    FOREIGN KEY (`pid`) REFERENCES `Problems` (`pid`),
+    FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`)
 );
