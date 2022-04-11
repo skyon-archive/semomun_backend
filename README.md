@@ -998,7 +998,8 @@ accessToken과 refreshToken 모두 새로 생성된 값입니다.
     "major": "이과 계열",
     "majorDetail": "의약",
     "school": "서울대학교",
-    "graduationStatus": "재학"
+    "graduationStatus": "재학",
+    "marketing": 1
 }
 </code></pre></details>
 <br/>
@@ -1019,7 +1020,6 @@ body에는 아래와 같은 값들이 주어져야 합니다. 전부 optional하
     "username": "yujin",
     "name": "임유진",
     "email": "email@gmail.com",
-    "gender": "female",
     "birth": "2001-01-01T00:00:00Z",
     "phone": "+82-10-1234-5678",
     "major": "이과 계열",
@@ -1027,7 +1027,8 @@ body에는 아래와 같은 값들이 주어져야 합니다. 전부 optional하
     "address": "주소",
     "addressDetail": "상세주소",
     "school": "서울대학교",
-    "graduationStatus": "재학"
+    "graduationStatus": "재학",
+    "marketing": 1
 }
 </code></pre></details>
 <br/>
