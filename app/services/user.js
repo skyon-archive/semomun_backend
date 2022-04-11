@@ -28,6 +28,7 @@ exports.createUser = async ({ username, ...userInfo }) => {
     'majorDetail',
     'favoriteTags',
     'graduationStatus',
+    'marketing',
     'googleId',
     'appleId'
   ]
@@ -59,7 +60,6 @@ exports.createUser = async ({ username, ...userInfo }) => {
     userInfo.email = ''
     userInfo.address = ''
     userInfo.addressDetail = ''
-    userInfo.marketing = 0
 
     try {
       return await Users.create(
