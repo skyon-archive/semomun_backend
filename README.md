@@ -1128,3 +1128,16 @@ body에는 아래와 같은 값들이 주어져야 합니다. 전부 optional하
 예시 2
 <pre language="json"><code class="language-json">null
 </code></pre></details>
+<br/>
+
+
+### POST /error-reports
+문제 오류를 제보합니다. access token을 필요로 합니다.
+
+<details>
+<summary>request 예시</summary>
+<pre language="json"><code class="language-json">{
+    "pid": 721,
+    "content": "오타가 있어요"
+}
+</code></pre></details>
