@@ -59,6 +59,7 @@ exports.createUser = async ({ username, ...userInfo }) => {
     userInfo.email = ''
     userInfo.address = ''
     userInfo.addressDetail = ''
+    userInfo.marketing = 0
 
     try {
       return await Users.create(
@@ -87,7 +88,8 @@ exports.updateUser = async (uid, { username, ...userInfo }) => {
     'address',
     'addressDetail',
     'school',
-    'graduationStatus'
+    'graduationStatus',
+    'marketing'
   ]
   Object.keys(userInfo).forEach((key) => {
     if (!whiteList.includes(key)) delete userInfo[key]

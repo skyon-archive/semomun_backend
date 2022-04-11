@@ -59,6 +59,10 @@ module.exports = function (sequelize, DataTypes) {
     graduationStatus: {
       type: DataTypes.STRING(32),
       allowNull: false
+    },
+    marketing: {
+      type: DataTypes.INTEGER,
+      allowNull: false
     }
   }, {
     sequelize,

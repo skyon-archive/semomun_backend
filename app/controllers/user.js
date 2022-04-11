@@ -69,7 +69,8 @@ exports.migrate = async (req, res) => {
       major,
       majorDetail,
       school,
-      graduationStatus
+      graduationStatus,
+      marketing: 0
     }
 
     const googleId = await getGoogleIdLegacy(socialId)

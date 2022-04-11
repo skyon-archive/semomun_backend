@@ -26,6 +26,7 @@ CREATE TABLE `UserInfo` (
     `majorDetail` VARCHAR(32) NOT NULL,                                            /* 전공                          */
     `school` VARCHAR(256) NOT NULL,                                                /* 학력                           */
     `graduationStatus` VARCHAR(32) NOT NULL,                                       /* 재학 상태                       */
+    `marketing` INT NOT NULL,                                                      /* 마케팅정부 수신 동의               */
     `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`),

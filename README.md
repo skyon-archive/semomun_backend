@@ -40,22 +40,34 @@ Semomun API의 명세와 조건, 참고사항 및 예외들을 정리해 작성�
 CREATE TABLE `Users` (
     `uid` INT NOT NULL AUTO_INCREMENT,                                             /* 식별자                          */
     `username` VARCHAR(256) NOT NULL,                                              /* 아이디                          */
+    `credit` INT NOT NULL,                                                         /* 보유 캐시, 종속성 관리 필요        */
+    `role` VARCHAR(32) NOT NULL DEFAULT 'USER',                                    /* USER 또는 ADMIN                 */
+    `deleted` INT NOT NULL DEFAULT 0,                                              /* 탈퇴했는지 여부                   */
+    `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE (`username`),
+    PRIMARY KEY (`uid`)
+);
+
+-- 유저의 개인정보 --
+CREATE TABLE `UserInfo` (
+    `uid` INT NOT NULL,                                                            /* 식별자                          */
     `name` VARCHAR(256) NOT NULL,                                                  /* 실명                          */
     `email` VARCHAR(256) NOT NULL,                                                 /* 이메일                         */
-    `gender` VARCHAR(32) NOT NULL,                                                 /* 성별                          */
+    `address` VARCHAR(256) NOT NULL,                                               /* 주소                          */
+    `addressDetail` VARCHAR(256) NOT NULL,                                         /* 상세 주소                      */
     `birth` DATETIME,                                                              /* 생일                          */
     `googleId` VARCHAR(256),                                                       /* 구글 소셜로그인 id                */
     `appleId` VARCHAR(256),                                                        /* 애플 소셜로그인 id                */
     `phone` VARCHAR(32) NOT NULL,                                                  /* 전화번호, 국가코드 포함            */
-    `major` VARCHAR(32) NOT NULL,                                                  /* 계역                           */
+    `major` VARCHAR(32) NOT NULL,                                                  /* 계열                           */
     `majorDetail` VARCHAR(32) NOT NULL,                                            /* 전공                          */
-    `degree` VARCHAR(256) NOT NULL,                                                /* 학력                           */
-    `degreeStatus` VARCHAR(32) NOT NULL,                                           /* 재학 상태                       */
-    `credit` INT NOT NULL,                                                         /* 보유 캐시, 종속성 관리 필요        */
-    `auth` INT NOT NULL,                                                           /* 유저 권한                       */
+    `school` VARCHAR(256) NOT NULL,                                                /* 학력                           */
+    `graduationStatus` VARCHAR(32) NOT NULL,                                       /* 재학 상태                       */
+    `marketing` INT NOT NULL,                                                      /* 마케팅정부 수신 동의, 1 또는 0      */
     `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    UNIQUE (`username`),
+    FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`),
     PRIMARY KEY (`uid`)
 );
 
@@ -229,6 +241,17 @@ CREATE TABLE `WorkbookHistory` (
     PRIMARY KEY (`whid`),
     FOREIGN KEY (`wid`) REFERENCES `Workbooks` (`wid`),
     FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`)
+);
+
+-- 공지사항 --
+CREATE TABLE `Notices` (
+    `nid` INT NOT NULL AUTO_INCREMENT,                                             /* 식별자                          */
+    `title` TINYTEXT NOT NULL,                                                     /* 제목                           */
+    `text` TEXT NOT NULL,                                                         /* 내용                           */
+    `image` VARCHAR(256),                                                          /* 이미지 url                       */
+    `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`nid`)
 );
 ```
 
