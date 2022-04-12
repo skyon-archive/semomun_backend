@@ -1133,7 +1133,7 @@ body에는 아래와 같은 값들이 주어져야 합니다. 전부 optional하
 
 
 ### POST /error-reports
-문제 오류를 제보합니다. access token을 필요로 합니다.
+문제 오류를 제보합니다. access token을 필요로 합니다. 해당 내용은 db에 저장되며, 슬랙 메시지로도 보내집니다.
 
 <details>
 <summary>request 예시</summary>
