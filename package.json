@@ -19,6 +19,7 @@
     "fs": "0.0.1-security",
     "google-auth-library": "^7.10.2",
     "js-yaml": "^4.1.0",
+    "jwks-rsa": "^2.0.5",
     "lodash": "^4.17.21",
     "morgan": "^1.10.0",
     "mysql2": "^2.3.0",
