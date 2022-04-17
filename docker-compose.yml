@@ -13,7 +13,7 @@ services:
       - mysql
       - redis
     ports:
-      - 8080:8080
+      - 80:8080
     volumes:
       - /home/ubuntu/data:/data:Z
       - /home/ubuntu/tmp:/tmp:Z
