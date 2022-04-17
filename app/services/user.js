@@ -20,7 +20,7 @@ const getUserWithAppleId = async (appleId, transaction = undefined) => {
 }
 exports.getUserWithAppleId = getUserWithAppleId
 
-exports.createUser = async ({ username, ...userInfo }) => {
+exports.createUser = async ({ username, usernameDup = false, ...userInfo }) => {
   const whiteList = [
     'phone',
     'school',
@@ -51,7 +51,7 @@ exports.createUser = async ({ username, ...userInfo }) => {
     if (userInfo.appleId && await getUserWithAppleId(userInfo.appleId, t)) {
       throw new BadRequest('USER_ALREADY_EXISTS')
     }
-    if (await getUserByUsername(username, t)) {
+    if (!usernameDup && await getUserByUsername(username, t)) {
       throw new Conflict('USERNAME_NOT_AVAILABLE')
     }
 
