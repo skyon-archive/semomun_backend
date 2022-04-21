@@ -19,6 +19,14 @@ function Conflict (message) {
 Conflict.prototype = Object.create(Error.prototype)
 Conflict.prototype.name = 'Conflict'
 
+function Forbidden (message) {
+  this.message = message
+  this.stack = Error().stack
+}
+Conflict.prototype = Object.create(Error.prototype)
+Conflict.prototype.name = 'Forbidden'
+
 exports.BadRequest = BadRequest
+exports.Forbidden = Forbidden
 exports.NotFound = NotFound
 exports.Conflict = Conflict

@@ -1,9 +1,10 @@
 module.exports = (app) => {
-  const s3 = require('../controllers/s3.js')
+  const { getPresignedUrl } = require('../controllers/s3')
+  const { authJwt } = require('../middleware/auth')
 
   const router = require('express').Router()
 
-  router.get('/presignedUrl', s3.get_presignedUrl)
+  router.get('/presignedUrl', authJwt, getPresignedUrl)
 
   app.use('/s3', router)
 }

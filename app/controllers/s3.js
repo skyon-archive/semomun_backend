@@ -1,4 +1,6 @@
 const { S3 } = require('aws-sdk')
+const { WorkbookHistory } = require('../models/index')
+const { BadRequest, Forbidden } = require('../errors')
 
 const s3 = new S3({
   region: process.env.AWS_REGION,
@@ -6,37 +8,93 @@ const s3 = new S3({
   secretAccessKey: process.env.AWS_SECRET_KEY
 })
 
-exports.get_presignedUrl = async (req, res) => {
+const checkPermissions = async (uuid, type, uid) => {
+  const publicTypes = [FileType.BOOKCOVER, FileType.SECTIONCOVER]
+  if (type === FileType.PASSAGE) {
+    const wh = await WorkbookHistory.findAll({
+      where: { uid },
+      include: {
+        association: 'Workbook',
+        include: {
+          association: 'sections',
+          include: {
+            association: 'views',
+            where: { passage: uuid }
+          }
+        }
+      },
+      raw: true
+    })
+    if (wh.length === 0) throw new Forbidden('')
+  } else if (type === FileType.EXPLANATION) {
+    const wh = await WorkbookHistory.findAll({
+      where: { uid },
+      include: {
+        association: 'Workbook',
+        include: {
+          association: 'sections',
+          include: {
+            association: 'views',
+            include: {
+              association: 'problems',
+              where: { explanation: uuid }
+            }
+          }
+        }
+      },
+      raw: true
+    })
+    if (wh.length === 0) throw new Forbidden('')
+  } else if (type === FileType.CONTENT) {
+    const wh = await WorkbookHistory.findAll({
+      where: { uid },
+      include: {
+        association: 'Workbook',
+        include: {
+          association: 'sections',
+          include: {
+            association: 'views',
+            include: {
+              association: 'problems',
+              where: { content: uuid }
+            }
+          }
+        }
+      },
+      raw: true
+    })
+    if (wh.length === 0) throw new Forbidden('')
+  } else if (!publicTypes.includes(type)) {
+    throw new BadRequest('type should be one of bookcover, sectioncover, passage, explanation or content')
+  }
+}
+
+exports.getPresignedUrl = async (req, res) => {
   try {
-    const uuid = req.query.uuid
-    const type = req.query.type
-    if (!uuid) {
-      res.status(400).send('uuid missing')
-      return
-    }
-    if (!type) {
-      res.status(400).send('type missing')
-      return
-    }
+    const { query: { uuid, type }, uid } = req
+    if (!uuid) throw new BadRequest('uuid missing')
+    if (!type) throw new BadRequest('type missing')
+    if (!uid) return res.status(401).send()
 
-    let key
-    // TODO: authorization
-    if (type === 'bookcover') key = `bookcover/${uuid}.png`
-    else if (type === 'sectioncover') key = `sectioncover/${uuid}.png`
-    else if (type === 'passage') key = `passage/${uuid}.png`
-    else if (type === 'explanation') key = `explanation/${uuid}.png`
-    else if (type === 'content') key = `content/${uuid}.png`
-    else {
-      res.status(400)
-        .send('type should be one of bookcover, sectioncover, passage, explanation or content')
-      return
-    }
-
+    await checkPermissions(uuid, type, uid)
+    const key = `${type}/${uuid}.png`
     const params = { Bucket: process.env.S3_BUCKET, Key: key, Expires: 3600 }
     const result = await s3.getSignedUrlPromise('getObject', params)
     res.send(result)
   } catch (err) {
-    console.log(err)
-    res.status(500).send()
+    if (err instanceof BadRequest) res.status(400).send(err.message)
+    else if (err instanceof Forbidden) res.status(403).send(err.message)
+    else {
+      console.log(err)
+      res.status(500).send()
+    }
   }
+}
+
+const FileType = {
+  BOOKCOVER: 'bookcover',
+  SECTIONCOVER: 'sectioncover',
+  PASSAGE: 'passage',
+  EXPLANATION: 'explanation',
+  CONTENT: 'content'
 }
