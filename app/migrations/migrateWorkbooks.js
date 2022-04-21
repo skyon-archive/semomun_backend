@@ -37,19 +37,6 @@ exports.migrateWorkbooks = async (wids) => {
           bookcover: workbook.bookcover.slice(0, 36)
         })
       }
-      const workbookTags = await WorkbookTags.findAll({
-        where: { wid: workbook.wid },
-        include: 'tid_Tag'
-      })
-      const newTags = [workbook.category, workbook.subject, workbook.grade]
-      const tagNames = workbookTags.map((workbookTag) => workbookTag.tid_Tag.name)
-      await Promise.all(newTags.map(async (newTag) => {
-        if (!tagNames.includes(newTag)) {
-          const [tag] = await Tags.findOrCreate({ where: { name: newTag } })
-          await WorkbookTags.create({ wid: workbook.wid, tid: tag.tid })
-        }
-      }))
-
       console.log(`done migrating workbook ${workbook.wid}`)
     }))
 
@@ -169,4 +156,36 @@ exports.updateSectionSize = async (wids) => {
     if (size !== section.size) await section.update({ size })
     console.log(`done updating section ${section.sid}`)
   }))
+}
+
+exports.fixTags = async () => {
+  try {
+    const workbooks = await readCsv(
+      path.resolve(__dirname, 'workbooks.csv'),
+      (workbook) => workbook
+    )
+    const cnt = workbooks.length
+    for (let i = 0; i < cnt; i += 1) {
+      const workbook = workbooks[i]
+      console.log(`wid = ${workbook.wid}`)
+      const newTags = [workbook.category, workbook.subject, workbook.grade]
+      const dbTags = (await WorkbookTags.findAll({
+        where: { wid: workbook.wid },
+        include: 'tid_Tag'
+      })).map((workbookTag) => workbookTag.tid_Tag.name)
+      await Promise.all(newTags.map(async (newTag) => {
+        if (!dbTags.includes(newTag)) {
+          const tags = await Tags.findAll({ where: { name: newTag }, raw: true })
+          const tag = tags.length === 0
+            ? (await Tags.create({ name: newTag }))
+            : tags[0]
+          await WorkbookTags.create({
+            wid: +workbook.wid, tid: tag.tid
+          })
+        }
+      }))
+    }
+  } catch (err) {
+    console.log(err)
+  }
 }
