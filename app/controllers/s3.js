@@ -74,7 +74,6 @@ exports.getPresignedUrl = async (req, res) => {
     const { query: { uuid, type }, uid } = req
     if (!uuid) throw new BadRequest('uuid missing')
     if (!type) throw new BadRequest('type missing')
-    if (!uid) return res.status(401).send()
 
     await checkPermissions(uuid, type, uid)
     const key = `${type}/${uuid}.png`
