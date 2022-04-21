@@ -60,7 +60,7 @@ exports.login = async (req, res) => {
       if (!appleId) return res.status(400).send()
       uid = await getUserWithAppleId(appleId)
     } else if (type === AuthType.LEGACY) {
-      const googleId = await getGoogleIdLegacy(token, true)
+      const googleId = getGoogleIdLegacy(token, true)
       if (googleId) uid = await getUserWithGoogleId(googleId)
       else {
         const appleId = await getAppleId(token)

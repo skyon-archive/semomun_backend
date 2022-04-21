@@ -73,7 +73,7 @@ exports.migrate = async (req, res) => {
       marketing: 0
     }
 
-    const googleId = await getGoogleIdLegacy(socialId)
+    const googleId = getGoogleIdLegacy(socialId)
     if (googleId) userInfo.googleId = googleId
     else {
       if (socialId.includes('.')) userInfo.appleId = socialId

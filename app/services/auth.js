@@ -24,13 +24,10 @@ exports.getGoogleId = async (token) => {
   }
 }
 
-exports.getGoogleIdLegacy = async (token) => {
+exports.getGoogleIdLegacy = (token) => {
   try {
-    const { sub } = jwt.verify(
-      token,
-      { audience: googleClientId, ignoreExpiration: true }
-    )
-    return sub
+    const { sub, aud } = jwt.decode(token)
+    return googleClientId.includes(aud) ? sub : null
   } catch (err) {
     return null
   }
