@@ -3,20 +3,31 @@ const { BadRequest, Conflict } = require('../errors')
 const { Users, UserInfo, sequelize } = require('../models/index')
 
 const getUserByUsername = async (username, transaction = undefined) => {
-  const user = await Users.findOne({ where: { username }, transaction })
-  return user ? user.uid : null
+  const users = await Users.findAll({
+    where: { username, deleted: 0 },
+    transaction
+  })
+  return users.length === 0 ? null : users[0].uid
 }
 exports.getUserByUsername = getUserByUsername
 
 const getUserWithGoogleId = async (googleId, transaction = undefined) => {
-  const user = await UserInfo.findOne({ where: { googleId }, transaction })
-  return user ? user.uid : null
+  const users = await UserInfo.findAll({
+    where: { googleId },
+    include: { association: 'user', where: { deleted: 0 } },
+    transaction
+  })
+  return users.length === 0 ? null : users[0].uid
 }
 exports.getUserWithGoogleId = getUserWithGoogleId
 
 const getUserWithAppleId = async (appleId, transaction = undefined) => {
-  const user = await UserInfo.findOne({ where: { appleId }, transaction })
-  return user ? user.uid : null
+  const users = await UserInfo.findAll({
+    where: { appleId },
+    include: { association: 'user', where: { deleted: 0 } },
+    transaction
+  })
+  return users.length === 0 ? null : users[0].uid
 }
 exports.getUserWithAppleId = getUserWithAppleId
 
