@@ -1,10 +1,35 @@
 const { Items, Workbooks, sequelize } = require('../models/index')
+const { Op } = require('sequelize')
 
-exports.fetchWorkbooks = async (page, limit) => {
+exports.fetchWorkbooks = async (page, limit, tids, substring) => {
+  const like = `%${substring.replace(/%/, '\\%')}%`
+  const where = substring
+    ? {
+        [Op.or]: [
+          { title: { [Op.like]: like } },
+          { author: { [Op.like]: like } },
+          { publishCompany: { [Op.like]: like } }
+        ]
+      }
+    : undefined
   const { count, rows } = await Workbooks.findAndCountAll({
+    attributes: {
+      include: [[
+        sequelize.literal(
+          `(SELECT COUNT(*) FROM WorkbookTags WHERE WorkbookTags.wid = Workbooks.wid AND WorkbookTags.tid IN (${tids.toString()}))`
+        ),
+        'matchTags'
+      ]]
+    },
+    where,
     offset: (page - 1) * limit,
     limit,
-    order: [['wid', 'ASC']]
+    order: [
+      [sequelize.literal('MatchTags'), 'DESC'], ['wid', 'ASC'],
+      ['wid', 'ASC']
+    ],
+    raw: true,
+    nest: true
   })
   return { count, workbooks: rows }
 }

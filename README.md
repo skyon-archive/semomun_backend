@@ -294,35 +294,61 @@ Semomun에서 사용자의 입력은 다음 네 가지 중 하나의 형태로 �
 특별한 말이 없는 경우, 성공 시 반환값은 JSON 객체이며 실패 시 반환값은 빈 문자열 혹은 오류 코드입니다.
 
 
-### GET /workbooks (workbook.js - fetchWorkbooks)
+### GET /workbooks?page=1&limit=25&tids[]=3&tids[]=4&keyword=국어 (workbook.js - fetchWorkbooks)
 
-요청한 사용자가 열람 권한을 가지고 있으며 검색 조건과 맞는 문제집의 목록을 반환합니다. 페이지네이션과 authorization이 추가될 예정이며, 현재는 모든 문제집을 반환합니다.
+검색 조건과 맞는 문제집의 목록을 페이지네이션하여 반환합니다.
+- page: 페이지네이션에서 몇 번째 페이지를 받아올지 입니다. 1-base이며, default는 1입니다. 
+- limit: 한 페이지에 몇 개의 문제집을 넣을지입니다. default는 25입니다.
+- tids: 검색하는 태그의 tid의 목록입니다. 일치하는 태그가 없더라도 검색 결과에 포함됩니다.
+- keyword: 검색하는 문자열입니다. 해당 문자열이 `title`, `author`, `publishCompany` 중 하나 이상의 필드에 substring으로 포함되는 문제집들만이 검색 결과에 포함됩니다.
+
+정렬 기준은 다음과 같습니다.
+1. 일치하는 태그의 수에 대한 내림차순
+2. wid에 대한 오름차순
 
 성공 시 반환값은 JSON이며, 다음과 같은 객체입니다.
 
 - { count, workbooks }
-  - count: 주어진 조건에 맞는 문제집의 개수입니다. sort 혹은 page에 영향을 받지 **않습니다**.
+  - count: 주어진 조건에 맞는 문제집의 개수입니다. sort 혹은 page에 영향을 받지 않습니다.
   - workbooks: 문제집의 배열입니다. Workbooks 테이블에 들어있는 값들을 담고 있으며, 다른 테이블에 있는 값들은 담고 있지 않습니다. (ex. `price`, `sections`, `tags` 같은 필드는 없음.)
+    - `matchTags` 필드는 해당 문제집에서 일치하는 태그의 개수입니다.
 
 <details>
 <summary>response 예시</summary>
 <pre language="json"><code class="language-json">{
-    "count": 1,
+    "count": 4,
     "workbooks": [
         {
-            "id": 1,
-            "wid": 1,
-            "title": "title",
-            "detail": "detail",
-            "isbn": "isbn",
-            "author": "author",
-            "date": "2022-02-28T17:39:49.000Z",
-            "publishMan": "publishMan",
-            "publishCompany": "publishCompany",
-            "originalPrice": 10000,
-            "bookcover": "uuid",
-            "createdAt": "2022-02-28T17:39:56.000Z",
-            "updatedAt": "2022-02-28T17:39:58.000Z"
+            "id": 4,
+            "wid": 30,
+            "title": "2013년도 국가직 9급 국어",
+            "detail": "",
+            "isbn": "",
+            "author": "",
+            "date": "2013-03-01T00:00:00.000Z",
+            "publishMan": "",
+            "publishCompany": "",
+            "originalPrice": 0,
+            "bookcover": "5ad2d320-5e36-4fa6-a417-ed5daa7b644a",
+            "createdAt": "2022-03-16T18:23:04.000Z",
+            "updatedAt": "2022-03-16T18:23:04.000Z",
+            "matchTags": 2
+        },
+        {
+            "id": 5,
+            "wid": 169,
+            "title": "2021년도 11월 고1 전국연합학력평가 국어영역",
+            "detail": "",
+            "isbn": "",
+            "author": "",
+            "date": "2021-11-01T00:00:00.000Z",
+            "publishMan": "",
+            "publishCompany": "교육청",
+            "originalPrice": 0,
+            "bookcover": "c87adefe-315b-4333-9e1d-bd921189293c",
+            "createdAt": "2022-03-29T14:53:58.000Z",
+            "updatedAt": "2022-03-29T14:53:58.000Z",
+            "matchTags": 1
         }
     ]
 }
