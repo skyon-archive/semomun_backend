@@ -11,7 +11,7 @@ exports.fetchWorkbooks = async (req, res) => {
     res.json(await fetchWorkbooks(
       parseIntDefault(page, 1),
       parseIntDefault(limit, 25),
-      parseIntList(tids),
+      parseIntList(tids ?? []),
       keyword ?? ''
     ))
   } catch (err) {

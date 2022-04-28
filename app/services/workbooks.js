@@ -12,11 +12,14 @@ exports.fetchWorkbooks = async (page, limit, tids, substring) => {
         ]
       }
     : undefined
+  const subquery = 'SELECT COUNT(*) FROM WorkbookTags WHERE WorkbookTags.wid = Workbooks.wid'
   const { count, rows } = await Workbooks.findAndCountAll({
     attributes: {
       include: [[
         sequelize.literal(
-          `(SELECT COUNT(*) FROM WorkbookTags WHERE WorkbookTags.wid = Workbooks.wid AND WorkbookTags.tid IN (${tids.toString()}))`
+          tids.length === 0
+            ? `(${subquery})`
+            : `(${subquery} AND WorkbookTags.tid IN (${tids.toString()}))`
         ),
         'matchTags'
       ]]
