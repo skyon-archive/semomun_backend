@@ -1,5 +1,5 @@
 const { S3 } = require('aws-sdk')
-const { WorkbookHistory } = require('../models/index')
+const { sequelize } = require('../models/index')
 const { BadRequest, Forbidden } = require('../errors')
 
 const s3 = new S3({
@@ -11,59 +11,40 @@ const s3 = new S3({
 const checkPermissions = async (uuid, type, uid) => {
   const publicTypes = [FileType.BOOKCOVER, FileType.SECTIONCOVER]
   if (type === FileType.PASSAGE) {
-    const wh = await WorkbookHistory.findAll({
-      where: { uid },
-      include: {
-        association: 'Workbook',
-        include: {
-          association: 'sections',
-          include: {
-            association: 'views',
-            where: { passage: uuid }
-          }
-        }
-      },
-      raw: true
-    })
-    if (wh.length === 0) throw new Forbidden('')
+    const sql = `SELECT * FROM Views
+    JOIN Sections ON Views.sid = Sections.sid
+    JOIN Workbooks ON Sections.wid = Workbooks.wid
+    JOIN PayHistory ON Workbooks.id = PayHistory.id
+    WHERE Views.passage = :uuid AND PayHistory.uid = :uid`
+    const views = await sequelize.query(
+      sql,
+      { type: sequelize.QueryTypes.SELECT, replacements: { uid, uuid } }
+    )
+    if (views.length === 0) throw new Forbidden('')
   } else if (type === FileType.EXPLANATION) {
-    const wh = await WorkbookHistory.findAll({
-      where: { uid },
-      include: {
-        association: 'Workbook',
-        include: {
-          association: 'sections',
-          include: {
-            association: 'views',
-            include: {
-              association: 'problems',
-              where: { explanation: uuid }
-            }
-          }
-        }
-      },
-      raw: true
-    })
-    if (wh.length === 0) throw new Forbidden('')
+    const sql = `SELECT * FROM Problems
+    JOIN Views ON Views.vid = Problems.vid
+    JOIN Sections ON Views.sid = Sections.sid
+    JOIN Workbooks ON Sections.wid = Workbooks.wid
+    JOIN PayHistory ON Workbooks.id = PayHistory.id
+    WHERE Problems.explanation = :uuid AND PayHistory.uid = :uid`
+    const problems = await sequelize.query(
+      sql,
+      { type: sequelize.QueryTypes.SELECT, replacements: { uid, uuid } }
+    )
+    if (problems.length === 0) throw new Forbidden('')
   } else if (type === FileType.CONTENT) {
-    const wh = await WorkbookHistory.findAll({
-      where: { uid },
-      include: {
-        association: 'Workbook',
-        include: {
-          association: 'sections',
-          include: {
-            association: 'views',
-            include: {
-              association: 'problems',
-              where: { content: uuid }
-            }
-          }
-        }
-      },
-      raw: true
-    })
-    if (wh.length === 0) throw new Forbidden('')
+    const sql = `SELECT * FROM Problems
+    JOIN Views ON Views.vid = Problems.vid
+    JOIN Sections ON Views.sid = Sections.sid
+    JOIN Workbooks ON Sections.wid = Workbooks.wid
+    JOIN PayHistory ON Workbooks.id = PayHistory.id
+    WHERE Problems.content = :uuid AND PayHistory.uid = :uid`
+    const problems = await sequelize.query(
+      sql,
+      { type: sequelize.QueryTypes.SELECT, replacements: { uid, uuid } }
+    )
+    if (problems.length === 0) throw new Forbidden('')
   } else if (!publicTypes.includes(type)) {
     throw new BadRequest('type should be one of bookcover, sectioncover, passage, explanation or content')
   }
