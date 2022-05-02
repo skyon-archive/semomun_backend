@@ -34,6 +34,7 @@ exports.fetchWorkbook = async (req, res) => {
     if (!workbook) return res.status(404).send()
 
     const workbookData = workbook.get()
+    delete workbookData.type
 
     const item = await Items.findOne({
       where: { id: workbook.id },

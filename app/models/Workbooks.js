@@ -49,6 +49,11 @@ module.exports = function (sequelize, DataTypes) {
     bookcover: {
       type: DataTypes.UUID,
       allowNull: false
+    },
+    type: {
+      type: DataTypes.STRING(32),
+      allowNull: false,
+      defaultValue: ''
     }
   }, {
     sequelize,

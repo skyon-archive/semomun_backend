@@ -56,6 +56,7 @@ CREATE TABLE `Workbooks` (
     `publishCompany` VARCHAR(32) NOT NULL,                                         /* 출판사                          */
     `originalPrice` INT NOT NULL,                                                  /* 정가                            */
     `bookcover` CHAR(36) NOT NULL,                                                 /* 표지 파일 식별자, uuid            */
+    `type` VARCHAR(32) NOT NULL DEFAULT '',                                        /* 권한 관련한 타입, ex. HIDDEN      */
     `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`wid`),
