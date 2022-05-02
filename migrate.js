@@ -1,13 +1,11 @@
 require('dotenv').config()
-// const { migrateWorkbooks, updateSectionSize } = require('./app/migrations/migrateWorkbooks')
+const { migrateWorkbooks, updateSectionSize, fixTags } = require('./app/migrations/migrateWorkbooks')
 // const { migrateUsers } = require('./app/migrations/migrateUsers')
 // const { fixSchool } = require('./app/migrations/migrateUsers')
-const { fixTags } = require('./app/migrations/migrateWorkbooks')
 
-// const wids = [169]
-// migrateWorkbooks(wids).then(() => updateSectionSize(wids))
+const wids = [2375, 2376, 3600]
+migrateWorkbooks(wids).then(() => updateSectionSize(wids)).then(() => fixTags(wids))
 
 // migrateUsers()
 
 // fixSchool()
-fixTags()

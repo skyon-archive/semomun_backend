@@ -6,6 +6,10 @@ const getFileSize = (key) => {
   return s3.headObject({ Key: key, Bucket: process.env.S3_BUCKET })
     .promise()
     .then(res => res.ContentLength)
+    .catch(() => {
+      console.log(`Missing ${key}`)
+      return 0
+    })
 }
 
 exports.migrateWorkbooks = async (wids) => {
@@ -69,10 +73,8 @@ exports.migrateWorkbooks = async (wids) => {
       (view) => sids.includes(+view.sid) ? view : null
     )
     const viewBySections = {}
-    views.forEach((view) => {
-      if (!viewBySections[+view.sid]) viewBySections[+view.sid] = []
-      viewBySections[+view.sid].push(view)
-    })
+    sids.forEach(sid => { viewBySections[sid] = [] })
+    views.forEach((view) => { viewBySections[+view.sid].push(view) })
     for (const sid in viewBySections) {
       const viewSection = viewBySections[sid]
       viewSection.sort((v1, v2) => +v1.index_start - +v2.index_start)
@@ -106,22 +108,24 @@ exports.migrateWorkbooks = async (wids) => {
           return +v.index_start <= +problem.icon_index &&
             +problem.icon_index <= +v.index_end
         })
-        await Problems.create({
-          vid: +view.vid,
-          pid: +problem.pid,
-          index: +problem.icon_index - +view.index_start + 1,
-          btType: '문',
-          btName: problem.icon_name,
-          type: +problem.type,
-          answer: problem.answer,
-          content: problem.content === 'NULL'
-            ? null
-            : problem.content.slice(0, 36),
-          explanation: problem.explanation === 'NULL'
-            ? null
-            : problem.explanation.slice(0, 36),
-          score: +problem.score
-        })
+        if (view) {
+          await Problems.create({
+            vid: +view.vid,
+            pid: +problem.pid,
+            index: +problem.icon_index - +view.index_start + 1,
+            btType: '문',
+            btName: problem.icon_name,
+            type: +problem.type,
+            answer: problem.answer,
+            content: problem.content === 'NULL'
+              ? null
+              : problem.content.slice(0, 36),
+            explanation: problem.explanation === 'NULL'
+              ? null
+              : problem.explanation.slice(0, 36),
+            score: +problem.score
+          })
+        }
       }
       console.log(`done migrating problem ${problem.pid}`)
     }))
@@ -158,7 +162,7 @@ exports.updateSectionSize = async (wids) => {
   }))
 }
 
-exports.fixTags = async () => {
+exports.fixTags = async (wids) => {
   try {
     const workbooks = await readCsv(
       path.resolve(__dirname, 'workbooks.csv'),
@@ -167,6 +171,7 @@ exports.fixTags = async () => {
     const cnt = workbooks.length
     for (let i = 0; i < cnt; i += 1) {
       const workbook = workbooks[i]
+      if (!wids.includes(+workbook.wid)) continue
       console.log(`wid = ${workbook.wid}`)
       const newTags = [workbook.category, workbook.subject, workbook.grade]
       const dbTags = (await WorkbookTags.findAll({
