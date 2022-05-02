@@ -30,7 +30,8 @@ exports.fetchWorkbooks = async (page, limit, tids, substring) => {
     offset: (page - 1) * limit,
     limit,
     order: [
-      [sequelize.literal('MatchTags'), 'DESC'], ['wid', 'ASC'],
+      [sequelize.literal('MatchTags'), 'DESC'],
+      ['date', 'DESC'],
       ['wid', 'ASC']
     ],
     raw: true,
