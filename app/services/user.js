@@ -142,7 +142,7 @@ exports.getUserWithInfo = async (uid) => {
         exclude: ['uid', 'createdAt', 'updatedAt', 'googleId', 'appleId']
       }
     },
-    attributes: { exclude: ['role', 'deleted'] },
+    attributes: { exclude: ['deleted'] },
     raw: true,
     nest: true
   })
