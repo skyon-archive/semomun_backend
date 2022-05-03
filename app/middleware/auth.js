@@ -18,7 +18,10 @@ exports.authJwt = async (req, res, next) => {
         } else if (user.deleted) {
           req.uid = null
           req.jwtMessage = 'deleted user'
-        } else req.uid = result.uid
+        } else {
+          req.uid = user.uid
+          req.role = user.role
+        }
       } else {
         req.uid = null
         req.jwtMessage = message

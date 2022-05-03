@@ -1,12 +1,6 @@
-const { S3 } = require('aws-sdk')
 const { sequelize } = require('../models/index')
+const { getPresignedUrl } = require('../services/s3')
 const { BadRequest, Forbidden } = require('../errors')
-
-const s3 = new S3({
-  region: process.env.AWS_REGION,
-  accessKeyId: process.env.AWS_ACCESS_KEY,
-  secretAccessKey: process.env.AWS_SECRET_KEY
-})
 
 const checkPermissions = async (uuid, type, uid) => {
   const publicTypes = [FileType.BOOKCOVER, FileType.SECTIONCOVER]
@@ -57,9 +51,7 @@ exports.getPresignedUrl = async (req, res) => {
     if (!type) throw new BadRequest('type missing')
 
     await checkPermissions(uuid, type, uid)
-    const key = `${type}/${uuid}.png`
-    const params = { Bucket: process.env.S3_BUCKET, Key: key, Expires: 3600 }
-    const result = await s3.getSignedUrlPromise('getObject', params)
+    const result = await getPresignedUrl(type, uuid)
     res.send(result)
   } catch (err) {
     if (err instanceof BadRequest) res.status(400).send(err.message)

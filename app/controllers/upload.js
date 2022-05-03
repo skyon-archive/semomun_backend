@@ -1,162 +1,164 @@
-const _ = require('lodash')
-const yaml = require('js-yaml')
-const sharp = require('sharp')
-const { v4: uuidv4 } = require('uuid')
 const fs = require('fs')
-const db = require('../models/index')
 const path = require('path')
-const Workbook = db.Workbooks
-const Section = db.Sections
-const View = db.Views
-const Problem = db.Problems
+const yaml = require('js-yaml')
+const { v4: uuidv4 } = require('uuid')
+const { BadRequest } = require('../errors')
+const { getPresignedPost } = require('../services/s3')
 
-function resizer (src, folder, option) {
-  const file = uuidv4() + '.png'
-  if (option === 0) {
-    const dest = path.join(process.env.IMAGE_SOURCE, folder, file)
-    sharp(fs.readFileSync(src)).resize({ width: 2000 }).toFormat('png').toFile(dest)
-  } else {
-    for (const width of [64, 128, 256]) {
-      const dest = path.join(process.env.IMAGE_SOURCE, folder, width + 'x' + width, file)
-      sharp(fs.readFileSync(src)).resize({ width: width }).toFormat('png').toFile(dest)
+const valdiateConfig = (config) => {
+  const workbookFields = [
+    'title',
+    'date',
+    'author',
+    'publisher',
+    'publishman',
+    'isbn',
+    'price',
+    'orginprice',
+    'continental',
+    'country',
+    'bigcategory',
+    'middlecategory',
+    'smallsubject',
+    'detail',
+    'bookcover',
+    'grade'
+  ]
+  const workbookIntFields = [
+    'price',
+    'orginprice'
+  ]
+  const sectionFields = [
+    'index',
+    'title',
+    'detail',
+    'sectioncover'
+  ]
+  const problemFields = [
+    'icon_index',
+    'icon_name',
+    'type',
+    'content'
+  ]
+  const problemIntFields = [
+    'icon_index',
+    'type'
+  ]
+
+  workbookFields.forEach((field) => {
+    if (!(field in config.workbook)) {
+      throw new BadRequest(`workbook.${field} 필드 없음`)
     }
+  })
+  if (!config.workbook.date.match(/^\d{4}-\d{1,2}-\d{1,2}$/)) {
+    throw new BadRequest('workbook.date 형식 틀림')
   }
-  return file
-}
+  workbookIntFields.forEach((field) => {
+    if (!Number.isInteger(config.workbook[field])) {
+      throw new BadRequest(`workbook.${field} 정수 아님`)
+    }
+  })
 
-async function uploader (dir) {
-  const doc = yaml.load(fs.readFileSync(path.join(dir, 'config.yaml'), 'utf8'))
-
-  const workbook = doc.workbook
-  if (workbook.bookcover !== undefined) {
-    const imagedir = path.join(dir, workbook.bookcover)
-    workbook.bookcover = resizer(imagedir, 'bookcover', 1)
-  }
-  const wid = (await Workbook.create(workbook)).wid
-
-  const sections = doc.sections
-  for (const section of sections) {
-    section.wid = wid
-    const imagedir = path.join(dir, section.sectioncover)
-    section.sectioncover = resizer(imagedir, 'sectioncover', 1)
-
-    const views = section.views
-    const sid = (await Section.create(section)).get({ plain: true }).sid
-    for (const view of views) {
-      view.sid = sid
-      if (view.material) { view.material = resizer(imagedir, 'material', 0) }
-      const problems = view.problems
-      for (const problem of problems) {
-        problem.sid = sid
-        if (problem.content) { problem.content = resizer(imagedir, 'content', 0) }
-        if (problem.explanation) { problem.explanation = resizer(imagedir, 'explanation', 0) }
-        await Problem.create(problem)
+  if (!Array.isArray(config.sections)) throw new BadRequest('sections 형식 틀림')
+  config.sections.forEach((section) => {
+    sectionFields.forEach((field) => {
+      if (!(field in section)) {
+        throw new BadRequest(`section.${field} 필드 없음`)
       }
-      await View.create(view)
+    })
+    if (!Number.isInteger(section.index)) {
+      throw new BadRequest('section.index 정수 아님')
     }
-  }
+    const views = section.views ?? []
+    if (!Array.isArray(views)) throw new BadRequest('views 형식 틀림')
+    views.forEach((view) => {
+      if (!Number.isInteger(view.form)) throw new BadRequest('view.form 정수 아님')
+      const problems = view.problems ?? []
+      problems.forEach((problem) => {
+        problemFields.forEach((field) => {
+          if (!(field in problem)) {
+            throw new BadRequest(`problem.${field} 필드 없음`)
+          }
+        })
+        problemIntFields.forEach((field) => {
+          if (!Number.isInteger(problem[field])) {
+            throw new BadRequest(`problem.${field} 정수 아님`)
+          }
+        })
+        if (problem.score && !Number.isInteger(problem.score)) {
+          throw new BadRequest('problem.score 정수 아님')
+        }
+      })
+    })
+  })
 }
 
-function validate (dir) {
+exports.readConfig = async (req, res) => {
   try {
-    const doc = yaml.load(fs.readFileSync(path.join(dir, 'config.yaml'), 'utf8'))
+    const { role } = req
+    if (role !== 'ADMIN') return res.status(403).send()
+    const filePath = path.join(__dirname, '../../', req.file.path)
+    const config = yaml.load(fs.readFileSync(filePath))
 
-    const workbook = doc.workbook
-    if (!workbook) throw new Error(`${dir} does not have workbook`)
-    if (!workbook.bookcover) {
-      throw new Error(`${dir} workbook does not have bookcover`)
-    }
-    if (workbook.bookcover && !fs.existsSync(path.join(dir, workbook.bookcover))) {
-      throw new Error(`${dir} workbook have wrong bookcover`)
-    }
-
-    const sections = doc.sections
-    if (!sections || sections.length === 0) {
-      throw new Error(`${dir} does not have sections`)
-    }
-    for (let sectionIdx = 0; sectionIdx < sections.length; sectionIdx++) {
-      const section = sections[sectionIdx]
-      if (!section.sectioncover) {
-        throw new Error(`${dir}, section[${sectionIdx}] does not have sectioncover`)
-      }
-      if (section.sectioncover && !fs.existsSync(path.join(dir, section.sectioncover))) {
-        throw new Error(`${dir}, section[${sectionIdx}] have wrong sectioncover`)
-      }
-      const views = section.views
-      if (!views || views.length === 0) {
-        throw new Error(`${dir}, section[${sectionIdx}] does not have views`)
-      }
-
-      let problemCnt = 0
-      for (let viewIdx = 0; viewIdx < views.length; viewIdx++) {
-        const view = views[viewIdx]
-        /* if (view.form === 1 && !view.material) {
-          throw new Error(`${dir}, section[${sectionIdx}], view[${viewIdx}] does not have material`)
-        } */
-        if (view.material && !fs.existsSync(path.join(dir, view.material))) {
-          throw new Error(`${dir}, section[${sectionIdx}], view[${viewIdx}] has wrong material`)
-        }
-        const problems = view.problems
-        if (!problems || problems.length === 0) {
-          throw new Error(`${dir}, section[${sectionIdx}], view[${viewIdx}] does not have problems`)
-        }
-        view.index_start = problemCnt + 1
-        problemCnt += problems.length
-        view.index_end = problemCnt
-
-        const problemIndexList = []
-        for (let problemIdx = 0; problemIdx < problems.length; problemIdx++) {
-          const problem = problems[problemIdx]
-          const type = problem.type
-          if (problem.content && !fs.existsSync(path.join(dir, problem.content))) {
-            throw new Error(`${dir}, section[${sectionIdx}], view[${viewIdx}], problem[${problemIdx}] has wrong content`)
-          }
-          if (problem.explanation && !fs.existsSync(path.join(dir, problem.explanation))) {
-            throw new Error(`${dir}, section[${sectionIdx}], view[${viewIdx}], problem[${problemIdx}] has wrong explanation`)
-          }
-          if ([4, 5].includes(type)) {
-            const answer = +problem.answer
-            if (isNaN(answer) || answer < 1 || answer > type) {
-              throw new Error(`${dir}, section[${sectionIdx}], view[${viewIdx}], problem[${problemIdx}] has wrong answer`)
-            }
-          }
-          const iconIdx = +problem.icon_index
-          if (isNaN(iconIdx) || iconIdx < view.index_start || iconIdx > view.index_end) {
-            throw new Error(`${dir}, section[${sectionIdx}], view[${viewIdx}], problem[${problemIdx}] has wrong icon index`)
-          }
-          problemIndexList.push(problem.icon_index)
-        }
-        if (_.uniq(problemIndexList).length !== problems.length) {
-          throw new Error(`${dir}, section[${sectionIdx}], view[${viewIdx}], has duplicate icon index`)
-        }
+    try {
+      valdiateConfig(config)
+    } catch (err) {
+      if (err instanceof BadRequest) {
+        fs.rmSync(filePath)
+        throw err
       }
     }
 
-    fs.writeFileSync(path.join(dir, 'config.yaml'), yaml.dump(doc))
-    return true
+    const urls = []
+    const bookcoverUuid = uuidv4()
+    urls.push({
+      url: await getPresignedPost('bookcover', bookcoverUuid),
+      file: config.workbook.bookcover
+    })
+    config.workbook.bookcover = bookcoverUuid
+
+    await Promise.all(config.sections.map(async (section) => {
+      const sectionUuid = uuidv4()
+      urls.push({
+        s3: await getPresignedPost('sectioncover', sectionUuid),
+        file: section.sectioncover
+      })
+      section.sectioncover = sectionUuid
+      await Promise.all(section.views.map(async (view) => {
+        if (view.material) {
+          const materialUuid = uuidv4()
+          urls.push({
+            s3: await getPresignedPost('passage', materialUuid),
+            file: view.material
+          })
+          view.material = materialUuid
+        }
+        await Promise.all(view.problems.map(async (problem) => {
+          const contentUuid = uuidv4()
+          urls.push({
+            s3: await getPresignedPost('content', contentUuid),
+            file: problem.content
+          })
+          problem.content = contentUuid
+          if (problem.explanation) {
+            const explanationUuid = uuidv4()
+            urls.push({
+              s3: await getPresignedPost('explanation', explanationUuid),
+              file: problem.explanation
+            })
+            problem.explanation = explanationUuid
+          }
+        }))
+      }))
+    }))
+
+    fs.writeFileSync(filePath, JSON.stringify(config))
+    res.json({ urls, key: path.basename(filePath) })
   } catch (err) {
-    console.log(String(err))
-    return false
-  }
-}
-
-exports.upload = async (req, res) => {
-  try {
-    const src = path.join(process.env.UPLOAD_SOURCE, req.params.title)
-    const outers = fs.readdirSync(src)
-    for (const outer of outers) {
-      const inners = fs.readdirSync(path.join(src, outer))
-      for (const inner of inners) {
-        const dir = path.join(src, outer, inner)
-        if (fs.existsSync(path.join(dir, 'config.yaml')) && validate(dir)) {
-          await uploader(dir)
-          console.log(dir)
-        }
-      }
+    if (err instanceof BadRequest) res.status(400).send(err.message)
+    else {
+      console.log(err)
+      res.status(500).send()
     }
-    res.send('done')
-  } catch (err) {
-    console.log(String(err))
-    res.status(500).send(String(err))
   }
 }

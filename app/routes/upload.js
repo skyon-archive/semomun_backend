@@ -1,9 +1,11 @@
+const router = require('express').Router()
+const multer = require('multer')
+const upload = multer({ dest: 'uploads/' })
+const { readConfig } = require('../controllers/upload')
+const { authJwt } = require('../middleware/auth')
+
 module.exports = (app) => {
-  const uploader = require('../controllers/upload.js')
-
-  const router = require('express').Router()
-
-  router.get('/:title', uploader.upload)
+  router.post('/config', upload.single('config'), authJwt, readConfig)
 
   app.use('/upload', router)
 }
