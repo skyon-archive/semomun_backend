@@ -104,42 +104,42 @@ exports.readConfig = async (req, res) => {
 
     valdiateConfig(config)
 
-    const urls = []
+    const posts = []
     const bookcoverUuid = uuidv4()
-    urls.push({
-      url: await getPresignedPost('bookcover', bookcoverUuid),
-      file: config.workbook.bookcover
+    posts.push({
+      post: await getPresignedPost('bookcover', bookcoverUuid),
+      filename: config.workbook.bookcover
     })
     config.workbook.bookcover = bookcoverUuid
 
     await Promise.all(config.sections.map(async (section) => {
       const sectionUuid = uuidv4()
-      urls.push({
-        s3: await getPresignedPost('sectioncover', sectionUuid),
-        file: section.sectioncover
+      posts.push({
+        post: await getPresignedPost('sectioncover', sectionUuid),
+        filename: section.sectioncover
       })
       section.sectioncover = sectionUuid
       await Promise.all(section.views.map(async (view) => {
         if (view.material) {
           const materialUuid = uuidv4()
-          urls.push({
-            s3: await getPresignedPost('passage', materialUuid),
-            file: view.material
+          posts.push({
+            post: await getPresignedPost('passage', materialUuid),
+            filename: view.material
           })
           view.material = materialUuid
         }
         await Promise.all(view.problems.map(async (problem) => {
           const contentUuid = uuidv4()
-          urls.push({
-            s3: await getPresignedPost('content', contentUuid),
-            file: problem.content
+          posts.push({
+            post: await getPresignedPost('content', contentUuid),
+            filename: problem.content
           })
           problem.content = contentUuid
           if (problem.explanation) {
             const explanationUuid = uuidv4()
-            urls.push({
-              s3: await getPresignedPost('explanation', explanationUuid),
-              file: problem.explanation
+            posts.push({
+              post: await getPresignedPost('explanation', explanationUuid),
+              filename: problem.explanation
             })
             problem.explanation = explanationUuid
           }
@@ -148,7 +148,7 @@ exports.readConfig = async (req, res) => {
     }))
 
     fs.writeFileSync(filePath, JSON.stringify(config))
-    res.json({ urls, key: path.basename(filePath) })
+    res.json({ posts, key: path.basename(filePath) })
   } catch (err) {
     if (filePath) fs.rmSync(filePath)
     if (err instanceof BadRequest) res.status(400).send(err.message)

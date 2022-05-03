@@ -1174,12 +1174,12 @@ body에는 아래와 같은 값들이 주어져야 합니다. 전부 optional하
 ### POST /upload/config
 문제집 업로드를 위해서 우선 config.yaml을 서버에 제출하는 api입니다. `ADMIN` role을 가진 유저만이 사용할 수 있습니다.
 
-request body에는 form-data 형식으로, key `config`에 config.yaml 파일을 보냅니다.
+request body에는 multitype/form-data 형식으로, key `config`에 config.yaml 파일을 보냅니다.
 
 response body는 이미지 파일들을 올릴 presignedPost에 대한 정보를 보냅니다.
-- urls: presignedPost에 대한 정보
-    - url: presignedPost에 대한 정보
-    - file: 해당 post에 올려야 하는 파일의 이름
+- posts: presignedPost에 대한 정보
+    - post: presignedPost에 대한 정보
+    - filename: 해당 post에 올려야 하는 파일의 이름
 - key: 업로드한 config.yaml의 키
 
 <details>
