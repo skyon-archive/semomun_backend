@@ -2,7 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const yaml = require('js-yaml')
 const { v4: uuidv4 } = require('uuid')
-const { BadRequest } = require('../errors')
+const { BadRequest, Forbidden } = require('../errors')
 const { getPresignedPost } = require('../services/s3')
 
 const valdiateConfig = (config) => {
@@ -94,20 +94,15 @@ const valdiateConfig = (config) => {
 }
 
 exports.readConfig = async (req, res) => {
+  let filePath
   try {
+    filePath = path.join(__dirname, '../../', req.file.path)
+
     const { role } = req
-    if (role !== 'ADMIN') return res.status(403).send()
-    const filePath = path.join(__dirname, '../../', req.file.path)
+    if (role !== 'ADMIN') throw new Forbidden('')
     const config = yaml.load(fs.readFileSync(filePath))
 
-    try {
-      valdiateConfig(config)
-    } catch (err) {
-      if (err instanceof BadRequest) {
-        fs.rmSync(filePath)
-        throw err
-      }
-    }
+    valdiateConfig(config)
 
     const urls = []
     const bookcoverUuid = uuidv4()
@@ -155,7 +150,9 @@ exports.readConfig = async (req, res) => {
     fs.writeFileSync(filePath, JSON.stringify(config))
     res.json({ urls, key: path.basename(filePath) })
   } catch (err) {
+    if (filePath) fs.rmSync(filePath)
     if (err instanceof BadRequest) res.status(400).send(err.message)
+    else if (err instanceof Forbidden) res.status(403).send(err.message)
     else {
       console.log(err)
       res.status(500).send()

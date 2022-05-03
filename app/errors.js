@@ -23,8 +23,8 @@ function Forbidden (message) {
   this.message = message
   this.stack = Error().stack
 }
-Conflict.prototype = Object.create(Error.prototype)
-Conflict.prototype.name = 'Forbidden'
+Forbidden.prototype = Object.create(Error.prototype)
+Forbidden.prototype.name = 'Forbidden'
 
 exports.BadRequest = BadRequest
 exports.Forbidden = Forbidden
