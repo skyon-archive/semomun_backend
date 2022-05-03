@@ -1,4 +1,5 @@
 const { S3 } = require('aws-sdk')
+const { BadRequest } = require('../errors')
 
 const s3 = new S3({
   region: process.env.AWS_REGION,
@@ -14,7 +15,7 @@ exports.getPresignedUrl = (type, key) => {
 exports.getPresignedPost = (type, key) => {
   const params = {
     Bucket: process.env.S3_BUCKET,
-    Fields: { key: `${type}/${key}` },
+    Fields: { key: `${type}/${key}.png` },
     Conditions: [['content-length-range', 0, 10485760]] // 10 MiB
   }
   return new Promise((resolve, reject) => {
@@ -23,4 +24,12 @@ exports.getPresignedPost = (type, key) => {
       resolve(data)
     })
   })
+}
+
+exports.checkFileExist = (type, key) => {
+  return s3.headObject({ Key: `${type}/${key}.png`, Bucket: process.env.S3_BUCKET })
+    .promise()
+    .catch(() => {
+      throw new BadRequest(`${type}/${key}.png가 존재하지 않음`)
+    })
 }
