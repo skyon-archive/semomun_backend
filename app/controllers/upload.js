@@ -9,30 +9,30 @@ const valdiateConfig = (config) => {
   const workbookFields = [
     'title',
     'date',
-    'author',
-    'publisher',
-    'publishman',
-    'isbn',
+    'originalPrice',
     'price',
-    'orginprice',
+    'detail',
+    'bookcover',
+    'author',
+    'publishCompany',
+    'publishMan',
     'continental',
     'country',
     'bigcategory',
     'middlecategory',
-    'smallsubject',
-    'detail',
-    'bookcover',
+    'smallcategory',
     'grade'
   ]
   const workbookIntFields = [
     'price',
-    'orginprice'
+    'originalPrice'
   ]
   const sectionFields = [
     'index',
     'title',
     'detail',
-    'sectioncover'
+    'sectioncover',
+    'cutoff'
   ]
   const problemFields = [
     'icon_index',
@@ -85,8 +85,8 @@ const valdiateConfig = (config) => {
             throw new BadRequest(`problem.${field} 정수 아님`)
           }
         })
-        if (problem.score && !Number.isInteger(problem.score)) {
-          throw new BadRequest('problem.score 정수 아님')
+        if (typeof problem.score !== 'number') {
+          throw new BadRequest('problem.score 수 아님')
         }
       })
     })
