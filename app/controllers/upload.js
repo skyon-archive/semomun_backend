@@ -2,6 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const yaml = require('js-yaml')
 const { v4: uuidv4 } = require('uuid')
+const { Workbooks } = require('../models/index')
 const { BadRequest, Forbidden } = require('../errors')
 const { getPresignedPost } = require('../services/s3')
 
@@ -91,6 +92,9 @@ const valdiateConfig = (config) => {
       })
     })
   })
+
+  const workbook = Workbooks.findOne({ title: config.workbook.title })
+  if (workbook) throw new BadRequest('title 중복')
 }
 
 exports.readConfig = async (req, res) => {
