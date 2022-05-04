@@ -224,7 +224,7 @@ exports.confirmWorkbook = async (req, res) => {
         transaction
       })
       const dbTagNames = oldDbTags.map((tag) => tag.name)
-      const missingTags = tagNames.filter((tag) => dbTagNames.includes(tag))
+      const missingTags = tagNames.filter((tag) => !dbTagNames.includes(tag))
       const newDbTags = await Tags.bulkCreate(
         missingTags.map((name) => ({ name })),
         { transaction }
