@@ -275,3 +275,30 @@ exports.confirmWorkbook = async (req, res) => {
     }
   }
 }
+
+exports.updateBookcover = async (req, res) => {
+  try {
+    const { title } = req.body
+    const { role } = req
+    if (role !== 'ADMIN') throw new Forbidden('')
+
+    const workbook = await Workbooks.findOne({ where: { title } })
+    if (!workbook) res.status(204).send()
+    else {
+      const section = await Sections.findOne({ where: { wid: workbook.wid } })
+      const bookcover = uuidv4()
+      await workbook.update({ bookcover })
+      const bookcoverPost = await getPresignedPost('bookcover', bookcover)
+      const sectioncover = uuidv4()
+      await section.update({ sectioncover })
+      const sectioncoverPost = await getPresignedPost('sectioncover', sectioncover)
+      res.json({ bookcoverPost, sectioncoverPost })
+    }
+  } catch (err) {
+    if (err instanceof Forbidden) res.status(403).send(err.message)
+    else {
+      console.log(err)
+      res.status(500).send()
+    }
+  }
+}
