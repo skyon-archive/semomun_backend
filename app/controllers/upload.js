@@ -281,8 +281,9 @@ exports.updateBookcover = async (req, res) => {
     const { role } = req
     if (role !== 'ADMIN') throw new Forbidden('')
 
+    console.log(title)
     const workbook = await Workbooks.findOne({ where: { title } })
-    if (!workbook) res.status(204).send()
+    if (!workbook) return res.status(204).send()
     else {
       const section = await Sections.findOne({ where: { wid: workbook.wid } })
 
