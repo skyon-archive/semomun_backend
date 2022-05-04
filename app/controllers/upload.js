@@ -32,8 +32,7 @@ const valdiateConfig = async (config) => {
     'index',
     'title',
     'detail',
-    'sectioncover',
-    'cutoff'
+    'sectioncover'
   ]
   const problemFields = [
     'icon_index',
