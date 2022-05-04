@@ -253,7 +253,7 @@ exports.confirmWorkbook = async (req, res) => {
         await Problems.bulkCreate(problems.map((problem, idx) => ({
           vid: dbView.vid,
           index: idx + 1,
-          btType: '', /* TODO */
+          btType: (isNaN(parseInt(problem.icon_name)) ? problem.icon_name : '문'),
           btName: problem.icon_name,
           type: problem.type,
           answer: problem.answer,
