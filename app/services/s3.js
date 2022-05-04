@@ -33,3 +33,15 @@ exports.checkFileExist = (type, key) => {
       throw new BadRequest(`${type}/${key}.png가 존재하지 않음`)
     })
 }
+
+exports.deleteFile = async (type, key) => {
+  const params = {
+    Bucket: process.env.S3_BUCKET,
+    Key: `${type}/${key}.png`
+  }
+  try {
+    await s3.deleteObject(params).promise()
+  } catch (err) {
+    console.log(err)
+  }
+}

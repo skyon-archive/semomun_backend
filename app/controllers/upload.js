@@ -4,7 +4,7 @@ const yaml = require('js-yaml')
 const { v4: uuidv4 } = require('uuid')
 const { sequelize, Items, Workbooks, Sections, Views, Problems, Tags, WorkbookTags } = require('../models/index')
 const { BadRequest, Forbidden } = require('../errors')
-const { getPresignedPost, checkFileExist } = require('../services/s3')
+const { getPresignedPost, checkFileExist, deleteFile } = require('../services/s3')
 
 const valdiateConfig = async (config) => {
   const workbookFields = [
@@ -286,6 +286,10 @@ exports.updateBookcover = async (req, res) => {
     if (!workbook) res.status(204).send()
     else {
       const section = await Sections.findOne({ where: { wid: workbook.wid } })
+
+      await deleteFile('bookcover', workbook.bookcover)
+      await deleteFile('sectioncover', section.sectioncover)
+
       const bookcover = uuidv4()
       await workbook.update({ bookcover })
       const bookcoverPost = await getPresignedPost('bookcover', bookcover)
