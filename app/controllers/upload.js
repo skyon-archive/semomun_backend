@@ -200,13 +200,13 @@ exports.confirmWorkbook = async (req, res) => {
       id: dbItem.id,
       title: workbook.title,
       detail: workbook.detail,
-      isbn: workbook.isbn ?? '',
+      isbn: ((workbook.isbn === '없음' || !workbook.isbn) ? workbook.isbn : ''),
       author: workbook.author,
       date: `${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')} 09:00:00`,
       publishMan: workbook.publishMan,
       publishCompany: workbook.publishCompany,
       originalPrice: workbook.originalPrice,
-      bookcover: workbook.originalPrice
+      bookcover: workbook.bookcover
     })
 
     const tagNames = [
@@ -282,7 +282,7 @@ exports.updateBookcover = async (req, res) => {
     if (role !== 'ADMIN') throw new Forbidden('')
 
     console.log(title)
-    const workbook = await Workbooks.findOne({ where: { title } })
+    const workbook = await Workbooks.findOne({ where: { title, type: '' } })
     if (!workbook) return res.status(204).send()
     else {
       const section = await Sections.findOne({ where: { wid: workbook.wid } })
