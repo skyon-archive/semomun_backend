@@ -243,10 +243,11 @@ exports.confirmWorkbook = async (req, res) => {
         cutoff: cutoff ?? {},
         ...section
       })
-      await Promise.all(views.map(async ({ problems, ...view }, idx) => {
+      await Promise.all(views.map(async ({ problems, material, ...view }, idx) => {
         const dbView = await Views.create({
           sid: dbSection.sid,
           index: idx + 1,
+          passage: material,
           ...view
         })
         problems.sort((a, b) => a.icon_index < b.icon_index)
