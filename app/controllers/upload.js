@@ -5,6 +5,7 @@ const { v4: uuidv4 } = require('uuid')
 const { sequelize, Items, Workbooks, Sections, Views, Problems, Tags, WorkbookTags } = require('../models/index')
 const { BadRequest, Forbidden } = require('../errors')
 const { getPresignedPost, checkFileExist, deleteFile } = require('../services/s3')
+const { updateSectionSize } = require('../migrations/migrateWorkbooks')
 
 const valdiateConfig = async (config) => {
   const workbookFields = [
@@ -262,6 +263,8 @@ exports.confirmWorkbook = async (req, res) => {
         })))
       }))
     }))
+
+    await updateSectionSize([dbWorkbook.wid])
 
     if (filePath) fs.rmSync(filePath)
     res.json({})
