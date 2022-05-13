@@ -86,7 +86,7 @@ const valdiateConfig = async (config) => {
             throw new BadRequest(`problem.${field} 정수 아님`)
           }
         })
-        if (typeof problem.score !== 'number') {
+        if (problem.score && typeof problem.score !== 'number') {
           throw new BadRequest('problem.score 수 아님')
         }
       })
