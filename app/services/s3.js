@@ -45,3 +45,35 @@ exports.deleteFile = async (type, key) => {
     console.log(err)
   }
 }
+
+const listFiles = async (prefix, continuationToken) => {
+  const params = {
+    Bucket: process.env.S3_BUCKET,
+    Prefix: prefix,
+    ContinuationToken: continuationToken
+  }
+  return new Promise((resolve, reject) => {
+    s3.listObjectsV2(params, (err, data) => {
+      if (err) reject(err)
+      resolve(data)
+    })
+  })
+}
+
+exports.listAllFiles = async (prefix) => {
+  const result = []
+  let continuationToken
+  console.log(`listAllFiles: ${prefix}`)
+  while (true) {
+    const {
+      IsTruncated: truncated,
+      Contents: content,
+      NextContinuationToken: nextContinuationToken
+    } = await listFiles(prefix, continuationToken)
+    console.log(truncated, nextContinuationToken)
+    result.push(...content)
+    if (truncated) continuationToken = nextContinuationToken
+    else break
+  }
+  return result
+}
