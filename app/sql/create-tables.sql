@@ -107,6 +107,7 @@ CREATE TABLE `Problems` (
     `score` DOUBLE,                                                                 /* 배점                          */
     `content` CHAR(36) NOT NULL,                                                    /* 문제 파일 식별자, uuid           */
     `explanation` CHAR(36),                                                         /* 해설 파일 식별자, uuid           */ 
+    `subproblemCnt` INT,                                                            /* 소문제 개수                      */
     `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`pid`),

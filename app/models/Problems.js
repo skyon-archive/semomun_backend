@@ -45,6 +45,10 @@ module.exports = function (sequelize, DataTypes) {
     explanation: {
       type: DataTypes.UUID,
       allowNull: true
+    },
+    subproblemCnt: {
+      type: DataTypes.INTEGER,
+      allowNull: true
     }
   }, {
     sequelize,

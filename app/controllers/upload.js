@@ -43,7 +43,8 @@ const valdiateConfig = async (config) => {
   ]
   const problemIntFields = [
     'icon_index',
-    'type'
+    'type',
+    'subproblemCnt'
   ]
 
   workbookFields.forEach((field) => {
@@ -82,7 +83,7 @@ const valdiateConfig = async (config) => {
           }
         })
         problemIntFields.forEach((field) => {
-          if (!Number.isInteger(problem[field])) {
+          if (problem[field] && !Number.isInteger(problem[field])) {
             throw new BadRequest(`problem.${field} 정수 아님`)
           }
         })
@@ -260,7 +261,8 @@ exports.confirmWorkbook = async (req, res) => {
           answer: problem.answer,
           content: problem.content,
           explanation: problem.explanation,
-          score: problem.score
+          score: problem.score,
+          subproblemCnt: problem.subproblemCnt
         })))
       }))
     }))

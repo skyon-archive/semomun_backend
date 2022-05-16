@@ -145,6 +145,7 @@ CREATE TABLE `Problems` (
     `score` DOUBLE,                                                                 /* 배점                          */
     `content` CHAR(36) NOT NULL,                                                    /* 문제 파일 식별자, uuid           */
     `explanation` CHAR(36),                                                         /* 해설 파일 식별자, uuid           */ 
+    `subproblemCnt` INT,                                                            /* 소문제 개수                      */
     `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`pid`),
@@ -596,6 +597,7 @@ sid가 주어진 값인 섹션을 반환합니다.
                     "answer": "3",
                     "content": "uuid",
                     "explanation": "uuid",
+                    "subproblemCnt": 2,
                     "createdAt": "2022-02-28T17:54:17.000Z",
                     "updatedAt": "2022-02-28T17:54:18.000Z"
                 }
