@@ -913,13 +913,15 @@ Query String
 - expire: short로 주어질 경우 refresh token의 expire time이 3시간이 되고, 그 외의 경우(주어지지 않은 경우 포함)에는 30일입니다.
 
 Request Body
-- token: google 또는 apple 토큰입니다.
-- type: "google", "apple" 또는 "legacy"의 값입니다. "legacy"는 1.0에서 가입한 유저가 2.0에서 로그인을 하는 경우입니다.
+- token: google 또는 apple 토큰입니다. type이 "review"인 경우에는 불필요합니다.
+- password: type이 "review"인 경우에 필요로 하는 값입니다.
+- type: "google", "apple", "legacy" 또는 "review"의 값입니다. "legacy"는 1.0에서 가입한 유저가 2.0에서 로그인을 하는 경우입니다. "review"는 스토어 심사를 위해서 발급된 계정에 로그인하는 경우입니다.
 
 성공 시 반환값은 JSON이며, `{ "accessToken": "asdf", "refreshToken": "abcd" }`와 같이 access token과 refresh token을 담은 객체입니다.
 
 실패 시 처리는 다음과 같습니다.
 - 400 Bad Request: type이 "google", "apple" 또는 "legacy"가 아닌 경우입니다. 반환값은 `WRONG_TYPE`입니다.
+- 400 Bad Request: type이 "review"이지만 password가 일치하지 않는 경우입니다. 반환값은 `WRONG_PASSWORD`입니다.
 - 400 Bad Request: 토큰 파싱에 실패한 경우입니다.
 - 400 Bad Request: 해당 토큰으로 가입한 유저가 없는 경우입니다. 반환값은 `USER_NOT_EXIST`입니다.
 

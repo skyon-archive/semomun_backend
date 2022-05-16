@@ -47,7 +47,7 @@ exports.createUser = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
-    const { token, type } = req.body
+    const { token, type, password } = req.body
     const { expire } = req.query
 
     let uid
@@ -67,6 +67,10 @@ exports.login = async (req, res) => {
         if (!appleId) return res.status(400).send()
         uid = await getUserWithAppleId(appleId)
       }
+    } else if (type === AuthType.REVIEW) {
+      const correctPassword = await redis.get('review:password')
+      if (password === correctPassword) uid = +(await redis.get('review:uid'))
+      else return res.status(400).send('WRONG_PASSWORD')
     } else return res.status(400).send('WRONG_TYPE')
 
     if (!uid) return res.status(400).send('USER_NOT_EXIST')

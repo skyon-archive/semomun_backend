@@ -94,5 +94,6 @@ exports.verifyJwt = (token, secret = jwtSecret) => {
 exports.AuthType = ({
   GOOGLE: 'google',
   APPLE: 'apple',
-  LEGACY: 'legacy'
+  LEGACY: 'legacy',
+  REVIEW: 'review'
 })
