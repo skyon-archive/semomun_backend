@@ -1203,4 +1203,10 @@ response body는 이미지 파일들을 올릴 presignedPost에 대한 정보를
     ],
     "key": "894e6672921a51d11b9a6d7eddedd7af"
 }
-</code></pre></details>
+</code></pre></details><br/>
+
+
+### GET /status/review?version=2.13.1
+현재 심사 중인 버전인지 확인하는 api입니다.
+
+query string으로 주어진 version이 심사 중인 버전일 경우 `{"result": true}`, 아닐 경우 `{"result": false}`를 반환합니다.

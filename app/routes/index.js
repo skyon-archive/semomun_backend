@@ -18,4 +18,5 @@ module.exports = (app) => {
   require('./banners')(app)
   require('./popups')(app)
   require('./errorReports')(app)
+  require('./status')(app)
 }
