@@ -2,50 +2,44 @@ require('dotenv').config()
 const { Workbooks, Sections, Views, Problems } = require('./app/models/index')
 const { listAllFiles, deleteFile } = require('./app/services/s3')
 
-const cleanBookcover = async () => {
-  const files = (await listAllFiles('bookcover/'))
-  await Promise.all(files.map(async ({ Key: key }) => {
-    const uuid = key.slice(10, -4)
-    const workbook = await Workbooks.findOne({ where: { bookcover: uuid } })
-    if (!workbook) await deleteFile('bookcover', uuid)
-  }))
+const clean = (type, findOne) => async () => {
+  const files = await listAllFiles(`${type}/`)
+  let i = 0
+  while (i < files.length) {
+    console.log(`${i} / ${files.length}`)
+    await Promise.all(files.slice(i, i + 1000).map(async ({ Key: key }) => {
+      const uuid = key.slice(type.length + 1, -4)
+      const object = await findOne(uuid)
+      if (!object) await deleteFile(type, uuid)
+    }))
+    i += 1000
+  }
 }
 
-const cleanContent = async () => {
-  const files = (await listAllFiles('content/'))
-  await Promise.all(files.map(async ({ Key: key }) => {
-    const uuid = key.slice(8, -4)
-    const problem = await Problems.findOne({ where: { content: uuid } })
-    if (!problem) await deleteFile('content', uuid)
-  }))
-}
+const cleanBookcover = clean(
+  'bookcover',
+  (uuid) => Workbooks.findOne({ where: { bookcover: uuid } })
+)
 
-const cleanExplanation = async () => {
-  const files = (await listAllFiles('explanation/'))
-  await Promise.all(files.map(async ({ Key: key }) => {
-    const uuid = key.slice(12, -4)
-    const problem = await Problems.findOne({ where: { explanation: uuid } })
-    if (!problem) await deleteFile('explanation', uuid)
-  }))
-}
+const cleanContent = clean(
+  'content',
+  (uuid) => Problems.findOne({ where: { content: uuid } })
+)
 
-const cleanPassage = async () => {
-  const files = (await listAllFiles('passage/'))
-  await Promise.all(files.map(async ({ Key: key }) => {
-    const uuid = key.slice(8, -4)
-    const view = await Views.findOne({ where: { passage: uuid } })
-    if (!view) await deleteFile('passage', uuid)
-  }))
-}
+const cleanExplanation = clean(
+  'explanation',
+  (uuid) => Problems.findOne({ where: { explanation: uuid } })
+)
 
-const cleanSectioncover = async () => {
-  const files = (await listAllFiles('sectioncover/'))
-  await Promise.all(files.map(async ({ Key: key }) => {
-    const uuid = key.slice(13, -4)
-    const section = await Sections.findOne({ where: { sectioncover: uuid } })
-    if (!section) await deleteFile('sectioncover', uuid)
-  }))
-}
+const cleanPassage = clean(
+  'passage',
+  (uuid) => Views.findOne({ where: { passage: uuid } })
+)
+
+const cleanSectioncover = clean(
+  'sectioncover',
+  (uuid) => Sections.findOne({ where: { sectioncover: uuid } })
+)
 
 cleanBookcover()
   .then(() => cleanContent())
