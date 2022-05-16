@@ -47,7 +47,7 @@ exports.createUser = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
-    const { token, type, password } = req.body
+    const { token, type } = req.body
     const { expire } = req.query
 
     let uid
@@ -69,7 +69,7 @@ exports.login = async (req, res) => {
       }
     } else if (type === AuthType.REVIEW) {
       const correctPassword = await redis.get('review:password')
-      if (password === correctPassword) uid = +(await redis.get('review:uid'))
+      if (token === correctPassword) uid = +(await redis.get('review:uid'))
       else return res.status(400).send('WRONG_PASSWORD')
     } else return res.status(400).send('WRONG_TYPE')
 
