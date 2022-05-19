@@ -35,6 +35,8 @@ Semomun API의 명세와 조건, 참고사항 및 예외들을 정리해 작성�
 
 ## 자료형
 
+![model diagram](model-diagram.png "Model Diagram")
+
 ```sql
 -- 사용자 --
 CREATE TABLE `Users` (
