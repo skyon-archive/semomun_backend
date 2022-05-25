@@ -5,16 +5,16 @@ name: Node.js CD
 
 on:
   push:
-    branches: [ master ]
+    branches: [ dev ]
 
 jobs:
   build:
 
-    runs-on: [self-hosted, production]
+    runs-on: [self-hosted, test]
 
     steps:
     - uses: actions/checkout@v2
     - name: Docker run
       run: |
         cp ~/app/.env .
-        docker-compose up -d --build node
+        docker-compose up -d --build
