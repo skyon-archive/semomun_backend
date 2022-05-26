@@ -17,4 +17,5 @@ jobs:
     - name: Docker run
       run: |
         cp ~/app/.env .
+        docker-compose down -v
         docker-compose up -d --build
