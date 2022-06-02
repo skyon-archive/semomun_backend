@@ -19,14 +19,17 @@ app.use(
 require('./app/models/index')
 require('./app/services/redis')
 
-app.use(express.static(path.join(process.env.DATA_SOURCE)))
+// ???
+// app.use(express.static(path.join(process.env.DATA_SOURCE)))
 
+// response-time package 사용?
 app.use(
   responseTime((req, res, time) => {
     console.log(`${req.method} ${req.originalUrl} ${time} ${res.statusCode}`)
   })
 )
 
+// 로그용
 const accessLogStream = rfs.createStream('access.log', {
   interval: '1d',
   path: path.join(process.env.LOG_SOURCE)
