@@ -97,7 +97,7 @@ jobs:
           region: ${{ env.REGION }}
           deployment_package: .deploy/dev/deploy.zip
           wait_for_environment_recovery: 360
-          use_existing_version_if_available: true
+          use_existing_version_if_available: false
 
       - name: Notify
         uses: 8398a7/action-slack@v3
