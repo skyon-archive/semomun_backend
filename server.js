@@ -2,10 +2,8 @@ require('dotenv').config()
 const express = require('express')
 const responseTime = require('response-time')
 const cors = require('cors')
-const path = require('path')
 const app = express()
 const morgan = require('morgan')
-const rfs = require('rotating-file-stream')
 
 const corsOptions = {
   origin: ['http://localhost:8081', 'http://localhost:3000', 'https://www.semomun.com', 'https://semomun.com']
@@ -30,11 +28,7 @@ app.use(
 )
 
 // 로그용
-const accessLogStream = rfs.createStream('access.log', {
-  interval: '1d',
-  path: path.join(process.env.LOG_SOURCE)
-})
-app.use(morgan('[:date[clf]] :method :url :status :res[content-length] - :response-time ms', { stream: accessLogStream }))
+app.use(morgan('[:date[clf]] :method :url :status :res[content-length] - :response-time ms'))
 
 require('./app/routes/index')(app)
 
