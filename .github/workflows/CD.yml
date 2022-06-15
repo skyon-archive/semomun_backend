@@ -71,7 +71,7 @@ jobs:
           envkey_DB_USERNAME: node
           envkey_DB_DIALECT: mysql
           envkey_PHONE_NUMBER: 01071282316
-          envkey_SMS_SERVICE_ID: ncp:sms:kr:263493214013:semomun
+          envkey_SMS_SERVICE_ID: "ncp:sms:kr:263493214013:semomun"
           envkey_SMS_ACCESS_KEY: mrx10KUxW8tEd26GMbop
           envkey_SMS_SECRET_KEY: ${{ secrets.SMS_SECRET_KEY }}
           envkey_S3_BUCKET: semomun-data
