@@ -13,8 +13,8 @@ jobs:
     env:
       REGION: ap-northeast-2
       IMAGE: semomun/backend
-      APP_NAME: backend
-      ENV_NAME: backend-main
+      APP_NAME: semomun-backend
+      ENV_NAME: semomun-backend
       VERSION: 1
       DB_HOST: aurora-main.db.semomun.com
       REDIS_HOST: redis://redis-main.mxpiww.ng.0001.apn2.cache.amazonaws.com:6379
