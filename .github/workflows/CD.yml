@@ -94,6 +94,7 @@ jobs:
           application_name: ${{ env.APP_NAME }}
           environment_name: ${{ env.ENV_NAME }}
           version_label: ${{ github.run_number }}
+          version_description: ${{ github.SHA }} - ${{ github.event.head_commit.message }}
           region: ${{ env.REGION }}
           deployment_package: .deploy/master/deploy.zip
           wait_for_environment_recovery: 360
