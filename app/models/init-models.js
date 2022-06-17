@@ -22,7 +22,6 @@ const _WorkbookHistory = require('./WorkbookHistory');
 const _ViewSubmissions = require('./ViewSubmissions');
 const _Submissions = require('./Submissions');
 const _ErrorReports = require('./ErrorReports');
-const workbooks = require('../routes/workbooks.js');
 
 function initModels(sequelize) {
   const ErrorReports = _ErrorReports(sequelize, DataTypes);
