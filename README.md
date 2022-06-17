@@ -6,9 +6,54 @@ Semomun API의 명세와 조건, 참고사항 및 예외들을 정리해 작성�
 
 해당 문서에서 ~~취소선~~이 그어진 API는 1.0 버전으로부터의 migration이 아직 이루어지지 않았음을 의미합니다. 따라서 정상적으로 동작하지 않을 수 있고, 추후에 수정되거나 삭제될 예정입니다.
 
+# .ENV
+### GOOGLE
+- GOOGLE_CLIENT_ID_APP : 구글 소셜로그인에 필요한 정보
+- GOOGLE_CLIENT_ID_WEB : 위와 같음
+
+### APPLE
+- APPLE_CLIENT_ID_APP : 애플 소셜로그인에 필요한 정보
+- APPLE_CLIENT_ID_WEB : 위와 같음
+
+### ENV
+- PORT : 서버 포트
+- DB_HOST : 서버 호스트
+- UPLOAD_SOURCE : ?
+- DATA_SOURCE : 기존 1 버전에서 쓰이던거라 현재는 주석처리.
+- IMAGE_SOURCE : 기존 1 버전에서 쓰이던거라 현재는 주석처리.
+- LOG_SOURCE : 로그 관련
+- JWT_SECRET : JWT 토큰 시크릿 키
+- SALT : 비크립트 해쉬 솔트 값
+
+### DB(Product RDS, Dev RED, Local MySQL)
+| 해당 정보는 서버마다 사용자마다 다를 수 있음
+- DB_HOST : 데이터베이스 호스트
+- DB_DATABASE : 데이터베이스 이름
+- DB_USERNAME : 데이터베이스 유저 네임
+- DB_PASSWORD : 데이터베이스 패스워드
+- DB_DIALECT : 데이터베이스 종류(MySQL, MongoDB, SQLite3 등등)
+
+### SMS
+- PHONE_NUMBER : 핸드폰 번호(뭔진 잘 모름)
+- SMS_SERVICE_ID : NCP(네이버 클라우드 플랫폼)를 사용하기 위한 서비스 아이디
+- SMS_ACCESS_KEY : NCP(네이버 클라우드 플랫폼)를 사용하기 위한 액세스 키
+- SMS_SECRET_KEY : NCP(네이버 클라우드 플랫폼)를 사용하기 위한 시크릿 키
+
+### S3
+- S3_BUCKET : 버킷 이름
+- AWS_REGION : 리전 이름
+- AWS_ACCESS_KEY : S3를 사용하기 위한 액세스 키
+- AWS_SECRET_KEY : S3를 사용하기 위한 시크릿 키
+
+### SLACK
+- SLACK_CHANNEL : 에러 리포트를 받기 위한, `피드백 제보 채널의 고유 아이디`
+- SLACK_TOKEN : 슬랙 API를 사용하기 위한 토큰 값
+
+### REDIS
+- REDIS_HOST : 레디스 호스트 값
 
 ## 문법
-
+---
 ### Status code
 
 정상적인 경우 HTTP 상태 코드는 200 OK로 응답해야 하지만, 사용자의 요청에 따라 다른 코드로 응답해야 할 수 있습니다. 목록 중간중간에 그래야 하는 상황들을 명시해 두었으며, 각 상태 코드의 의미는 다음과 같습니다.
