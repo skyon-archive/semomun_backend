@@ -11,12 +11,12 @@ module.exports = function (sequelize, DataTypes) {
       wgid: {
         type: DataTypes.INTEGER,
         allowNull: true,
-        references: { model: 'WorkbookGroups', key: 'id' },
+        references: { model: 'WorkbookGroups', key: 'wgid' },
       },
       title: { type: DataTypes.STRING(256), allowNull: false },
       detail: { type: DataTypes.STRING(4096), allowNull: false },
-      subject: { type: DataTypes.string(255), allowNull: false }, // 과목 이름
-      area: { type: DataTypes.string(255), allowNull: false }, // 영역 이름
+      subject: { type: DataTypes.STRING(255), allowNull: false }, // 과목 이름
+      area: { type: DataTypes.STRING(255), allowNull: false }, // 영역 이름
       cutoff: { type: DataTypes.JSON, allowNull: true }, // 등급 컷
       isbn: { type: DataTypes.STRING(32), allowNull: false },
       author: { type: DataTypes.STRING(32), allowNull: false },
