@@ -3,25 +3,25 @@ const DataTypes = require('sequelize').DataTypes;
 // Notices - 1
 const _Notices = require('./Notices.js');
 // Items - 6
-const _Items = require('./Items');
-const _WorkbookGroups = require('./WorkbookGroups'); // WorkbookGroups Model
-const _Workbooks = require('./Workbooks');
-const _Sections = require('./Sections');
-const _Views = require('./Views');
-const _Problems = require('./Problems');
+const _Items = require('./Items.js');
+const _WorkbookGroups = require('./WorkbookGroups.js'); // WorkbookGroups Model
+const _Workbooks = require('./Workbooks.js');
+const _Sections = require('./Sections.js');
+const _Views = require('./Views.js');
+const _Problems = require('./Problems.js');
 // User - 2
-const _Users = require('./Users');
-const _UserInfo = require('./UserInfo');
+const _Users = require('./Users.js');
+const _UserInfo = require('./UserInfo.js');
 // Tag - 1
-const _Tags = require('./Tags');
+const _Tags = require('./Tags.js');
 // Relationship Tables - 7
-const _PayHistory = require('./PayHistory');
-const _FavoriteTags = require('./FavoriteTags');
-const _WorkbookTags = require('./WorkbookTags');
-const _WorkbookHistory = require('./WorkbookHistory');
-const _ViewSubmissions = require('./ViewSubmissions');
-const _Submissions = require('./Submissions');
-const _ErrorReports = require('./ErrorReports');
+const _PayHistory = require('./PayHistory.js');
+const _FavoriteTags = require('./FavoriteTags.js');
+const _WorkbookTags = require('./WorkbookTags.js');
+const _WorkbookHistory = require('./WorkbookHistory.js');
+const _ViewSubmissions = require('./ViewSubmissions.js');
+const _Submissions = require('./Submissions.js');
+const _ErrorReports = require('./ErrorReports.js');
 
 function initModels(sequelize) {
   const ErrorReports = _ErrorReports(sequelize, DataTypes);

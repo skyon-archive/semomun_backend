@@ -17,6 +17,7 @@ module.exports = function (sequelize, DataTypes) {
       detail: { type: DataTypes.STRING(4096), allowNull: false },
       subject: { type: DataTypes.STRING(255), allowNull: false }, // 과목 이름
       area: { type: DataTypes.STRING(255), allowNull: false }, // 영역 이름
+      deviation: { type: DataTypes.STRING(64), allowNull:false }, // 표준편차
       cutoff: { type: DataTypes.JSON, allowNull: true }, // 등급 컷
       isbn: { type: DataTypes.STRING(32), allowNull: false },
       author: { type: DataTypes.STRING(32), allowNull: false },
