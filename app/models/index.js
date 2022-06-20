@@ -18,7 +18,7 @@ const sequelize = new Sequelize(env.DB_DATABASE, env.DB_USERNAME, env.DB_PASSWOR
 })
 
 const db = require('./init-models')(sequelize)
-sequelize.sync()
+// sequelize.sync() // 혹시 모를 전준태
 
 db.Sequelize = Sequelize
 db.sequelize = sequelize

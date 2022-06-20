@@ -5,19 +5,19 @@ module.exports = function (sequelize, DataTypes) {
       wid: { type: DataTypes.INTEGER, allowNull: false, autoIncrement: true, primaryKey: true },
       id: {
         type: DataTypes.INTEGER,
-        allowNull: true, // 모의고사면 해당 id: null.
+        allowNull: false,
         references: { model: 'Items', key: 'id' },
       },
       wgid: {
         type: DataTypes.INTEGER,
-        allowNull: true,
+        allowNull: true, // 모의고사면 해당 id: null.
         references: { model: 'WorkbookGroups', key: 'wgid' },
       },
       title: { type: DataTypes.STRING(256), allowNull: false },
       detail: { type: DataTypes.STRING(4096), allowNull: false },
-      subject: { type: DataTypes.STRING(255), allowNull: false }, // 과목 이름
-      area: { type: DataTypes.STRING(255), allowNull: false }, // 영역 이름
-      deviation: { type: DataTypes.STRING(64), allowNull:false }, // 표준편차
+      subject: { type: DataTypes.STRING(50), allowNull: false, defaultValue: '' }, // 과목 이름
+      area: { type: DataTypes.STRING(50), allowNull: false, defaultValue: '' }, // 영역 이름
+      deviation: { type: DataTypes.STRING(50), allowNull:false, defaultValue: '' }, // 표준편차
       cutoff: { type: DataTypes.JSON, allowNull: true }, // 등급 컷
       isbn: { type: DataTypes.STRING(32), allowNull: false },
       author: { type: DataTypes.STRING(32), allowNull: false },
