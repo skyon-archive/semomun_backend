@@ -46,10 +46,30 @@ function initModels(sequelize) {
   Problems.hasMany(ErrorReports, { as: 'errorReports', foreignKey: 'pid' });
   ErrorReports.belongsTo(Users, { as: 'uid_User', foreignKey: 'uid' });
   Users.hasMany(ErrorReports, { as: 'errorReports', foreignKey: 'uid' });
-  Tags.belongsToMany(Users, { as: 'uid_Users', through: FavoriteTags, foreignKey: 'tid', otherKey: 'uid' });
-  Tags.belongsToMany(Workbooks, { as: 'wid_Workbooks', through: WorkbookTags, foreignKey: 'tid', otherKey: 'wid' });
-  Users.belongsToMany(Tags, { as: 'tid_Tags', through: FavoriteTags, foreignKey: 'uid', otherKey: 'tid' });
-  Workbooks.belongsToMany(Tags, { as: 'tid_Tags_WorkbookTags', through: WorkbookTags, foreignKey: 'wid', otherKey: 'tid' });
+  Tags.belongsToMany(Users, {
+    as: 'uid_Users',
+    through: FavoriteTags,
+    foreignKey: 'tid',
+    otherKey: 'uid',
+  });
+  Tags.belongsToMany(Workbooks, {
+    as: 'wid_Workbooks',
+    through: WorkbookTags,
+    foreignKey: 'tid',
+    otherKey: 'wid',
+  });
+  Users.belongsToMany(Tags, {
+    as: 'tid_Tags',
+    through: FavoriteTags,
+    foreignKey: 'uid',
+    otherKey: 'tid',
+  });
+  Workbooks.belongsToMany(Tags, {
+    as: 'tid_Tags_WorkbookTags',
+    through: WorkbookTags,
+    foreignKey: 'wid',
+    otherKey: 'tid',
+  });
   Workbooks.belongsTo(Items, { as: 'item', foreignKey: 'id' });
   Items.hasOne(Workbooks, { as: 'workbook', foreignKey: 'id' });
   Submissions.belongsTo(Problems, { as: 'pid_Problem', foreignKey: 'pid' });
@@ -84,8 +104,20 @@ function initModels(sequelize) {
   Workbooks.hasMany(WorkbookHistory, { as: 'workbookHistories', foreignKey: 'wid' });
   WorkbookTags.belongsTo(Workbooks, { as: 'wid_Workbook', foreignKey: 'wid' });
   Workbooks.hasMany(WorkbookTags, { as: 'WorkbookTags', foreignKey: 'wid' });
-  WorkbookGroups.hasMany(Workbooks, { as: 'Workbooks', foreignKey: 'wgid' }); // New Option
-  Items.hasMany(WorkbookGroups, { as: 'WorkbookGroups', foreignKey: 'id' }); // New Option
+  // New Option
+  WorkbookGroups.hasMany(Workbooks, {
+    as: 'Workbooks',
+    foreignKey: 'wgid',
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+  });
+  // New Option
+  Items.hasMany(WorkbookGroups, {
+    as: 'WorkbookGroups',
+    foreignKey: 'id',
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+  });
 
   return {
     ErrorReports,
