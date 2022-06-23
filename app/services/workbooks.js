@@ -10,9 +10,11 @@ exports.fetchWorkbooks = async (page, limit, tids, substring) => {
           { author: { [Op.like]: like } },
           { publishCompany: { [Op.like]: like } }
         ],
-        type: '', wgid: { [Op.not] : null }
+        // type: '', wgid: { [Op.not] : null }
+        type: '',
       }
-    : { type: '', wgid: { [Op.not]: null } }
+    // : { type: '', wgid: { [Op.not]: null } }
+    : { type: '' }
   const subquery = 'SELECT COUNT(*) FROM WorkbookTags WHERE WorkbookTags.wid = Workbooks.wid'
   const { count, rows } = await Workbooks.findAndCountAll({
     attributes: {

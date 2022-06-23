@@ -4,7 +4,7 @@ const DataTypes = require('sequelize').DataTypes;
 const _Notices = require('./Notices.js');
 // Items - 6
 const _Items = require('./Items.js');
-const _WorkbookGroups = require('./WorkbookGroups.js'); // WorkbookGroups Model
+// const _WorkbookGroups = require('./WorkbookGroups.js'); // WorkbookGroups Model
 const _Workbooks = require('./Workbooks.js');
 const _Sections = require('./Sections.js');
 const _Views = require('./Views.js');
@@ -18,11 +18,11 @@ const _Tags = require('./Tags.js');
 const _PayHistory = require('./PayHistory.js');
 const _FavoriteTags = require('./FavoriteTags.js');
 const _WorkbookTags = require('./WorkbookTags.js');
-const _WorkbookGroupHistory = require('./WorkbookGroupHistory.js');
+// const _WorkbookGroupHistory = require('./WorkbookGroupHistory.js');
 const _WorkbookHistory = require('./WorkbookHistory.js');
 const _ViewSubmissions = require('./ViewSubmissions.js');
 const _Submissions = require('./Submissions.js');
-const _ResultSubmissions = require('./ResultSubmissions.js');
+// const _ResultSubmissions = require('./ResultSubmissions.js');
 const _ErrorReports = require('./ErrorReports.js');
 
 function initModels(sequelize) {
@@ -42,9 +42,9 @@ function initModels(sequelize) {
   const WorkbookHistory = _WorkbookHistory(sequelize, DataTypes);
   const WorkbookTags = _WorkbookTags(sequelize, DataTypes);
   const Workbooks = _Workbooks(sequelize, DataTypes);
-  const WorkbookGroups = _WorkbookGroups(sequelize, DataTypes);
-  const WorkbookGroupHistory = _WorkbookGroupHistory(sequelize, DataTypes);
-  const ResultSubmissions = _ResultSubmissions(sequelize, DataTypes);
+  // const WorkbookGroups = _WorkbookGroups(sequelize, DataTypes);
+  // const WorkbookGroupHistory = _WorkbookGroupHistory(sequelize, DataTypes);
+  // const ResultSubmissions = _ResultSubmissions(sequelize, DataTypes);
 
   ErrorReports.belongsTo(Problems, { as: 'pid_Problem', foreignKey: 'pid' });
   Problems.hasMany(ErrorReports, { as: 'errorReports', foreignKey: 'pid' });
@@ -144,9 +144,9 @@ function initModels(sequelize) {
     WorkbookHistory,
     WorkbookTags,
     Workbooks,
-    WorkbookGroups,
-    WorkbookGroupHistory,
-    ResultSubmissions,
+    // WorkbookGroups,
+    // WorkbookGroupHistory,
+    // ResultSubmissions,
   };
 }
 module.exports = initModels;
