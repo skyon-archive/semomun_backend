@@ -45,7 +45,7 @@
   },
   "scripts": {
     "start": "sequelize-cli db:migrate --env test && node server.js",
-    "stop": "sequelize-cli db:migrate:undo:all --env test",
+    "start:dev":"node server.js",
     "lint": "eslint ."
   },
   "repository": {
