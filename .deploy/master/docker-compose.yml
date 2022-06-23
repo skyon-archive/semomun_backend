@@ -1,0 +1,10 @@
+version: "3"
+services:
+  node:
+    container_name: node
+    image: "219222627333.dkr.ecr.ap-northeast-2.amazonaws.com/semomun/backend:latest"
+    restart: always
+    ports:
+      - "80:8080"
+    env_file:
+      - .env

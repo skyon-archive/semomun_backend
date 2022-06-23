@@ -1,8 +1,8 @@
-name: Deploy to AWS Elastic Beanstalk (master)
+name: Deploy to AWS Elastic Beanstalk (dev)
 
 on:
   push:
-    branches: [ master ]
+    branches: [ dev ]
 
   workflow_dispatch:
 
@@ -12,12 +12,12 @@ jobs:
 
     env:
       REGION: ap-northeast-2
-      IMAGE: semomun/backend
+      IMAGE: semomun/backend-dev
       APP_NAME: semomun-backend
-      ENV_NAME: semomun-backend
+      ENV_NAME: semomun-backend-dev
       VERSION: 1
-      DB_HOST: aurora-main.db.semomun.com
-      REDIS_HOST: redis://redis-main.mxpiww.ng.0001.apn2.cache.amazonaws.com:6379
+      DB_HOST: aurora-dev.db.semomun.com
+      REDIS_HOST: redis://redis-dev.mxpiww.ng.0001.apn2.cache.amazonaws.com:6379
 
     steps:
       - uses: actions/checkout@v2
@@ -74,17 +74,17 @@ jobs:
           envkey_SMS_SERVICE_ID: "ncp:sms:kr:263493214013:semomun"
           envkey_SMS_ACCESS_KEY: mrx10KUxW8tEd26GMbop
           envkey_SMS_SECRET_KEY: ${{ secrets.SMS_SECRET_KEY }}
-          envkey_S3_BUCKET: semomun-data
+          envkey_S3_BUCKET: semomun-data-test
           envkey_AWS_REGION: ${{ env.REGION }}
           envkey_AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
           envkey_AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
           envkey_SLACK_CHANNEL: C03BUV6A4FJ
           envkey_SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
-          directory: .deploy/master
+          directory: .deploy/dev
 
       - name: Prepare deployment package
         run: |
-          cd .deploy/master && zip -r deploy.zip . && cd ../..
+          cd .deploy/dev && zip -r deploy.zip . && cd ../..
 
       - name: Deploy to EB
         uses: einaregilsson/beanstalk-deploy@v20
@@ -96,7 +96,7 @@ jobs:
           version_label: ${{ github.run_number }}
           version_description: ${{ github.SHA }} - ${{ github.event.head_commit.message }}
           region: ${{ env.REGION }}
-          deployment_package: .deploy/master/deploy.zip
+          deployment_package: .deploy/dev/deploy.zip
           wait_for_environment_recovery: 360
           use_existing_version_if_available: false
 

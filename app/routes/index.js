@@ -1,6 +1,6 @@
 module.exports = (app) => {
   app.get('/', (req, res) => {
-    res.json({ message: 'Semomun API.' })
+    res.json({ message: 'Semomun API.', latestVersion: '2.0.1' })
   })
   require('./workbooks')(app) // 교재
   require('./sections')(app) // 페이지?

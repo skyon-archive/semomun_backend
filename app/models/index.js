@@ -18,7 +18,7 @@ const sequelize = new Sequelize(env.DB_DATABASE, env.DB_USERNAME, env.DB_PASSWOR
 })
 
 const db = require('./init-models')(sequelize)
-sequelize.sync()
+// sequelize.sync() // WorkbookGroups생성을 위한 싱크 함수 실행.
 
 db.Sequelize = Sequelize
 db.sequelize = sequelize

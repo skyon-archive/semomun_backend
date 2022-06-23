@@ -39,7 +39,7 @@ exports.sendSms = async (phone, message) => {
   }
 
   const { data } = await axios.post(url, form, { headers })
-    .catch((e) => console.log(e.message))
+    .catch((e) => console.log(e))
   if (data.statusCode !== '202') throw new Error('failed to send sms')
 }
 
