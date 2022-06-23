@@ -18,9 +18,11 @@ const _Tags = require('./Tags.js');
 const _PayHistory = require('./PayHistory.js');
 const _FavoriteTags = require('./FavoriteTags.js');
 const _WorkbookTags = require('./WorkbookTags.js');
+const _WorkbookGroupHistory = require('./WorkbookGroupHistory.js');
 const _WorkbookHistory = require('./WorkbookHistory.js');
 const _ViewSubmissions = require('./ViewSubmissions.js');
 const _Submissions = require('./Submissions.js');
+const _ResultSubmissions = require('./ResultSubmissions.js');
 const _ErrorReports = require('./ErrorReports.js');
 
 function initModels(sequelize) {
@@ -41,6 +43,8 @@ function initModels(sequelize) {
   const WorkbookTags = _WorkbookTags(sequelize, DataTypes);
   const Workbooks = _Workbooks(sequelize, DataTypes);
   const WorkbookGroups = _WorkbookGroups(sequelize, DataTypes);
+  const WorkbookGroupHistory = _WorkbookGroupHistory(sequelize, DataTypes);
+  const ResultSubmissions = _ResultSubmissions(sequelize, DataTypes);
 
   ErrorReports.belongsTo(Problems, { as: 'pid_Problem', foreignKey: 'pid' });
   Problems.hasMany(ErrorReports, { as: 'errorReports', foreignKey: 'pid' });
@@ -104,20 +108,24 @@ function initModels(sequelize) {
   Workbooks.hasMany(WorkbookHistory, { as: 'workbookHistories', foreignKey: 'wid' });
   WorkbookTags.belongsTo(Workbooks, { as: 'wid_Workbook', foreignKey: 'wid' });
   Workbooks.hasMany(WorkbookTags, { as: 'WorkbookTags', foreignKey: 'wid' });
-  // New Option
-  WorkbookGroups.hasMany(Workbooks, {
-    as: 'Workbooks',
-    foreignKey: 'wgid',
-    onDelete: 'SET NULL',
-    onUpdate: 'CASCADE',
-  });
-  // New Option
-  Items.hasMany(WorkbookGroups, {
-    as: 'WorkbookGroups',
-    foreignKey: 'id',
-    onDelete: 'SET NULL',
-    onUpdate: 'CASCADE',
-  });
+  /**
+   * 모델에서 관계를 정의해주어서 따로 관계를 정의하지 않아도 될 것 같습니다.
+   * 코드를 삭제하지 않고 주석을 단 이유는 추후에 API관련 작업을 하다가 혹시나 하는 관계 Miss상황을 대비해 남겨두었습니다.
+   */
+  // // New Option
+  // WorkbookGroups.hasMany(Workbooks, {
+  //   as: 'Workbooks',
+  //   foreignKey: 'wgid',
+  //   onDelete: 'SET NULL',
+  //   onUpdate: 'CASCADE',
+  // });
+  // // New Option
+  // Items.hasMany(WorkbookGroups, {
+  //   as: 'WorkbookGroups',
+  //   foreignKey: 'id',
+  //   onDelete: 'SET NULL',
+  //   onUpdate: 'CASCADE',
+  // });
 
   return {
     ErrorReports,
@@ -137,6 +145,8 @@ function initModels(sequelize) {
     WorkbookTags,
     Workbooks,
     WorkbookGroups,
+    WorkbookGroupHistory,
+    ResultSubmissions,
   };
 }
 module.exports = initModels;
