@@ -25,13 +25,31 @@ Semomun API의 명세와 조건, 참고사항 및 예외들을 정리해 작성�
 - JWT_SECRET : JWT 토큰 시크릿 키
 - SALT : 비크립트 해쉬 솔트 값
 
-### DB(Product RDS, Dev RED, Local MySQL)
-| 해당 정보는 서버마다 사용자마다 다를 수 있음
+### ORM과 연결할 DB 설정값(해당 정보는 서버마다 사용자마다 다를 수 있음)
 - DB_HOST : 데이터베이스 호스트
-- DB_DATABASE : 데이터베이스 이름
-- DB_USERNAME : 데이터베이스 유저 네임
+- DB_USERNAME : 데이터베이스 유저 이름
 - DB_PASSWORD : 데이터베이스 패스워드
-- DB_DIALECT : 데이터베이스 종류(MySQL, MongoDB, SQLite3 등등)
+- DB_DATABASE : 데이터베이스 이름
+- DB_DIALECT : 데이터베이스 종류
+
+### ORM Migration 설정 값(해당 정보는 product, development, local로 나뉨)
+- PRODUCT_HOST : Product 데이터베이스 호스트
+- PRODUCT_USERNAME : Product 데이터베이스 유저 이름
+- PRODUCT_PASSWORD : Product 데이터베이스 패스워드
+- PRODUCT_DATABASE : Product 데이터베이스 이름
+- PRODUCT_DIALECT : Product 데이터베이스 종류
+
+- DEVELOPMENT_HOST : Development 데이터베이스 호스트
+- DEVELOPMENT_USERNAME : Development 데이터베이스 유저 이름
+- DEVELOPMENT_PASSWORD : Development 데이터베이스 패스워드
+- DEVELOPMENT_DATABASE : Development 데이터베이스 이름
+- DEVELOPMENT_DIALECT : Development 데이터베이스 종류
+
+- LOCAL_HOST : Local 데이터베이스 호스트
+- LOCAL_USERNAME : Local 데이터베이스 유저 이름
+- LOCAL_PASSWORD : Local 데이터베이스 패스워드
+- LOCAL_DATABASE : Local 데이터베이스 이름
+- LOCAL_DIALECT : Local 데이터베이스 종류
 
 ### SMS
 - PHONE_NUMBER : 핸드폰 번호(뭔진 잘 모름)
