@@ -5,9 +5,9 @@ module.exports = function (sequelize, DataTypes) {
       wgid: { type: DataTypes.INTEGER, allowNull: false, autoIncrement: true, primaryKey: true },
       id: {
         type: DataTypes.INTEGER,
-        allowNull: false, // 전체 구매든 개별 구매든 item을 참조해야 하지 않을까?
+        allowNull: true, // 현재로썬 개별 구매만 가능하기에 아이템을 바라보는 그룹의 FK는 nullable 허용
         references: { model: 'Items', key: 'id' },
-        onDelete: 'CASCADE',
+        onDelete: 'SET NULL',
         onUpdate: 'CASCADE',
       },
       title: { type: DataTypes.STRING(256), allowNull: false },

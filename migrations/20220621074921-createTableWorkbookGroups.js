@@ -6,9 +6,9 @@ module.exports = {
       wgid: { type: Sequelize.INTEGER, allowNull: false, autoIncrement: true, primaryKey: true },
       id: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true, // 현재로썬 개별 구매만 가능하기에 아이템을 바라보는 그룹의 FK는 nullable 허용
         references: { model: 'Items', key: 'id' },
-        onDelete: 'cascade',
+        onDelete: 'set null',
         onUpdate: 'cascade',
       },
       title: { type: Sequelize.STRING(256), allowNull: false },
