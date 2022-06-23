@@ -6,8 +6,7 @@ module.exports = function (sequelize, DataTypes) {
       type: { type: DataTypes.STRING(32), allowNull: false },
       price: { type: DataTypes.INTEGER, allowNull: false },
       sales: { type: DataTypes.INTEGER, allowNull: false },
-      // createdAt: DataTypes.DATE, // Sequelize ORM v5's TIMESTAMP
-      // updatedAt: DataTypes.DATE,
+      originalPrice: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
     },
     {
       sequelize,
