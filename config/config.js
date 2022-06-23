@@ -10,11 +10,11 @@ module.exports = {
     dialect: env.DEVELOPMENT_DIALECT,
   },
   test: {
-    username: env.TEST_USERNAME,
-    password: env.TEST_PASSWORD,
-    database: env.TEST_DATABASE,
-    host: env.TEST_HOST,
-    dialect: env.TEST_DIALECT,
+    username: env.LOCAL_USERNAME,
+    password: env.LOCAL_PASSWORD,
+    database: env.LOCAL_DATABASE,
+    host: env.LOCAL_HOST,
+    dialect: env.LOCAL_DIALECT,
   },
   product: {
     username: env.PRODUCT_USERNAME,
