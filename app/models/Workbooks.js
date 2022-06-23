@@ -30,7 +30,7 @@ module.exports = function (sequelize, DataTypes) {
 
       subject: { type: DataTypes.STRING(50), allowNull: false, defaultValue: '' }, // 과목 이름
       area: { type: DataTypes.STRING(50), allowNull: false, defaultValue: '' }, // 영역 이름
-      deviation: { type: DataTypes.INTEGER, allowNull: true }, // 표준편차
+      standardDeviation: { type: DataTypes.INTEGER, allowNull: true }, // 표준편차
       averageScore: { type: DataTypes.INTEGER, allowNull: true }, // 평균 점수
       cutoff: { type: DataTypes.JSON, allowNull: true }, // 등급 컷
     },

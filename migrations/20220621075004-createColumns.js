@@ -31,8 +31,8 @@ module.exports = {
       allowNull: false,
       defaultValue: '',
     });
-    // Workbooks.deviation
-    queryInterface.addColumn('Workbooks', 'deviation', {
+    // Workbooks.standardDeviation
+    queryInterface.addColumn('Workbooks', 'standardDeviation', {
       type: Sequelize.INTEGER,
       allowNull: true,
     });
@@ -60,7 +60,7 @@ module.exports = {
     await queryInterface.removeColumn('Workbooks', 'cutoff');
     await queryInterface.removeColumn('Workbooks', 'subject');
     await queryInterface.removeColumn('Workbooks', 'area');
-    await queryInterface.removeColumn('Workbooks', 'deviation');
+    await queryInterface.removeColumn('Workbooks', 'standardDeviation');
     await queryInterface.removeColumn('Workbooks', 'averageScore');
 
     const info = await queryInterface.getForeignKeyReferencesForTable('Workbooks');
