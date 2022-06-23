@@ -1,5 +1,3 @@
-const { col } = require('sequelize/types');
-
 module.exports = function (sequelize, DataTypes) {
   return sequelize.define(
     'ResultSubmissions',
