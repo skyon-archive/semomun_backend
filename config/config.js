@@ -2,25 +2,11 @@ require('dotenv').config();
 const env = process.env;
 
 module.exports = {
-  product: {
-    username: env.PRODUCT_USERNAME,
-    password: env.PRODUCT_PASSWORD,
-    database: env.PRODUCT_DATABASE,
-    host: env.PRODUCT_HOST,
-    dialect: env.PRODUCT_DIALECT,
-  },
-  development: {
-    username: env.DEVELOPMENT_USERNAME,
-    password: env.DEVELOPMENT_PASSWORD,
-    database: env.DEVELOPMENT_DATABASE,
-    host: env.DEVELOPMENT_HOST,
-    dialect: env.DEVELOPMENT_DIALECT,
-  },
-  local: {
-    username: env.LOCAL_USERNAME,
-    password: env.LOCAL_PASSWORD,
-    database: env.LOCAL_DATABASE,
-    host: env.LOCAL_HOST,
-    dialect: env.LOCAL_DIALECT,
+  db: {
+    username: env.DB_USERNAME,
+    password: env.DB_PASSWORD,
+    database: env.DB_DATABASE,
+    host: env.DB_HOST,
+    dialect: env.DB_DIALECT,
   },
 };

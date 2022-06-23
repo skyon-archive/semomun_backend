@@ -44,7 +44,7 @@
     "form-data": "^4.0.0"
   },
   "scripts": {
-    "start": "sequelize-cli db:migrate --env development && node server.js",
+    "start": "sequelize-cli db:migrate --env db && node server.js",
     "start:dev":"node server.js",
     "lint": "eslint ."
   },
