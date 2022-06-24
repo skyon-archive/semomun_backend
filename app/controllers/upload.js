@@ -10,24 +10,26 @@ const { updateSectionSize } = require('../migrations/migrateWorkbooks')
 const valdiateConfig = async (config) => {
   const workbookFields = [
     'title',
-    'date',
-    'originalPrice',
-    'price',
     'detail',
-    'bookcover',
+    'date',
     'author',
+    'originalPrice', // 판매 원가 - 온라인
+    'price', // 판매 할인 가격(실 거래가) - 온라인
+    'paperbookPrice', // 종이책 원가 - 오프라인
+    'bookcover',
     'publishCompany',
     'publishMan',
-    'continental',
-    'country',
-    'bigcategory',
-    'middlecategory',
-    'smallcategory',
-    'grade'
+    'continental', // Tag
+    'country', // Tag
+    'bigcategory', // Tag
+    'middlecategory', // Tag
+    'smallcategory', // Tag
+    'grade' // Tag
   ]
   const workbookIntFields = [
     'price',
-    'originalPrice'
+    'originalPrice',
+    'paperbookPrice',
   ]
   const sectionFields = [
     'index',
@@ -194,7 +196,8 @@ exports.confirmWorkbook = async (req, res) => {
     const dbItem = await Items.create({
       type: 'workbook',
       sales: 0,
-      price: workbook.price
+      price: workbook.price,
+      originalPrice: workbook.originalPrice
     })
 
     const m = workbook.date.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/)
@@ -207,8 +210,14 @@ exports.confirmWorkbook = async (req, res) => {
       date: `${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')} 09:00:00`,
       publishMan: workbook.publishMan,
       publishCompany: workbook.publishCompany,
-      originalPrice: workbook.originalPrice,
-      bookcover: workbook.bookcover
+      paperbookPrice: workbook.paperbookPrice, // originalPrice: workbook.originalPrice,
+      bookcover: workbook.bookcover,
+      subject: workbook.subject, // New
+      area: workbook.area, // New
+      standardDeviation: workbook.standardDeviation, // New
+      averageScore: workbook.averageScore, // New
+      cutoff: workbook.cutoff, // New
+
     })
 
     const tagNames = [
