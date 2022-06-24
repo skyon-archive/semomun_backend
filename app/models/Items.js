@@ -6,7 +6,7 @@ module.exports = function (sequelize, DataTypes) {
       type: { type: DataTypes.STRING(32), allowNull: false },
       price: { type: DataTypes.INTEGER, allowNull: false },
       sales: { type: DataTypes.INTEGER, allowNull: false },
-      // originalPrice: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
+      originalPrice: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
     },
     {
       sequelize,
