@@ -1,9 +1,10 @@
 const { parseIntDefault, parseIntList } = require('../utils.js');
-const { selectWorkbookGroups } = require('../services/workbookGroups.js');
+const { selectWorkbookGroups, selectOneWorkbookGroup } = require('../services/workbookGroups.js');
 
 exports.getWorkbookGroups = async (req, res) => {
   // Query Params
   const { page, limit, tids, keyword } = req.query;
+  console.log('!@!@!@!@@#@#@#@#');
   console.log(page);
   console.log(limit);
   console.log(tids);
@@ -18,4 +19,14 @@ exports.getWorkbookGroups = async (req, res) => {
         keyword ?? ''
       )
     );
+};
+
+exports.getOneWorkbookGroup = async (req, res, next) => {
+  const { wgid } = req.params;
+  console.log('@@@');
+  console.log(wgid);
+  workbookgroup = await selectOneWorkbookGroup(wgid);
+  if (!workbookgroup) return res.status(404).send();
+
+  res.status(200).json({ workbookgroup });
 };

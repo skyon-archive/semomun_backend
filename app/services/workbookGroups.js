@@ -1,8 +1,9 @@
-const { WorkbookGroups } = require('../models/index.js');
+const { WorkbookGroups, Workbooks } = require('../models/index.js');
 const { Op } = require('sequelize');
+const { fetchWorkbooksByWids } = require('./workbooks.js');
 
 exports.selectWorkbookGroups = async (page, limit, tids, keyword) => {
-  // Tag 미구현
+  // // Tag 미구현
   const like = `%${keyword.replace(/%/, '\\%')}%`;
   const where = keyword
     ? {
@@ -17,4 +18,13 @@ exports.selectWorkbookGroups = async (page, limit, tids, keyword) => {
     limit,
   });
   return { count, workbookGroups: rows };
+};
+
+exports.selectOneWorkbookGroup = async (wgid) => {
+  console.log('!#!@#!#!@#!@#!@#');
+  const workbookgroup = await WorkbookGroups.findOne({
+    include: [{ model: Workbooks, as: 'Workbooks' }],
+    where: { wgid },
+  });
+  return workbookgroup;
 };
