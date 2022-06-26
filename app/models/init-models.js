@@ -113,19 +113,19 @@ function initModels(sequelize) {
    * 코드를 삭제하지 않고 주석을 단 이유는 추후에 API관련 작업을 하다가 혹시나 하는 관계 Miss상황을 대비해 남겨두었습니다.
    */
   // // New Option
-  // WorkbookGroups.hasMany(Workbooks, {
-  //   as: 'Workbooks',
-  //   foreignKey: 'wgid',
-  //   onDelete: 'SET NULL',
-  //   onUpdate: 'CASCADE',
-  // });
+  WorkbookGroups.hasMany(Workbooks, {
+    as: 'Workbooks',
+    foreignKey: 'wgid',
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+  });
   // // New Option
-  // Items.hasMany(WorkbookGroups, {
-  //   as: 'WorkbookGroups',
-  //   foreignKey: 'id',
-  //   onDelete: 'SET NULL',
-  //   onUpdate: 'CASCADE',
-  // });
+  Items.hasMany(WorkbookGroups, {
+    as: 'WorkbookGroups',
+    foreignKey: 'id',
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+  });
 
   return {
     ErrorReports,
