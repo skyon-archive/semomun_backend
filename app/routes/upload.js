@@ -6,6 +6,7 @@ const { authJwt } = require('../middleware/auth')
 
 module.exports = (app) => {
   router.post('/config', upload.single('config'), authJwt, readConfig)
+  router.post('/groupConfig', upload.single('groupConfig'), authJwt, readGroupConfig)
   router.post('/confirm', authJwt, confirmWorkbook)
   router.patch('/bookcover', authJwt, updateBookcover)
 
