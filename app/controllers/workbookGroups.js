@@ -22,20 +22,27 @@ exports.getOneWorkbookGroup = async (req, res) => {
   const { wgid } = req.params;
   workbookgroup = await selectOneWorkbookGroup(wgid);
   if (!workbookgroup) return res.status(404).send();
-  
+
   const workbookgroupData = workbookgroup.get({ plain: true });
   Array.from(workbookgroupData.workbooks).forEach((workbook) => {
+    // cutoff.rank int to string 관련
+    if (Array.isArray(workbook.cutoff)) {
+      workbook.cutoff.forEach((cutoff) => {
+        cutoff.rank = cutoff.rank.toString();
+      });
+    }
+
     // item 관련
     workbook.price = workbook.item.price;
     workbook.sales = workbook.item.sales;
-    delete workbook.item
+    delete workbook.item;
 
     // tags 관련
-    workbook.tags = []
-    workbook.WorkbookTags.forEach(WorkbookTags => {
-      workbook.tags.push(WorkbookTags.tid_Tag)
-    })
-    delete workbook.WorkbookTags
+    workbook.tags = [];
+    workbook.WorkbookTags.forEach((WorkbookTags) => {
+      workbook.tags.push(WorkbookTags.tid_Tag);
+    });
+    delete workbook.WorkbookTags;
   });
 
   res.status(200).json(workbookgroupData);
