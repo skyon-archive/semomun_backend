@@ -21,7 +21,7 @@ exports.getOneWorkbookGroup = async (req, res) => {
   workbookgroup = await selectOneWorkbookGroup(wgid);
   if (!workbookgroup) return res.status(404).send();
 
-  res.status(200).json({ workbookgroup });
+  res.status(200).json(workbookgroup);
 };
 
 exports.getPurchasedWorkbookGroups = async (req, res) => {
