@@ -111,14 +111,14 @@ function initModels(sequelize) {
   
   // // New Option
   WorkbookGroups.hasMany(Workbooks, {
-    as: 'Workbooks',
+    as: 'workbooks',
     foreignKey: 'wgid',
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
   });
   // // New Option
   Items.hasMany(WorkbookGroups, {
-    as: 'WorkbookGroups',
+    as: 'workbookGroups',
     foreignKey: 'id',
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',

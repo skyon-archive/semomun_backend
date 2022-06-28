@@ -21,7 +21,7 @@ exports.selectWorkbookGroups = async (page, limit, tids, keyword) => {
 
 exports.selectOneWorkbookGroup = async (wgid) => {
   const workbookgroup = await WorkbookGroups.findOne({
-    include: [{ model: Workbooks, as: 'Workbooks' }],
+    include: [{ model: Workbooks, as: 'workbooks' }],
     where: { wgid },
   });
   return workbookgroup;
