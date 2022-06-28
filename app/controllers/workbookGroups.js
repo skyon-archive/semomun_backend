@@ -1,5 +1,7 @@
 const { parseIntDefault, parseIntList } = require('../utils.js');
 const { selectWorkbookGroups, selectOneWorkbookGroup } = require('../services/workbookGroups.js');
+const workbookGroups = require('../routes/workbookGroups.js');
+const workbooks = require('../routes/workbooks.js');
 
 exports.getWorkbookGroups = async (req, res) => {
   // Query Params
@@ -20,8 +22,23 @@ exports.getOneWorkbookGroup = async (req, res) => {
   const { wgid } = req.params;
   workbookgroup = await selectOneWorkbookGroup(wgid);
   if (!workbookgroup) return res.status(404).send();
+  
+  const workbookgroupData = workbookgroup.get({ plain: true });
+  Array.from(workbookgroupData.workbooks).forEach((workbook) => {
+    // item 관련
+    workbook.price = workbook.item.price;
+    workbook.sales = workbook.item.sales;
+    delete workbook.item
 
-  res.status(200).json(workbookgroup);
+    // tags 관련
+    workbook.tags = []
+    workbook.WorkbookTags.forEach(WorkbookTags => {
+      workbook.tags.push(WorkbookTags.tid_Tag)
+    })
+    delete workbook.WorkbookTags
+  });
+
+  res.status(200).json(workbookgroupData);
 };
 
 exports.getPurchasedWorkbookGroups = async (req, res) => {

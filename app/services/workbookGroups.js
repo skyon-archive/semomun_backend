@@ -21,8 +21,19 @@ exports.selectWorkbookGroups = async (page, limit, tids, keyword) => {
 
 exports.selectOneWorkbookGroup = async (wgid) => {
   const workbookgroup = await WorkbookGroups.findOne({
-    include: [{ model: Workbooks, as: 'workbooks', include: [{model: Sections, as: 'sections'}]}],
+    include: {
+      association: 'workbooks',
+      attributes: { exclude: ['type'] },
+      isNewRecord: true,
+      include: [
+        { association: 'sections', order: [['index', 'ASC']] },
+        { association: 'item', attributes: ['price', 'sales'] },
+        { association: 'WorkbookTags', include: { association: 'tid_Tag' } },
+      ],
+    },
     where: { wgid },
+    // raw: true,
+    nest: true,
   });
   return workbookgroup;
 };
