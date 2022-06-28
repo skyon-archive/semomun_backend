@@ -1,4 +1,4 @@
-const { WorkbookGroups, Workbooks, Items, sequelize } = require('../models/index.js');
+const { WorkbookGroups, Workbooks, Items, sequelize, Sections } = require('../models/index.js');
 const { Op } = require('sequelize');
 
 exports.selectWorkbookGroups = async (page, limit, tids, keyword) => {
@@ -21,7 +21,7 @@ exports.selectWorkbookGroups = async (page, limit, tids, keyword) => {
 
 exports.selectOneWorkbookGroup = async (wgid) => {
   const workbookgroup = await WorkbookGroups.findOne({
-    include: [{ model: Workbooks, as: 'workbooks' }],
+    include: [{ model: Workbooks, as: 'workbooks', include: [{model: Sections, as: 'sections'}]}],
     where: { wgid },
   });
   return workbookgroup;
