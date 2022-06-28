@@ -108,10 +108,7 @@ function initModels(sequelize) {
   Workbooks.hasMany(WorkbookHistory, { as: 'workbookHistories', foreignKey: 'wid' });
   WorkbookTags.belongsTo(Workbooks, { as: 'wid_Workbook', foreignKey: 'wid' });
   Workbooks.hasMany(WorkbookTags, { as: 'WorkbookTags', foreignKey: 'wid' });
-  /**
-   * 모델에서 관계를 정의해주어서 따로 관계를 정의하지 않아도 될 것 같습니다.
-   * 코드를 삭제하지 않고 주석을 단 이유는 추후에 API관련 작업을 하다가 혹시나 하는 관계 Miss상황을 대비해 남겨두었습니다.
-   */
+  
   // // New Option
   WorkbookGroups.hasMany(Workbooks, {
     as: 'Workbooks',
