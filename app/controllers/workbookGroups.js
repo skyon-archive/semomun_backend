@@ -1,7 +1,5 @@
 const { parseIntDefault, parseIntList } = require('../utils.js');
 const { selectWorkbookGroups, selectOneWorkbookGroup } = require('../services/workbookGroups.js');
-const workbookGroups = require('../routes/workbookGroups.js');
-const workbooks = require('../routes/workbooks.js');
 
 exports.getWorkbookGroups = async (req, res) => {
   // Query Params
