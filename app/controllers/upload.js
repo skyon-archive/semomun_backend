@@ -93,7 +93,29 @@ const valdiateConfig = async (config) => {
   if (workbook) throw new BadRequest(`title 중복: ${workbook.title}`);
 };
 
-exports.readGroupConfig = async (req, res, next) => {};
+exports.readGroupConfig = async (req, res) => {
+  let filePath;
+  try {
+    console.log(req.files['config']);
+    console.log(req.files['image']);
+
+    // 재현님과 회의 후 진행 예정.
+
+    res.status(200).json({ message: config });
+  } catch (err) {
+    if (filePath) fs.rmSync(filePath);
+    if (err instanceof BadRequest) res.status(400).send(err.message);
+    else if (err instanceof Forbidden) res.status(403).send(err.message);
+    else {
+      console.log(err);
+      res.status(500).send();
+    }
+  }
+};
+
+exports.confirmWorkbookGroup = async (req, res, next) => {
+  // not yet
+};
 
 exports.readConfig = async (req, res) => {
   let filePath;
