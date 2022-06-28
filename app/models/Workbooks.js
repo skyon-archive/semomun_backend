@@ -35,6 +35,7 @@ module.exports = function (sequelize, DataTypes) {
       standardDeviation: { type: DataTypes.INTEGER, allowNull: true }, // 표준편차
       averageScore: { type: DataTypes.INTEGER, allowNull: true }, // 평균 점수
       cutoff: { type: DataTypes.JSON, allowNull: true }, // 등급 컷
+      timelimit: { type: DataTypes.INTEGER, allowNull: true }, // 모의고사 풀이에 주어지는 시간(단위 : 초)
     },
     {
       sequelize,
