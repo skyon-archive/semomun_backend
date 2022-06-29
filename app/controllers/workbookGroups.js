@@ -61,23 +61,18 @@ exports.getPurchasedWorkbookGroups = async (req, res) => {
     console.log(order);
     const result = await selectPurchasedWorkbookGroups(uid, order);
 
-    const resultData = [];
-    Array.from(result).forEach((workbookgroup) => { // reduce, etc...
+    const resultData = result.map((workbookgroup) => {
       const workbookgroupData = workbookgroup.get({ plain: true });
-      delete workbookgroupData.workbookgroupHistories;
-      resultData.push(workbookgroupData);
-
-      const temp_wids = [];
-      let temp_payDate = null;
-      workbookgroupData.workbooks.forEach((workbook) => {
-        temp_wids.push(workbook.wid);
-        const payDate = workbook.item.payHistory[0].createdAt;
-        if (temp_payDate === null) temp_payDate = payDate;
-        else temp_payDate = temp_payDate > payDate ? temp_payDate : payDate;
-      });
-      workbookgroupData.workbooks = temp_wids; // map
-      workbookgroupData.createdAt = temp_payDate;
-
+      return {
+        ...workbookgroupData,
+        workbookgroupHistories: undefined,
+        workbooks: workbookgroupData.workbooks.map((workbook) => workbook.wid),
+        createdAt: workbookgroupData.workbooks.reduce((accu, curr) => {
+          const currentCreatedAt = curr.item.payHistory[0].createdAt;
+          if (!accu) return currentCreatedAt;
+          return accu > currentCreatedAt ? accu : currentCreatedAt;
+        }, null),
+      };
     });
 
     res.status(200).json(resultData);
