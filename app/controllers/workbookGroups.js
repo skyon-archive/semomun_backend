@@ -51,6 +51,7 @@ exports.getOneWorkbookGroup = async (req, res) => {
   res.status(200).json(workbookgroupData);
 };
 
+// 리팩토링 필요
 exports.getPurchasedWorkbookGroups = async (req, res) => {
   try {
     const uid = req.uid;
@@ -61,7 +62,7 @@ exports.getPurchasedWorkbookGroups = async (req, res) => {
     const result = await selectPurchasedWorkbookGroups(uid, order);
 
     const resultData = [];
-    Array.from(result).forEach((workbookgroup) => {
+    Array.from(result).forEach((workbookgroup) => { // reduce, etc...
       const workbookgroupData = workbookgroup.get({ plain: true });
       delete workbookgroupData.workbookgroupHistories;
       resultData.push(workbookgroupData);
@@ -74,7 +75,7 @@ exports.getPurchasedWorkbookGroups = async (req, res) => {
         if (temp_payDate === null) temp_payDate = payDate;
         else temp_payDate = temp_payDate > payDate ? temp_payDate : payDate;
       });
-      workbookgroupData.workbooks = temp_wids;
+      workbookgroupData.workbooks = temp_wids; // map
       workbookgroupData.createdAt = temp_payDate;
 
     });
