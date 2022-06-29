@@ -51,7 +51,6 @@ exports.getOneWorkbookGroup = async (req, res) => {
   res.status(200).json(workbookgroupData);
 };
 
-// 리팩토링 필요
 exports.getPurchasedWorkbookGroups = async (req, res) => {
   try {
     const uid = req.uid;
