@@ -108,7 +108,7 @@ function initModels(sequelize) {
   Workbooks.hasMany(WorkbookHistory, { as: 'workbookHistories', foreignKey: 'wid' });
   WorkbookTags.belongsTo(Workbooks, { as: 'wid_Workbook', foreignKey: 'wid' });
   Workbooks.hasMany(WorkbookTags, { as: 'WorkbookTags', foreignKey: 'wid' });
-  
+
   // // New Option
   WorkbookGroups.hasMany(Workbooks, {
     as: 'workbooks',
@@ -116,6 +116,7 @@ function initModels(sequelize) {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
   });
+
   // // New Option
   Items.hasMany(WorkbookGroups, {
     as: 'workbookGroups',
@@ -123,6 +124,14 @@ function initModels(sequelize) {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
   });
+
+  Workbooks.belongsTo(WorkbookGroups, { as: 'workbookgroups', foreignKey: 'wgid' });
+
+  WorkbookGroups.hasMany(WorkbookGroupHistory, {
+    as: 'workbookgroupHistories',
+    foreignKey: 'wgid',
+  });
+  WorkbookGroupHistory.belongsTo(WorkbookGroups, { as: 'workbookgroup', foreignKey: 'wgid' });
 
   return {
     ErrorReports,

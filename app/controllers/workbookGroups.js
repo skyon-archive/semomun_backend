@@ -1,5 +1,10 @@
 const { parseIntDefault, parseIntList } = require('../utils.js');
-const { selectWorkbookGroups, selectOneWorkbookGroup } = require('../services/workbookGroups.js');
+
+const {
+  selectWorkbookGroups,
+  selectOneWorkbookGroup,
+  selectPurchasedWorkbookGroups,
+} = require('../services/workbookGroups.js');
 
 exports.getWorkbookGroups = async (req, res) => {
   // Query Params
@@ -53,22 +58,23 @@ exports.getPurchasedWorkbookGroups = async (req, res) => {
 
     const { order } = req.query;
     console.log(order);
+    const result = await selectPurchasedWorkbookGroups(uid, order);
 
-    res.status(200).json([
-      // Mock Data Return
-      {
-        wgid: 2,
-        solve: '2022-03-09T17:03:34.000Z',
-        createdAt: '2022-03-10T19:37:11.000Z',
-        workbooks: [2, 3],
-      },
-      {
-        wgid: 3,
-        solve: '2022-03-09T17:03:34.000Z',
-        createdAt: '2022-03-10T19:37:11.000Z',
-        workbooks: [3, 4],
-      },
-    ]);
+    const resultData = result.map((workbookgroup) => {
+      const workbookgroupData = workbookgroup.get({ plain: true });
+      return {
+        ...workbookgroupData,
+        workbookgroupHistories: undefined,
+        workbooks: workbookgroupData.workbooks.map((workbook) => workbook.wid),
+        createdAt: workbookgroupData.workbooks.reduce((accu, curr) => {
+          const currentCreatedAt = curr.item.payHistory[0].createdAt;
+          if (!accu) return currentCreatedAt;
+          return accu > currentCreatedAt ? accu : currentCreatedAt;
+        }, null),
+      };
+    });
+
+    res.status(200).json(resultData);
   } catch (err) {
     console.log(err);
     res.status(500).send();
