@@ -58,7 +58,7 @@ exports.selectPurchasedWorkbookGroups = async (uid, orderType) => {
   const result = await WorkbookGroups.findAll({
     attributes: ['wgid', [sequelize.col('`workbookgroupHistories`.`datetime`'), 'solve']],
     include: [
-      { association: 'workbookgroupHistories', attributes: ['datetime'] },
+      { association: 'workbookgroupHistories', attributes: ['datetime'] }, // 여기 수정했는데? 배포가 안되네?
       {
         association: 'workbooks',
         attributes: ['wid'],
