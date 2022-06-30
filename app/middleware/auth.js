@@ -3,15 +3,20 @@ const { getUserByUid } = require('../services/user')
 
 exports.authJwt = async (req, res, next) => {
   try {
+    // console.log(req);
     const { authorization } = req.headers
+    console.log('AUTHO', authorization);
     const accessToken = authorization ? authorization.split('Bearer ')[1] : null
+    console.log('ACC', accessToken);
     if (!accessToken) {
       req.uid = null
       req.jwtMessage = 'no access token'
     } else {
       const { ok, result, message } = verifyJwt(accessToken)
+      console.log('OK', ok, result, message);
       if (ok) {
         const user = await getUserByUid(result.uid)
+        console.log('USER', user);
         if (!user) {
           req.uid = null
           req.jwtMessage = 'user not exist'

@@ -17,6 +17,11 @@ exports.postScoredData = async (req, res) => {
     subject,
   } = req.body;
   const uid = req.uid;
+  console.log('################ CONTROLLER ################');
+
+  console.log('USER ID =', uid);
+
+//   console.log(req);
   
   const resultSub = await ResultSubmissions.create({
     wgid,
@@ -34,5 +39,5 @@ exports.postScoredData = async (req, res) => {
     uid,
   });
   if (resultSub) res.status(201).send();
-  else res.status(400).json({ message: resultSub });
+  else res.status(400).json({ message: "INSERT ERROR" });
 };
