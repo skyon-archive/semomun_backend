@@ -11,10 +11,27 @@ const {
   Problems,
   Tags,
   WorkbookTags,
+  WorkbookGroups,
 } = require('../models/index');
 const { BadRequest, Forbidden } = require('../errors');
 const { getPresignedPost, checkFileExist, deleteFile } = require('../services/s3');
 const { updateSectionSize } = require('../migrations/migrateWorkbooks');
+
+const validateGroupConfig = async (groupConfig) => {
+  const workbookgroupFields = [
+    'type',
+    'title',
+    'groupCover',
+    'isGroupOnlyPurchasable',
+    'workbooks',
+  ];
+
+  workbookgroupFields.forEach((field) => {
+    if (!(field in groupConfig.workbookgroup)) {
+      throw new BadRequest(`workbookgroup.${field} 필드 없음`);
+    }
+  });
+};
 
 const valdiateConfig = async (config) => {
   const workbookFields = [
@@ -96,12 +113,18 @@ const valdiateConfig = async (config) => {
 exports.readGroupConfig = async (req, res) => {
   let filePath;
   try {
-    console.log(req.files['config']);
-    console.log(req.files['image']);
+    filePath = path.join(__dirname, '../../', req.file.path);
 
-    // 재현님과 회의 후 진행 예정.
+    const { role } = req;
+    if (role !== 'ADMIN') throw new Forbidden('');
+    const groupConfig = yaml.load(fs.readFileSync(filePath));
 
-    res.status(200).json({ message: config });
+    validateGroupConfig(groupConfig);
+    const filename = groupConfig.workbookgroup.title;
+    const groupCoverUUID = uuidv4();
+    const preSignedUrl = await getPresignedPost('groupCover', groupCoverUUID);
+
+    res.status(200).json({ preSignedUrl, filename, key: path.basename(filePath) });
   } catch (err) {
     if (filePath) fs.rmSync(filePath);
     if (err instanceof BadRequest) res.status(400).send(err.message);
@@ -113,8 +136,52 @@ exports.readGroupConfig = async (req, res) => {
   }
 };
 
-exports.confirmWorkbookGroup = async (req, res, next) => {
-  // not yet
+exports.confirmWorkbookGroup = async (req, res) => {
+  try {
+    const { key } = req.body;
+    const { role } = req;
+    if (role !== 'ADMIN') throw new Forbidden('');
+
+    const filePath = path.join(__dirname, '../../uploads', key);
+    if (!fs.existsSync(filePath)) {
+      throw new BadRequest(`옳지 않은 key ${key}`);
+    }
+
+    const { workbookgroup } = JSON.parse(fs.readFileSync(filePath));
+    await checkFileExist('groupCover', workbookgroup.title); // S3 Check
+
+    const dbGroup = await WorkbookGroups.create({
+      type: workbookgroup.type,
+      title: workbookgroup.title,
+      detail: workbookgroup.detail === undefined ? '' : workbookgroup.detail,
+      groupCover: workbookgroup.groupCover,
+      isGroupOnlyPurchasable: workbookgroup.isGroupOnlyPurchasable,
+    });
+
+    const wgid = dbGroup.wgid;
+    const nonExistBooks = [];
+    const changeParents = [];
+    const titles = workbookgroup.workbooks.map((title) => title.title);
+    await Promise.all(
+      titles.map(async (title) => {
+        const result = await Workbooks.findOne({ where: { title } });
+        if (result !== null) {
+          const resultData = result.get({ plain: true });
+          if (resultData.wgid !== null) changeParents.push(title);
+          await result.update(wgid); // 참조
+        } else nonExistBooks.push(title);
+      })
+    );
+    if (filePath) fs.rmSync(filePath);
+    res.status(200).json({ nonExistBooks, changeParents });
+  } catch (err) {
+    if (err instanceof BadRequest) res.status(400).send(err.message);
+    else if (err instanceof Forbidden) res.status(403).send(err.message);
+    else {
+      console.log(err);
+      res.status(500).send();
+    }
+  }
 };
 
 exports.readConfig = async (req, res) => {
