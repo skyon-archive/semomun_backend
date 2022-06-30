@@ -16,6 +16,22 @@ const { BadRequest, Forbidden } = require('../errors');
 const { getPresignedPost, checkFileExist, deleteFile } = require('../services/s3');
 const { updateSectionSize } = require('../migrations/migrateWorkbooks');
 
+const validateGroupConfig = async (groupConfig) => {
+  const workbookgroupFields = [
+    'type',
+    'title',
+    'groupCover',
+    'isGroupOnlyPurchasable',
+    'workbooks',
+  ];
+
+  workbookgroupFields.forEach((field) => {
+    if (!(field in groupConfig.workbookgroup)) {
+      throw new BadRequest(`workbookgroup.${field} 필드 없음`);
+    }
+  });
+}; // 미사용
+
 const valdiateConfig = async (config) => {
   const workbookFields = [
     'title',
@@ -96,12 +112,18 @@ const valdiateConfig = async (config) => {
 exports.readGroupConfig = async (req, res) => {
   let filePath;
   try {
-    console.log(req.files['config']);
-    console.log(req.files['image']);
+    filePath = path.join(__dirname, '../../', req.file.path);
 
-    // 재현님과 회의 후 진행 예정.
+    const { role } = req;
+    if (role !== 'ADMIN') throw new Forbidden('');
+    const groupConfig = yaml.load(fs.readFileSync(filePath));
 
-    res.status(200).json({ message: config });
+    validateGroupConfig(groupConfig);
+    const filename = groupConfig.workbookgroup.title;
+    const groupCoverUUID = uuidv4();
+    const preSignedUrl = await getPresignedPost('groupCover', groupCoverUUID);
+
+    res.status(200).json({ preSignedUrl, filename, key: path.basename(filePath) });
   } catch (err) {
     if (filePath) fs.rmSync(filePath);
     if (err instanceof BadRequest) res.status(400).send(err.message);
