@@ -3,7 +3,7 @@ const { getUserByUid } = require('../services/user')
 
 exports.authJwt = async (req, res, next) => {
   try {
-    // console.log(req);
+    console.log('############# AUTH MIDDLEWARE ###########');
     const { authorization } = req.headers
     console.log('AUTHO', authorization);
     const accessToken = authorization ? authorization.split('Bearer ')[1] : null
