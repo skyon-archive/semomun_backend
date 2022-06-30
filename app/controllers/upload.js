@@ -173,7 +173,7 @@ exports.confirmWorkbookGroup = async (req, res) => {
       })
     );
     if (filePath) fs.rmSync(filePath);
-    res.status(200).json({});
+    res.status(200).json({ nonExistBooks, changeParents });
   } catch (err) {
     if (err instanceof BadRequest) res.status(400).send(err.message);
     else if (err instanceof Forbidden) res.status(403).send(err.message);
