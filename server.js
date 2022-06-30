@@ -6,13 +6,17 @@ const app = express()
 const morgan = require('morgan')
 
 const corsOptions = {
-  origin: ['http://localhost:8081', 'http://localhost:3000', 'https://www.semomun.com', 'https://semomun.com']
-}
+  origin: [
+    'http://localhost:8081',
+    'http://localhost:3000',
+    'https://www.semomun.com',
+    'https://semomun.com',
+  ],
+  credentials: true
+};
 app.use(cors(corsOptions))
 app.use(express.json())
-app.use(
-  express.urlencoded({ extended: true })
-)
+app.use(express.urlencoded({ extended: true }))
 
 require('./app/models/index')
 require('./app/services/redis')
