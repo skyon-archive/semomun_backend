@@ -1,5 +1,5 @@
 const { ResultSubmissions, sequelize } = require('../models/index.js');
-const { selectAllResultByWgid } = require('../services/result.js');
+const { selectAllResultByWgid, selectOneResultByWid } = require('../services/result.js');
 
 exports.postScoredData = async (req, res) => {
   const {
@@ -58,5 +58,16 @@ exports.getAllResultByWgid = async (req, res) => {
     delete rsData.workbook;
     result.push(rsData);
   });
+  res.status(200).json(result);
+};
+
+exports.getOneResultByWid = async (req, res) => {
+  const { wid } = req.params;
+  const uid = req.uid;
+
+  const resultData = await selectOneResultByWid(uid, wid);
+  const result = resultData.get({ plain: true });
+  delete result.workbook;
+
   res.status(200).json(result);
 };
