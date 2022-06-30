@@ -36,8 +36,8 @@ module.exports = function (sequelize, DataTypes) {
       perfectScore: { type: DataTypes.INTEGER, allowNull: false }, // 만점 점수
       standardScore: { type: DataTypes.INTEGER, allowNull: false }, // 표준 점수
       percentile: { type: DataTypes.INTEGER, allowNull: false }, // 백분위
-      corrctCount: { type: DataTypes.INTEGER, allowNull: false }, // 맞은 개수 (웹 + 동기화를 위함)
-      totalCount: { type: DataTypes.INTEGER, allowNull: false }, // 전체 개수 (웹 + 동기화를 위함))
+      correctProblemCount: { type: DataTypes.INTEGER, allowNull: false }, // 맞은 개수 (웹 + 동기화를 위함)
+      totalProblemCount: { type: DataTypes.INTEGER, allowNull: false }, // 전체 개수 (웹 + 동기화를 위함))
       totalTime: { type: DataTypes.INTEGER, allowNull: false }, // 시간
       subject: { type: DataTypes.STRING(50), allowNull: false }, // 과목명
     },
