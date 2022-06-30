@@ -11,10 +11,12 @@ const {
   Problems,
   Tags,
   WorkbookTags,
+  WorkbookGroups,
 } = require('../models/index');
 const { BadRequest, Forbidden } = require('../errors');
 const { getPresignedPost, checkFileExist, deleteFile } = require('../services/s3');
 const { updateSectionSize } = require('../migrations/migrateWorkbooks');
+const { type } = require('os');
 
 const validateGroupConfig = async (groupConfig) => {
   const workbookgroupFields = [
@@ -135,8 +137,52 @@ exports.readGroupConfig = async (req, res) => {
   }
 };
 
-exports.confirmWorkbookGroup = async (req, res, next) => {
-  // not yet
+exports.confirmWorkbookGroup = async (req, res) => {
+  try {
+    const { key } = req.body;
+    const { role } = req;
+    if (role !== 'ADMIN') throw new Forbidden('');
+
+    const filePath = path.join(__dirname, '../../uploads', key);
+    if (!fs.existsSync(filePath)) {
+      throw new BadRequest(`옳지 않은 key ${key}`);
+    }
+
+    const { workbookgroup } = JSON.parse(fs.readFileSync(filePath));
+    await checkFileExist('groupCover', workbookgroup.title); // S3 Check
+
+    const dbGroup = await WorkbookGroups.create({
+      type: workbookgroup.type,
+      title: workbookgroup.title,
+      detail: workbookgroup.detail === undefined ? '' : workbookgroup.detail,
+      groupCover: workbookgroup.groupCover,
+      isGroupOnlyPurchasable: workbookgroup.isGroupOnlyPurchasable,
+    });
+
+    const wgid = dbGroup.wgid;
+    const nonExistBooks = [];
+    const changeParents = [];
+    const titles = workbookgroup.workbooks.map((title) => title.title);
+    await Promise.all(
+      titles.map(async (title) => {
+        const result = await Workbooks.findOne({ where: { title } });
+        if (result !== null) {
+          const resultData = result.get({ plain: true });
+          if (resultData.wgid !== null) changeParents.push(title);
+          await result.update(wgid); // 참조
+        } else nonExistBooks.push(title);
+      })
+    );
+    if (filePath) fs.rmSync(filePath);
+    res.status(200).json({});
+  } catch (err) {
+    if (err instanceof BadRequest) res.status(400).send(err.message);
+    else if (err instanceof Forbidden) res.status(403).send(err.message);
+    else {
+      console.log(err);
+      res.status(500).send();
+    }
+  }
 };
 
 exports.readConfig = async (req, res) => {
