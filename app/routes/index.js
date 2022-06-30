@@ -20,4 +20,5 @@ module.exports = (app) => {
   require('./popups')(app) // 팝업
   require('./errorReports')(app) // 에러 리포트
   require('./status')(app) // 상태
+  require('./result')(app) // 채점 및 성적
 }
