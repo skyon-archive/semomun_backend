@@ -16,7 +16,6 @@ const {
 const { BadRequest, Forbidden } = require('../errors');
 const { getPresignedPost, checkFileExist, deleteFile } = require('../services/s3');
 const { updateSectionSize } = require('../migrations/migrateWorkbooks');
-const { type } = require('os');
 
 const validateGroupConfig = async (groupConfig) => {
   const workbookgroupFields = [
@@ -32,7 +31,7 @@ const validateGroupConfig = async (groupConfig) => {
       throw new BadRequest(`workbookgroup.${field} 필드 없음`);
     }
   });
-}; // 미사용
+};
 
 const valdiateConfig = async (config) => {
   const workbookFields = [
