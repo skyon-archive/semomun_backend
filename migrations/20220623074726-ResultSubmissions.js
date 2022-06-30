@@ -28,7 +28,7 @@ module.exports = {
       sid: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        references: { model: 'Submissions', key: 'sbid' },
+        references: { model: 'Sections', key: 'sid' },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       },
@@ -37,10 +37,12 @@ module.exports = {
       perfectScore: { type: Sequelize.INTEGER, allowNull: false }, // 만점 점수
       standardScore: { type: Sequelize.INTEGER, allowNull: false }, // 표준 점수
       percentile: { type: Sequelize.INTEGER, allowNull: false }, // 백분위
-      corrctCount: { type: Sequelize.INTEGER, allowNull: false }, // 맞은 개수 (웹 + 동기화를 위함)
-      totalCount: { type: Sequelize.INTEGER, allowNull: false }, // 전체 개수 (웹 + 동기화를 위함))
+      correctProblemCount: { type: Sequelize.INTEGER, allowNull: false }, // 맞은 개수 (웹 + 동기화를 위함)
+      totalProblemCount: { type: Sequelize.INTEGER, allowNull: false }, // 전체 개수 (웹 + 동기화를 위함))
       totalTime: { type: Sequelize.INTEGER, allowNull: false }, // 시간
       subject: { type: Sequelize.STRING(50), allowNull: false }, // 과목명
+      createdAt: { type: Sequelize.DATE, allowNull: false },
+      updatedAt: { type: Sequelize.DATE, allowNull: false },
     });
   },
 

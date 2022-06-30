@@ -1,6 +1,7 @@
 const { ResultSubmissions } = require('../models/index.js');
 
-exports.postScoredData = async (req, res, next) => {
+exports.postScoredData = async (req, res) => {
+  
   const {
     wgid,
     wid,
@@ -16,6 +17,7 @@ exports.postScoredData = async (req, res, next) => {
     subject,
   } = req.body;
   const uid = req.uid;
+  
   const resultSub = await ResultSubmissions.create({
     wgid,
     wid,
@@ -31,6 +33,6 @@ exports.postScoredData = async (req, res, next) => {
     subject,
     uid,
   });
-  if (resultSub) res.status(201);
+  if (resultSub) res.status(201).send();
   else res.status(400).json({ message: resultSub });
 };
