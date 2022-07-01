@@ -73,6 +73,12 @@ exports.getOneResultByWid = async (req, res) => {
     const resultsData = await selectResultByWidFromAllUser(wid);
     const resultData = resultsData[0].get({ plain: true });
 
+    const rank = parseInt(
+      resultsData.reduce((acc, cur) => {
+        return parseInt(acc) + parseInt(cur.rank || 0);
+      }, 0) / resultsData.length
+    );
+
     const rawScore = parseInt(
       resultsData.reduce((acc, cur) => {
         return parseInt(acc) + parseInt(cur.rawScore || 0);
@@ -98,7 +104,7 @@ exports.getOneResultByWid = async (req, res) => {
       wid: resultData.wid,
       sid: resultData.sid,
       id: resultData.id,
-      rank: 1,
+      rank,
       rawScore,
       standardScore,
       percentile,
