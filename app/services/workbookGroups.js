@@ -21,6 +21,16 @@ exports.selectWorkbookGroups = async (page, limit, tids, keyword) => {
   const { count, rows } = await WorkbookGroups.findAndCountAll({
     where,
     offset: (page - 1) * limit,
+    include: {
+      association: 'workbooks',
+      where: { wid: { [Op.not]: null } },
+      required: true,
+      include: {
+        association: 'WorkbookTags',
+        where: { tid: { [Op.in]: tids } },
+        include: { association: 'tid_Tag' },
+      },
+    },
     limit,
   });
   return { count, workbookGroups: rows };
