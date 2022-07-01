@@ -31,6 +31,11 @@ const validateGroupConfig = async (groupConfig) => {
       throw new BadRequest(`workbookgroup.${field} 필드 없음`);
     }
   });
+
+  const workbook = await WorkbookGroups.findOne({
+    where: { title: groupConfig.workbookgroup.title },
+  });
+  if (workbook) throw new BadRequest(`title 중복: ${workbook.title}`);
 };
 
 const valdiateConfig = async (config) => {
