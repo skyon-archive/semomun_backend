@@ -39,7 +39,7 @@ exports.postScoredData = async (req, res) => {
     uid,
   })
     .then(() => {
-      res.status(201).send();
+      res.status(201).json({});
     })
     .catch((err) => {
       console.log('ResultSubmissions Error');
