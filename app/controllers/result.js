@@ -21,34 +21,33 @@ exports.postScoredData = async (req, res) => {
     subject,
   } = req.body;
   const uid = req.uid;
-  console.log('################ CONTROLLER ################');
-
-  console.log('USER ID =', uid);
-
-  //   console.log(req);
-
-  const resultSub = await ResultSubmissions.create({
-    wgid,
-    wid,
-    sid,
-    rank,
-    rawScore,
-    perfectScore,
-    standardScore,
-    percentile,
-    correctProblemCount,
-    totalProblemCount,
-    totalTime,
-    subject,
-    uid,
-  })
-    .then(() => {
-      res.status(201).json({});
+  const result = await ResultSubmissions.findOne({ where: { uid, wid } });
+  if (result) {
+    res.status(200).json({});
+  } else {
+    await ResultSubmissions.create({
+      wgid,
+      wid,
+      sid,
+      rank,
+      rawScore,
+      perfectScore,
+      standardScore,
+      percentile,
+      correctProblemCount,
+      totalProblemCount,
+      totalTime,
+      subject,
+      uid,
     })
-    .catch((err) => {
-      console.log('ResultSubmissions Error');
-      res.status(400).json({ err });
-    });
+      .then(() => {
+        res.status(201).json({});
+      })
+      .catch((err) => {
+        console.log('ResultSubmissions Error');
+        res.status(400).json({ err });
+      });
+  }
 };
 
 exports.getAllResultByWgid = async (req, res) => {
