@@ -133,6 +133,9 @@ function initModels(sequelize) {
   });
   WorkbookGroupHistory.belongsTo(WorkbookGroups, { as: 'workbookgroup', foreignKey: 'wgid' });
 
+  Workbooks.hasMany(ResultSubmissions, { as: 'resultSubmissions', foreignKey: 'wid' });
+  ResultSubmissions.belongsTo(Workbooks, { as: 'workbook', foreignKey: 'wid' });
+
   return {
     ErrorReports,
     FavoriteTags,

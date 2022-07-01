@@ -1,4 +1,5 @@
-const { ResultSubmissions } = require('../models/index.js');
+const { ResultSubmissions, sequelize } = require('../models/index.js');
+const { selectAllResultByWgid, selectOneResultByWid } = require('../services/result.js');
 
 exports.postScoredData = async (req, res) => {
   const {
@@ -44,9 +45,29 @@ exports.postScoredData = async (req, res) => {
       console.log('ResultSubmissions Error');
       res.status(400).json({ err });
     });
+};
 
-//   if (resultSub) res.status(201).send();
-//   else res.status(400).json({ message: 'INSERT ERROR' });
-  //   if (resultSub) res.status(201).send();
-  //   else res.status(400).json({ message: 'INSERT ERROR' });
+exports.getAllResultByWgid = async (req, res) => {
+  const { wgid } = req.params;
+  const uid = req.uid;
+
+  const result = [];
+  const temp = await selectAllResultByWgid(uid, wgid);
+  temp.forEach((rs) => {
+    const rsData = rs.get({ plain: true });
+    delete rsData.workbook;
+    result.push(rsData);
+  });
+  res.status(200).json(result);
+};
+
+exports.getOneResultByWid = async (req, res) => {
+  const { wid } = req.params;
+  const uid = req.uid;
+
+  const resultData = await selectOneResultByWid(uid, wid);
+  const result = resultData.get({ plain: true });
+  delete result.workbook;
+
+  res.status(200).json(result);
 };
