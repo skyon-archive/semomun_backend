@@ -97,6 +97,7 @@ exports.getOneResultByWid = async (req, res) => {
       wgid: resultData.wgid,
       wid: resultData.wid,
       sid: resultData.sid,
+      id: resultData.id,
       rank: 1,
       rawScore,
       standardScore,
