@@ -1,5 +1,9 @@
 const { ResultSubmissions, sequelize } = require('../models/index.js');
-const { selectAllResultByWgid, selectOneResultByWid } = require('../services/result.js');
+const {
+  selectAllResultByWgid,
+  selectOneResultByWid,
+  selectResultByWidFromAllUser,
+} = require('../services/result.js');
 
 exports.postScoredData = async (req, res) => {
   const {
@@ -63,11 +67,50 @@ exports.getAllResultByWgid = async (req, res) => {
 
 exports.getOneResultByWid = async (req, res) => {
   const { wid } = req.params;
+  const { type } = req.query;
   const uid = req.uid;
 
-  const resultData = await selectOneResultByWid(uid, wid);
-  const result = resultData.get({ plain: true });
-  delete result.workbook;
+  if (type === 'public') {
+    const resultsData = await selectResultByWidFromAllUser(wid);
+    const resultData = resultsData[0].get({ plain: true });
 
-  res.status(200).json(result);
+    const rawScore = parseInt(
+      resultsData.reduce((acc, cur) => {
+        return parseInt(acc) + parseInt(cur.rawScore || 0);
+      }, 0) / resultsData.length
+    );
+
+    const standardScore = parseInt(
+      resultsData.reduce((acc, cur) => {
+        return parseInt(acc) + parseInt(cur.standardScore || 0);
+      }, 0) / resultsData.length
+    );
+
+    const percentile = parseInt(
+      resultsData.reduce((acc, cur) => {
+        return parseInt(acc) + parseInt(cur.percentile || 0);
+      }, 0) / resultsData.length
+    );
+
+    const newData = {
+      rsid: resultData.rsid,
+      uid: resultData.uid,
+      wgid: resultData.wgid,
+      wid: resultData.wid,
+      sid: resultData.sid,
+      rawScore,
+      standardScore,
+      percentile,
+      createdAt: resultData.createdAt,
+      updatedAt: resultData.updatedAt,
+    };
+    res.status(200).json(newData);
+  } else {
+    const resultData = await selectOneResultByWid(uid, wid);
+    if (resultData === null) return res.status(200).json(null);
+    const result = resultData.get({ plain: true });
+    delete result.workbook;
+
+    res.status(200).json(result);
+  }
 };
