@@ -11,6 +11,8 @@ const { Op } = require('sequelize');
 exports.selectWorkbookGroups = async (page, limit, tids, keyword) => {
   // // Tag 미구현
   const like = `%${keyword.replace(/%/, '\\%')}%`;
+  // console.log(tids);
+  const tidsWhere = tids.length === 0 ? {} : { tid: { [Op.in]: tids } };
   const where = keyword
     ? {
         [Op.or]: [{ title: { [Op.like]: like } }, { detail: { [Op.like]: like } }],
@@ -27,8 +29,8 @@ exports.selectWorkbookGroups = async (page, limit, tids, keyword) => {
       required: true,
       include: {
         association: 'WorkbookTags',
-        where: { tid: { [Op.in]: tids } },
-        include: { association: 'tid_Tag' },
+        where: tidsWhere,
+        // include: { association: 'tid_Tag' },
       },
     },
     limit,
