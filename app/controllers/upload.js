@@ -123,7 +123,8 @@ exports.readGroupConfig = async (req, res) => {
     const filename = groupConfig.workbookgroup.title;
     const groupCoverUUID = uuidv4();
     const preSignedUrl = await getPresignedPost('groupCover', groupCoverUUID);
-
+    groupConfig.workbookgroup.groupCover = groupCoverUUID;
+    fs.writeFileSync(filePath, JSON.stringify(groupConfig));
     res.status(200).json({ preSignedUrl, filename, key: path.basename(filePath) });
   } catch (err) {
     if (filePath) fs.rmSync(filePath);
@@ -148,7 +149,7 @@ exports.confirmWorkbookGroup = async (req, res) => {
     }
 
     const { workbookgroup } = JSON.parse(fs.readFileSync(filePath));
-    await checkFileExist('groupCover', workbookgroup.title); // S3 Check
+    await checkFileExist('groupCover', workbookgroup.groupCover); // S3 Check
 
     const dbGroup = await WorkbookGroups.create({
       type: workbookgroup.type,
