@@ -12,7 +12,7 @@ const corsOptions = {
     'https://www.semomun.com',
     'https://semomun.com',
   ],
-  // credentials: true
+  credentials: true
 };
 app.use(cors(corsOptions))
 app.use(express.json())
