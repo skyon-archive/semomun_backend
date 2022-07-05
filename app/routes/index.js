@@ -21,4 +21,5 @@ module.exports = (app) => {
   require('./errorReports')(app) // 에러 리포트
   require('./status')(app) // 상태
   require('./result')(app) // 채점 및 성적
+  require('./admin')(app) // 콘솔 어드민 전용
 }
