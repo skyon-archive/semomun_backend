@@ -1,4 +1,4 @@
-const { selectWorkbooks } = require('../services/admin.js');
+const { selectWorkbooks, selectWorkbookByWid } = require('../services/admin.js');
 const { parseIntDefault } = require('../utils.js');
 
 exports.getWorkbooks = async (req, res) => {
@@ -21,4 +21,14 @@ exports.getWorkbooks = async (req, res) => {
   });
 
   res.status(200).json({ totalWorkbookCounts: count, workbooks: resultData });
+};
+
+exports.getWorkbookByWid = async (req, res) => {
+  console.log('##### 도서 상세 조회 API #####');
+  const { wid } = req.params;
+  const result = await selectWorkbookByWid(wid);
+  const resultData = result.get({plain:true})
+  delete resultData.item
+  resultData.isHidden = resultData.isHidden === 'HIDDEN' ? true : false
+  res.status(200).json(resultData);
 };

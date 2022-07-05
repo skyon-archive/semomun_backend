@@ -10,11 +10,11 @@ exports.selectWorkbooks = async (offset, limit, keyword, order) => {
       'title',
       'author',
       'publishCompany',
-      'createdAt',
-      'updatedAt',
-      ['type', 'isHidden'],
       [sequelize.col('`item`.`originalPrice`'), 'originalPrice'],
       [sequelize.col('`item`.`price`'), 'price'],
+      ['type', 'isHidden'],
+      'createdAt',
+      'updatedAt',
     ],
     include: {
       association: 'item',
@@ -27,4 +27,28 @@ exports.selectWorkbooks = async (offset, limit, keyword, order) => {
     order: [['createdAt', order]],
   });
   return { count, rows };
+};
+
+exports.selectWorkbookByWid = async (wid) => {
+  return await Workbooks.findOne({
+    attributes: [
+      'wid',
+      'title',
+      'author',
+      'publishCompany',
+      'bookcover',
+      [sequelize.col('`item`.`originalPrice`'), 'originalPrice'],
+      [sequelize.col('`item`.`price`'), 'price'],
+      [sequelize.col('`item`.`sales`'), 'sales'],
+      ['type', 'isHidden'],
+      'createdAt',
+      'updatedAt',
+    ],
+    include: {
+      association: 'item',
+      attributes: ['originalPrice', 'price', 'sales'],
+      required: true,
+    },
+    where: { wid },
+  });
 };
