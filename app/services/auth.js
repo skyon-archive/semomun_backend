@@ -69,7 +69,7 @@ exports.getAuthJwtKey = getAuthJwtKey
 exports.createJwt = async (uid, short = false) => {
   const payload = { uid }
   const accessToken = jwt.sign(payload, jwtSecret, { algorithm: 'HS256', expiresIn: '2m' })
-  const refreshToken = jwt.sign({}, jwtSecret, { algorithm: 'HS256', expiresIn: short ? '3h' : '30d' })
+  const refreshToken = jwt.sign({}, jwtSecret, { algorithm: 'HS256', expiresIn: short ? '3h' : '5m' })
   const accessHash = bcrypt.hashSync(accessToken, +salt)
   const redisKey = getAuthJwtKey(refreshToken)
   await redis.set(redisKey, accessHash, { EX: 60 * 60 * 24 * 30 + 15 })
