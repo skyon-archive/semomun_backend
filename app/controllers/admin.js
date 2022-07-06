@@ -2,7 +2,7 @@ const {
   selectWorkbooks,
   selectWorkbookByWid,
   selectProblemsByWid,
-  getProblemByPid,
+  selectProblemByPid,
 } = require('../services/admin.js');
 const { parseIntDefault } = require('../utils.js');
 
@@ -70,7 +70,7 @@ exports.getProblemByPid = async (req, res) => {
   console.log('##### 문제 상세 조회 API #####');
   const { pid } = req.params;
   if (isNaN(pid)) return res.status(400).json({ message: 'pid must be only integer.' });
-  const result = await getProblemByPid(pid);
+  const result = await selectProblemByPid(pid);
   if (!result) return res.status(404).json({ message: 'Not found.' });
   res.status(200).json(result);
 };

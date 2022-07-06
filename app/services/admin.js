@@ -95,7 +95,7 @@ exports.selectProblemsByWid = async (wid, offset, limit) => {
   return { count, rows };
 };
 
-exports.getProblemByPid = async (pid) => {
+exports.selectProblemByPid = async (pid) => {
   return Problems.findOne({
     attributes: [
       [sequelize.col('`View->Section->Workbook`.`wid`'), 'wid'],
