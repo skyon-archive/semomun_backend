@@ -30,8 +30,9 @@ exports.getWorkbooks = async (req, res) => {
 exports.getWorkbookByWid = async (req, res) => {
   console.log('##### 도서 상세 조회 API #####');
   const { wid } = req.params;
-  //   console.log('Wid =', wid);
-  const result = await selectWorkbookByWid(wid);
+  if (isNaN(wid)) return res.status(400).json({ message: 'wid must be only integer.' });
+
+  const result = await selectWorkbookByWid(parseInt(wid));
   const resultData = result.get({ plain: true });
   delete resultData.item;
   resultData.isHidden = resultData.isHidden === 'HIDDEN' ? true : false;
