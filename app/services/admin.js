@@ -94,3 +94,34 @@ exports.selectProblemsByWid = async (wid, offset, limit) => {
   });
   return { count, rows };
 };
+
+exports.getProblemByPid = async (pid) => {
+  return Problems.findOne({
+    attributes: [
+      [sequelize.col('`View->Section->Workbook`.`wid`'), 'wid'],
+      [sequelize.col('`View->Section->Workbook`.`title`'), 'title'],
+      'pid',
+      'index',
+      'btType',
+      'type',
+      'content',
+      'explanation',
+      'answer',
+      'score',
+    ],
+    include: {
+      association: 'View',
+      attributes: [],
+      required: true,
+      include: {
+        association: 'Section',
+        required: true,
+        include: {
+          association: 'Workbook',
+          required: true,
+        },
+      },
+    },
+    where: { pid },
+  });
+};

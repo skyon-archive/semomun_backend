@@ -65,3 +65,12 @@ exports.getProblemsByWid = async (req, res) => {
 
   res.status(200).json({ totalProblemCounts: count, problems: rows });
 };
+
+exports.getProblemByPid = async (req, res) => {
+  console.log('##### 문제 상세 조회 API #####');
+  const { pid } = req.params;
+  if (isNaN(pid)) return res.status(400).json({ message: 'pid must be only integer.' });
+  const result = await getProblemByPid(pid);
+  if (!result) return res.status(404).json({ message: 'Not found.' });
+  res.status(200).json(result);
+};
