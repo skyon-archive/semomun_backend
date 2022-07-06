@@ -2,14 +2,18 @@ const {
   selectWorkbooks,
   selectWorkbookByWid,
   selectProblemsByWid,
+  getProblemByPid,
 } = require('../services/admin.js');
 const { parseIntDefault } = require('../utils.js');
 
 exports.getWorkbooks = async (req, res) => {
   console.log('##### 도서 전체 조회 API #####');
-  const { offset, limit, keyword, order } = req.query;
+  const { offset, limit, order } = req.query;
+  let { keyword } = req.query;
   //   console.log('Offset =', offset);
   //   console.log('Limit =', limit);
+  //   console.log('Keyword =', keyword);
+  if (keyword === 'allworkbook') keyword = '';
   //   console.log('Keyword =', keyword);
   //   console.log('Order =', order);
   const { count, rows } = await selectWorkbooks(
