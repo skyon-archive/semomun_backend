@@ -57,15 +57,13 @@ exports.selectWorkbookByWid = async (wid) => {
 exports.selectProblemsByWid = async (wid, offset, limit) => {
   const { count, rows } = await Problems.findAndCountAll({
     attributes: [
-    //   [sequelize.col('`View->Section->Workbook`.`wid`'), 'wid'], -> 현재는 사용되지 않음.
-    //   [sequelize.col('`View->Section`.`sid`'), 'sid'],
-    //   [sequelize.col('`View`.`vid`'), 'vid'],
+      //   [sequelize.col('`View->Section->Workbook`.`wid`'), 'wid'], -> 현재는 사용되지 않음.
+      //   [sequelize.col('`View->Section`.`sid`'), 'sid'],
+      //   [sequelize.col('`View`.`vid`'), 'vid'],
       'pid',
       'index',
       'btType',
       'type',
-      'content',
-      'explanation',
       'answer',
       'score',
     ],
