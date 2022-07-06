@@ -125,3 +125,9 @@ exports.selectProblemByPid = async (pid) => {
     where: { pid },
   });
 };
+
+exports.selectWorkbookByTitle = async (wid, title) => {
+  return Workbooks.findOne({
+    where: { title, wid: { [Op.not]: wid } },
+  });
+};
