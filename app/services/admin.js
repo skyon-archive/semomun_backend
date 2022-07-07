@@ -1,5 +1,5 @@
 const { Op } = require('sequelize');
-const { Workbooks, sequelize, Problems, Items } = require('../models/index.js');
+const { Workbooks, sequelize, Problems } = require('../models/index.js');
 
 exports.selectWorkbooks = async (offset, limit, keyword, order) => {
   const like = `%${keyword.replace(/%/, '\\%')}%`;
