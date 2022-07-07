@@ -1,8 +1,10 @@
+const { isBoolean } = require('lodash');
 const {
   selectWorkbooks,
   selectWorkbookByWid,
   selectProblemsByWid,
-  getProblemByPid,
+  selectProblemByPid,
+  selectWorkbookByTitle,
 } = require('../services/admin.js');
 const { parseIntDefault } = require('../utils.js');
 
@@ -70,7 +72,51 @@ exports.getProblemByPid = async (req, res) => {
   console.log('##### 문제 상세 조회 API #####');
   const { pid } = req.params;
   if (isNaN(pid)) return res.status(400).json({ message: 'pid must be only integer.' });
-  const result = await getProblemByPid(pid);
+  const result = await selectProblemByPid(pid);
   if (!result) return res.status(404).json({ message: 'Not found.' });
   res.status(200).json(result);
+};
+
+exports.putWorkbookByWid = async (req, res) => {
+  console.log('##### Workbook 정보 수정 API #####');
+  const { wid } = req.params;
+  if (isNaN(wid)) return res.status(400).json({ message: 'wid must be only integer.' });
+
+  const { title, author, publishCompany, price, isHidden } = req.body;
+  const type = isHidden === true ? 'HIDDEN' : '';
+
+  // title 예외 처리
+  if (title.length > 250) {
+    return res
+      .status(400)
+      .json({ message: 'The number of characters in the title cannot be greater than 250.' });
+  }
+  if (author.length > 30 || publishCompany.length > 30) {
+    return res.status(400).json({
+      message:
+        'The number of characters in the author and publishCompany cannot be greater than 30.',
+    });
+  }
+
+  // price 예외 처리
+  if (isNaN(price)) return res.status(400).json({ message: 'price must be only integer.' });
+  if (parseInt(price) < 0 || parseInt(price) > 10000000)
+    return res.status(400).json({ message: 'price ranges from 0 to 100000000.' });
+
+  // isHidden 예외처리
+  if (!isBoolean(isHidden))
+    return res.status(400).json({ message: 'isHidden must be only boolean' });
+
+  const workbook = await selectWorkbookByWid(wid);
+  if (!workbook) return res.status(404).json({ message: 'Not found.' });
+
+  // title 중복 예외 처리
+  const isConflict = (await selectWorkbookByTitle(wid, title)) === null ? false : true;
+  if (isConflict) return res.status(409).json({ message: 'Already using title' });
+
+  const payload = { title, author, publishCompany, type };
+
+  workbook.update(payload);
+  workbook.item.update({ price: price });
+  res.status(204).send();
 };

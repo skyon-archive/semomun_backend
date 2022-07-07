@@ -47,7 +47,7 @@ exports.selectWorkbookByWid = async (wid) => {
     ],
     include: {
       association: 'item',
-      attributes: ['originalPrice', 'price', 'sales'],
+      attributes: ['id', 'originalPrice', 'price', 'sales'],
       required: true,
     },
     where: { wid },
@@ -95,7 +95,7 @@ exports.selectProblemsByWid = async (wid, offset, limit) => {
   return { count, rows };
 };
 
-exports.getProblemByPid = async (pid) => {
+exports.selectProblemByPid = async (pid) => {
   return Problems.findOne({
     attributes: [
       [sequelize.col('`View->Section->Workbook`.`wid`'), 'wid'],
@@ -123,5 +123,11 @@ exports.getProblemByPid = async (pid) => {
       },
     },
     where: { pid },
+  });
+};
+
+exports.selectWorkbookByTitle = async (wid, title) => {
+  return Workbooks.findOne({
+    where: { title, wid: { [Op.not]: wid } },
   });
 };
