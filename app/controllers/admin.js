@@ -120,3 +120,17 @@ exports.putWorkbookByWid = async (req, res) => {
   workbook.item.update({ price: price });
   res.status(204).send();
 };
+
+exports.putProblemByPid = async (req, res) => {
+  console.log('##### Problem 정보 수정 API #####');
+  const { pid } = req.params;
+  const { index, btType, type, answer, score } = req.body;
+  if (isNaN(index) || isNaN(type) || isNaN(score))
+    return res.status(400).json({ message: 'index, type and score must be only integer.' });
+  const problem = await selectProblemByPid(pid);
+  if (!problem) return res.status(404).json({ message: 'Not found.' });
+
+  const payload = { index, btType, type, answer, score };
+  problem.update(payload);
+  res.status(204).send();
+};
