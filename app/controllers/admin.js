@@ -6,6 +6,7 @@ const {
   selectProblemByPid,
   selectWorkbookByTitle,
 } = require('../services/admin.js');
+const { checkFileExist, deleteFile, getPresignedPost } = require('../services/s3.js');
 const { parseIntDefault } = require('../utils.js');
 
 exports.getWorkbooks = async (req, res) => {
@@ -48,6 +49,8 @@ exports.getWorkbookByWid = async (req, res) => {
   const resultData = result.get({ plain: true });
   delete resultData.item;
   resultData.isHidden = resultData.isHidden === 'HIDDEN' ? true : false;
+  const s3 = await getPresignedPost('bookcover', resultData.bookcover);
+  resultData.s3 = s3;
   res.status(200).json(resultData);
 };
 
@@ -82,7 +85,7 @@ exports.putWorkbookByWid = async (req, res) => {
   const { wid } = req.params;
   if (isNaN(wid)) return res.status(400).json({ message: 'wid must be only integer.' });
 
-  const { title, author, publishCompany, price, isHidden } = req.body;
+  const { title, author, publishCompany, price, isHidden, isChangedImage } = req.body;
   const type = isHidden === true ? 'HIDDEN' : '';
 
   // title 예외 처리
@@ -115,9 +118,14 @@ exports.putWorkbookByWid = async (req, res) => {
   if (isConflict) return res.status(409).json({ message: 'Already using title' });
 
   const payload = { title, author, publishCompany, type };
-
   workbook.update(payload);
   workbook.item.update({ price: price });
+
+  const bookcoverUUID = workbook.bookcover;
+  if (isChangedImage) {
+    await checkFileExist('bookcover', bookcoverUUID);
+    await deleteFile('bookcover', bookcoverUUID);
+  }
   res.status(204).send();
 };
 
