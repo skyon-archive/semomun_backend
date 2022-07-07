@@ -77,7 +77,13 @@ exports.getProblemByPid = async (req, res) => {
   if (isNaN(pid)) return res.status(400).json({ message: 'pid must be only integer.' });
   const result = await selectProblemByPid(pid);
   if (!result) return res.status(404).json({ message: 'Not found.' });
-  res.status(200).json(result);
+
+  const resultData = result.get({ plain: true });
+  const content = await getPresignedPost('content', resultData.content);
+  const explanation = await getPresignedPost('explanation', resultData.explanation);
+
+  resultData.s3 = { content, explanation };
+  res.status(200).json(resultData);
 };
 
 exports.putWorkbookByWid = async (req, res) => {
