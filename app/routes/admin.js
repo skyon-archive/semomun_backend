@@ -5,6 +5,7 @@ const {
   getProblemsByWid,
   getProblemByPid,
   putWorkbookByWid,
+  putProblemByPid,
 } = require('../controllers/admin.js');
 
 module.exports = (app) => {
@@ -16,6 +17,7 @@ module.exports = (app) => {
   router.get('/problems/:pid', adminAuthJwt, getProblemByPid);
 
   router.put('/workbooks/:wid', adminAuthJwt, putWorkbookByWid);
+  router.put('/problems/:pid', adminAuthJwt, putProblemByPid);
 
   app.use('/admin', router);
 };
