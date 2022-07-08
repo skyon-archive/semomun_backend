@@ -73,11 +73,11 @@ exports.getOneResultByWid = async (req, res) => {
     const resultsData = await selectResultByWidFromAllUser(wid);
     const resultData = resultsData[0].get({ plain: true });
 
-    const rank = parseInt(
+    const rank = (
       resultsData.reduce((acc, cur) => {
         return parseInt(acc) + parseInt(cur.rank || 0);
       }, 0) / resultsData.length
-    );
+    ).toString();
 
     const rawScore = parseInt(
       resultsData.reduce((acc, cur) => {
