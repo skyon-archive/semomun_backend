@@ -138,13 +138,25 @@ exports.putWorkbookByWid = async (req, res) => {
 exports.putProblemByPid = async (req, res) => {
   console.log('##### Problem 정보 수정 API #####');
   const { pid } = req.params;
-  const { index, btType, type, answer, score } = req.body;
+  const { index, btType, type, answer, score, isChangedContent, isChangedExplanation } = req.body;
   if (isNaN(index) || isNaN(type) || isNaN(score))
     return res.status(400).json({ message: 'index, type and score must be only integer.' });
   const problem = await selectProblemByPid(pid);
   if (!problem) return res.status(404).json({ message: 'Not found.' });
 
+  const contentUUID = problem.content
+  const explanationUUID = problem.explanation
+
   const payload = { index, btType, type, answer, score };
   problem.update(payload);
+
+  if (isChangedContent) {
+    await checkFileExist('content', contentUUID);
+    await deleteFile('content', contentUUID);
+  }
+  if (isChangedExplanation) {
+    await checkFileExist('explanation', explanationUUID);
+    await deleteFile('explanation', explanationUUID);
+  }
   res.status(204).send();
 };
