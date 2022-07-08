@@ -144,16 +144,19 @@ exports.putProblemByPid = async (req, res) => {
   const problem = await selectProblemByPid(pid);
   if (!problem) return res.status(404).json({ message: 'Not found.' });
 
+  const contentUUID = problem.content
+  const explanationUUID = problem.explanation
+
   const payload = { index, btType, type, answer, score };
   problem.update(payload);
 
   if (isChangedContent) {
-    await checkFileExist('content', bookcoverUUID);
-    await deleteFile('content', bookcoverUUID);
+    await checkFileExist('content', contentUUID);
+    await deleteFile('content', contentUUID);
   }
   if (isChangedExplanation) {
-    await checkFileExist('explanation', bookcoverUUID);
-    await deleteFile('explanation', bookcoverUUID);
+    await checkFileExist('explanation', explanationUUID);
+    await deleteFile('explanation', explanationUUID);
   }
   res.status(204).send();
 };
