@@ -50,7 +50,7 @@ exports.getPresignedUrl = async (req, res) => {
     if (!uuid) throw new BadRequest('uuid missing')
     if (!type) throw new BadRequest('type missing')
 
-    console.log('Role = ', req.role);
+    // console.log('Role = ', req.role);
     if (req.role !== 'ADMIN') await checkPermissions(uuid, type, uid)
     const result = await getPresignedUrl(type, uuid)
     res.send(result)
