@@ -5,6 +5,8 @@ const {
   selectProblemsByWid,
   selectProblemByPid,
   selectWorkbookByTitle,
+  selectPayHistoryById,
+  selectItemByWid,
 } = require('../services/admin.js');
 const { checkFileExist, deleteFile, getPresignedPost } = require('../services/s3.js');
 const { parseIntDefault } = require('../utils.js');
@@ -139,13 +141,14 @@ exports.putProblemByPid = async (req, res) => {
   console.log('##### Problem 정보 수정 API #####');
   const { pid } = req.params;
   const { index, btType, type, answer, score, isChangedContent, isChangedExplanation } = req.body;
+  console.log('Body =', req.body);
   if (isNaN(index) || isNaN(type) || isNaN(score))
     return res.status(400).json({ message: 'index, type and score must be only integer.' });
   const problem = await selectProblemByPid(pid);
   if (!problem) return res.status(404).json({ message: 'Not found.' });
 
-  const contentUUID = problem.content
-  const explanationUUID = problem.explanation
+  const contentUUID = problem.content;
+  const explanationUUID = problem.explanation;
 
   const payload = { index, btType, type, answer, score };
   problem.update(payload);
@@ -158,5 +161,27 @@ exports.putProblemByPid = async (req, res) => {
     await checkFileExist('explanation', explanationUUID);
     await deleteFile('explanation', explanationUUID);
   }
+  res.status(204).send();
+};
+
+exports.deleteWorkbookByWid = async (req, res) => {
+  console.log('##### Workbook 삭제 #####');
+  const { wid } = req.params;
+  console.log('Wid =', wid);
+
+  // Check Valid wid & Get id
+  const item = await selectItemByWid(wid);
+  if (!item) return res.status(404).json({ message: 'Workbook does not exist.' });
+  // console.log('Item =', item);
+  const itemId = item.id;
+  console.log('Item.is =', itemId);
+
+  // Check PayHistory By Items.id
+  const histories = await selectPayHistoryById(itemId);
+  if (histories.length !== 0)
+    return res.status(403).json({ message: 'This workbook is already using now.' });
+
+  // We can delete workbook now
+  await item.destroy();
   res.status(204).send();
 };

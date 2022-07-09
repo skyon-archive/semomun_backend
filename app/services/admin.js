@@ -1,5 +1,5 @@
 const { Op } = require('sequelize');
-const { Workbooks, sequelize, Problems } = require('../models/index.js');
+const { Workbooks, sequelize, Problems, PayHistory, Items } = require('../models/index.js');
 
 exports.selectWorkbooks = async (offset, limit, keyword, order) => {
   const like = `%${keyword.replace(/%/, '\\%')}%`;
@@ -129,5 +129,20 @@ exports.selectProblemByPid = async (pid) => {
 exports.selectWorkbookByTitle = async (wid, title) => {
   return Workbooks.findOne({
     where: { title, wid: { [Op.not]: wid } },
+  });
+};
+
+exports.selectPayHistoryById = async (id) => {
+  return await PayHistory.findAll({ where: { id } });
+};
+
+exports.selectItemByWid = async (wid) => {
+  return await Items.findOne({
+    include: {
+      association: 'workbook',
+      attributes: [],
+      required: true,
+      where: { wid },
+    },
   });
 };
