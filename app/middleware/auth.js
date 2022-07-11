@@ -59,7 +59,7 @@ exports.adminAuthJwt = async (req, res, next) => {
     const user = await getUserByUid(result.uid);
     if (!user) return res.status(401).json({ message: 'User does not exist.' });
     else if (user.deleted) return res.status(401).json({ message: 'Deleted user.' });
-    else if (user.role !== 'ADMIN') return res.status(403).json({ message: 'No permission' });
+    else if (user.role !== 'ADMIN') return res.status(403).json({ message: 'This API is only available to administrators.' });
     else {
       req.uid = user.uid;
       req.role = user.role;

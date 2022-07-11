@@ -7,6 +7,7 @@ const {
   putWorkbookByWid,
   putProblemByPid,
 } = require('../controllers/admin.js');
+const { deleteWorkbookByWid } = require('../controllers/admin.js');
 
 module.exports = (app) => {
   const router = require('express').Router();
@@ -18,6 +19,7 @@ module.exports = (app) => {
 
   router.put('/workbooks/:wid', adminAuthJwt, putWorkbookByWid);
   router.put('/problems/:pid', adminAuthJwt, putProblemByPid);
+  router.delete('/workbooks/:wid', adminAuthJwt, deleteWorkbookByWid)
 
   app.use('/admin', router);
 };

@@ -5,8 +5,15 @@ const {
   selectProblemsByWid,
   selectProblemByPid,
   selectWorkbookByTitle,
+  selectPayHistoryById,
+  selectItemByWid,
 } = require('../services/admin.js');
-const { checkFileExist, deleteFile, getPresignedPost } = require('../services/s3.js');
+const {
+  checkFileExist,
+  deleteFile,
+  getPresignedPost,
+  deleteFileAsync,
+} = require('../services/s3.js');
 const { parseIntDefault } = require('../utils.js');
 
 exports.getWorkbooks = async (req, res) => {
@@ -139,13 +146,14 @@ exports.putProblemByPid = async (req, res) => {
   console.log('##### Problem 정보 수정 API #####');
   const { pid } = req.params;
   const { index, btType, type, answer, score, isChangedContent, isChangedExplanation } = req.body;
+  console.log('Body =', req.body);
   if (isNaN(index) || isNaN(type) || isNaN(score))
     return res.status(400).json({ message: 'index, type and score must be only integer.' });
   const problem = await selectProblemByPid(pid);
   if (!problem) return res.status(404).json({ message: 'Not found.' });
 
-  const contentUUID = problem.content
-  const explanationUUID = problem.explanation
+  const contentUUID = problem.content;
+  const explanationUUID = problem.explanation;
 
   const payload = { index, btType, type, answer, score };
   problem.update(payload);
@@ -159,4 +167,60 @@ exports.putProblemByPid = async (req, res) => {
     await deleteFile('explanation', explanationUUID);
   }
   res.status(204).send();
+};
+
+exports.deleteWorkbookByWid = async (req, res) => {
+  console.log('##### Workbook 삭제 #####');
+  const { wid } = req.params;
+  console.log('Wid =', wid);
+
+  // Check Valid wid & Get id
+  const item = await selectItemByWid(wid);
+  if (!item) return res.status(404).json({ message: 'Workbook does not exist.' });
+  // console.log('Item =', item);
+  const itemId = item.id;
+  const workbookTitle = item.workbook.title
+
+  // Check PayHistory By Items.id
+  const histories = await selectPayHistoryById(itemId);
+  if (histories.length !== 0)
+    return res.status(403).json({
+      message: 'This workbook is already using now.',
+      title: workbookTitle,
+    });
+
+  // Make a data for deleting files in S3
+  const itemData = item.get({ plain: true });
+  const result = {};
+  result.bookcover = [itemData.workbook.bookcover];
+  result.sectioncover = itemData.workbook.sections.map((s) => s.sectioncover);
+  result.passage = [];
+  itemData.workbook.sections.forEach((section) => {
+    section.views.forEach((view) => result.passage.push(view.passage));
+  });
+  result.content = [];
+  itemData.workbook.sections.forEach((section) => {
+    section.views.forEach((view) =>
+      view.problems.forEach((problem) => result.content.push(problem.content))
+    );
+  });
+  result.explanation = [];
+  itemData.workbook.sections.forEach((section) => {
+    section.views.forEach((view) =>
+      view.problems.forEach((problem) => result.explanation.push(problem.explanation))
+    );
+  });
+
+  const arrayFilesForDelete = [];
+  // Delete files in S3
+  for (const key of Object.keys(result)) {
+    for (const value of result[key]) {
+      if (value) arrayFilesForDelete.push(deleteFileAsync(key, value));
+    }
+  }
+  await Promise.all(arrayFilesForDelete);
+
+  // Delete DB
+  await item.destroy();
+  res.status(200).json({title: workbookTitle})
 };
