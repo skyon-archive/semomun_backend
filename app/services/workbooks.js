@@ -1,7 +1,7 @@
 const { Items, Workbooks, sequelize } = require('../models/index')
 const { Op } = require('sequelize')
 
-exports.fetchWorkbooks = async (page, limit, tids, substring) => {
+exports.fetchWorkbooks = async (page, limit, tids, substring, order) => {
   const like = `%${substring.replace(/%/, '\\%')}%`
   const where = substring
     ? {
@@ -14,6 +14,14 @@ exports.fetchWorkbooks = async (page, limit, tids, substring) => {
       }
     : { type: '', wgid: { [Op.is]: null } }
   const subquery = 'SELECT COUNT(*) FROM WorkbookTags WHERE WorkbookTags.wid = Workbooks.wid'
+
+  const orderType =
+    order === 'recentUpload'
+      ? ['createdAt', 'DESC']
+      : order === 'titleDescending'
+      ? ['title', 'DESC']
+      : ['title', 'ASC'];
+
   const { count, rows } = await Workbooks.findAndCountAll({
     attributes: {
       include: [[
@@ -29,11 +37,7 @@ exports.fetchWorkbooks = async (page, limit, tids, substring) => {
     where,
     offset: (page - 1) * limit,
     limit,
-    order: [
-      [sequelize.literal('MatchTags'), 'DESC'],
-      ['date', 'DESC'],
-      ['wid', 'ASC']
-    ],
+    order: [orderType],
     raw: true,
     nest: true
   })
