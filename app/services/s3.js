@@ -46,6 +46,18 @@ exports.deleteFile = async (type, key) => {
   }
 }
 
+exports.deleteFileAsync = async (type, key) => {
+  const params = {
+    Bucket: process.env.S3_BUCKET,
+    Key: `${type}/${key}.png`
+  }
+  try {
+    return await s3.deleteObject(params).promise()
+  } catch (err) {
+    console.log(err)
+  }
+}
+
 const listFiles = async (prefix, continuationToken) => {
   const params = {
     Bucket: process.env.S3_BUCKET,
