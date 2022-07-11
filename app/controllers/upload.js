@@ -32,10 +32,10 @@ const validateGroupConfig = async (groupConfig) => {
     }
   });
 
-  const workbook = await WorkbookGroups.findOne({
+  const workbookgroup = await WorkbookGroups.findOne({
     where: { title: groupConfig.workbookgroup.title },
   });
-  if (workbook) throw new BadRequest(`title 중복: ${workbook.title}`);
+  if (workbookgroup) throw new BadRequest(`title 중복: ${workbookgroup.title}`);
 };
 
 const valdiateConfig = async (config) => {
@@ -124,7 +124,7 @@ exports.readGroupConfig = async (req, res) => {
     if (role !== 'ADMIN') throw new Forbidden('');
     const groupConfig = yaml.load(fs.readFileSync(filePath));
 
-    validateGroupConfig(groupConfig);
+    await validateGroupConfig(groupConfig);
     const filename = groupConfig.workbookgroup.title;
     const groupCoverUUID = uuidv4();
     const preSignedUrl = await getPresignedPost('groupCover', groupCoverUUID);
