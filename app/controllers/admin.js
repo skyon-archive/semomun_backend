@@ -179,11 +179,15 @@ exports.deleteWorkbookByWid = async (req, res) => {
   if (!item) return res.status(404).json({ message: 'Workbook does not exist.' });
   // console.log('Item =', item);
   const itemId = item.id;
+  const workbookTitle = item.workbook.title
 
   // Check PayHistory By Items.id
   const histories = await selectPayHistoryById(itemId);
   if (histories.length !== 0)
-    return res.status(403).json({ message: 'This workbook is already using now.' });
+    return res.status(403).json({
+      message: 'This workbook is already using now.',
+      title: workbookTitle,
+    });
 
   // Make a data for deleting files in S3
   const itemData = item.get({ plain: true });
@@ -207,16 +211,16 @@ exports.deleteWorkbookByWid = async (req, res) => {
     );
   });
 
-  const arrayFilesForDelete = []
+  const arrayFilesForDelete = [];
   // Delete files in S3
   for (const key of Object.keys(result)) {
     for (const value of result[key]) {
       if (value) arrayFilesForDelete.push(deleteFileAsync(key, value));
     }
   }
-  await Promise.all(arrayFilesForDelete)
+  await Promise.all(arrayFilesForDelete);
 
   // Delete DB
   await item.destroy();
-  res.status(204).send();
+  res.status(200).json({title: workbookTitle})
 };
