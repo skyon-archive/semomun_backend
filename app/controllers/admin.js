@@ -8,7 +8,12 @@ const {
   selectPayHistoryById,
   selectItemByWid,
 } = require('../services/admin.js');
-const { checkFileExist, deleteFile, getPresignedPost } = require('../services/s3.js');
+const {
+  checkFileExist,
+  deleteFile,
+  getPresignedPost,
+  deleteFileAsync,
+} = require('../services/s3.js');
 const { parseIntDefault } = require('../utils.js');
 
 exports.getWorkbooks = async (req, res) => {
@@ -174,14 +179,44 @@ exports.deleteWorkbookByWid = async (req, res) => {
   if (!item) return res.status(404).json({ message: 'Workbook does not exist.' });
   // console.log('Item =', item);
   const itemId = item.id;
-  console.log('Item.is =', itemId);
 
   // Check PayHistory By Items.id
   const histories = await selectPayHistoryById(itemId);
   if (histories.length !== 0)
     return res.status(403).json({ message: 'This workbook is already using now.' });
 
-  // We can delete workbook now
+  // Make a data for deleting files in S3
+  const itemData = item.get({ plain: true });
+  const result = {};
+  result.bookcover = [itemData.workbook.bookcover];
+  result.sectioncover = itemData.workbook.sections.map((s) => s.sectioncover);
+  result.passage = [];
+  itemData.workbook.sections.forEach((section) => {
+    section.views.forEach((view) => result.passage.push(view.passage));
+  });
+  result.content = [];
+  itemData.workbook.sections.forEach((section) => {
+    section.views.forEach((view) =>
+      view.problems.forEach((problem) => result.content.push(problem.content))
+    );
+  });
+  result.explanation = [];
+  itemData.workbook.sections.forEach((section) => {
+    section.views.forEach((view) =>
+      view.problems.forEach((problem) => result.explanation.push(problem.explanation))
+    );
+  });
+
+  const arrayFilesForDelete = []
+  // Delete files in S3
+  for (const key of Object.keys(result)) {
+    for (const value of result[key]) {
+      if (value) arrayFilesForDelete.push(deleteFileAsync(key, value));
+    }
+  }
+  await Promise.all(arrayFilesForDelete)
+
+  // Delete DB
   await item.destroy();
   res.status(204).send();
 };
