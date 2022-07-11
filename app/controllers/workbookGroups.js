@@ -9,6 +9,14 @@ const {
 exports.getWorkbookGroups = async (req, res) => {
   // Query Params
   const { page, limit, tids, keyword } = req.query;
+  let { order } = req.query;
+  order =
+    order === 'titleDescending'
+      ? 'titleDesceding'
+      : order === 'titleAscending'
+      ? 'titleAsceding'
+      : 'recentUpload';
+  console.log('Order =', order);
   res
     .status(200)
     .json(

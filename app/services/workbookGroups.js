@@ -8,7 +8,7 @@ const {
 } = require('../models/index.js');
 const { Op } = require('sequelize');
 
-exports.selectWorkbookGroups = async (page, limit, tids, keyword) => {
+exports.selectWorkbookGroups = async (page, limit, tids, keyword, order) => {
   // // Tag 미구현
   const like = `%${keyword.replace(/%/, '\\%')}%`;
   // console.log(tids);
@@ -19,10 +19,14 @@ exports.selectWorkbookGroups = async (page, limit, tids, keyword) => {
         type: 'MOCK_K_SAT',
       }
     : { type: 'MOCK_K_SAT' };
+  const orderType =
+    order === 'recentUpload'
+      ? ['createdAt', 'DESC']
+      : order === 'titleDescending'
+      ? ['title', 'DESC']
+      : ['title', 'ASC'];
 
   const { count, rows } = await WorkbookGroups.findAndCountAll({
-    where,
-    offset: (page - 1) * limit,
     include: {
       association: 'workbooks',
       where: { wid: { [Op.not]: null } },
@@ -33,7 +37,10 @@ exports.selectWorkbookGroups = async (page, limit, tids, keyword) => {
         // include: { association: 'tid_Tag' },
       },
     },
+    where,
+    offset: (page - 1) * limit,
     limit,
+    order: [orderType],
   });
   return { count, workbookGroups: rows };
 };
