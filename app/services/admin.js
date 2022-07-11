@@ -140,9 +140,20 @@ exports.selectItemByWid = async (wid) => {
   return await Items.findOne({
     include: {
       association: 'workbook',
-      attributes: [],
+      attributes: ['wid', 'bookcover'],
       required: true,
       where: { wid },
+      include: {
+        association: 'sections',
+        attributes: ['sid', 'sectioncover'],
+        required: true,
+        include: {
+          association: 'views',
+          attributes: ['vid', 'passage'],
+          required: true,
+          include: { association: 'problems', attributes: ['pid', 'content', 'explanation'], required: true },
+        },
+      },
     },
   });
 };
