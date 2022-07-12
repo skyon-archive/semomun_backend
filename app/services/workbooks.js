@@ -34,6 +34,7 @@ exports.fetchWorkbooks = async (page, limit, tids, substring, order) => {
       ]],
       exclude: 'type'
     },
+    include: { association: 'WorkbookTags', where : { tid: { [Op.in]: tids } } },
     where,
     offset: (page - 1) * limit,
     limit,
