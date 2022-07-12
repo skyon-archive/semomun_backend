@@ -19,21 +19,24 @@ exports.selectWorkbookGroups = async (page, limit, tids, keyword, order) => {
         type: 'MOCK_K_SAT',
       }
     : { type: 'MOCK_K_SAT' };
+    console.log('Order =', order);
   const orderType =
     order === 'recentUpload'
       ? ['createdAt', 'DESC']
       : order === 'titleDescending'
       ? ['title', 'DESC']
       : ['title', 'ASC'];
+      console.log('OrderType =', orderType);
 
   const { count, rows } = await WorkbookGroups.findAndCountAll({
     include: {
       association: 'workbooks',
-      where: { wid: { [Op.not]: null } },
+      where: { wid: { [Op.not]: null } , type: ''},
       required: true,
       include: {
         association: 'WorkbookTags',
         where: tidsWhere,
+        required:true
         // include: { association: 'tid_Tag' },
       },
     },

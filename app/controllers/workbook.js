@@ -23,9 +23,9 @@ exports.fetchWorkbooks = async (req, res) => {
     let { order } = req.query;
     order =
       order === 'titleDescending'
-        ? 'titleDesceding'
+        ? 'titleDescending'
         : order === 'titleAscending'
-        ? 'titleAsceding'
+        ? 'titleAscending'
         : 'recentUpload';
 
     res.json(
