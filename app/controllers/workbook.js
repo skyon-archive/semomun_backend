@@ -20,12 +20,21 @@ const {
 exports.fetchWorkbooks = async (req, res) => {
   try {
     const { page, limit, tids, keyword } = req.query;
+    let { order } = req.query;
+    order =
+      order === 'titleDescending'
+        ? 'titleDesceding'
+        : order === 'titleAscending'
+        ? 'titleAsceding'
+        : 'recentUpload';
+
     res.json(
       await fetchWorkbooks(
         parseIntDefault(page, 1),
         parseIntDefault(limit, 25),
         parseIntList(tids ?? []),
-        keyword ?? ''
+        keyword ?? '',
+        order
       )
     );
   } catch (err) {
