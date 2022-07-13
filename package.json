@@ -7,7 +7,7 @@
     "test": "test"
   },
   "dependencies": {
-    "@bootpay/server-rest-client": "^1.0.9",
+    "@bootpay/backend-js": "^2.0.2",
     "apple-auth": "^1.0.7",
     "aws-sdk": "^2.1079.0",
     "axios": "^0.26.0",

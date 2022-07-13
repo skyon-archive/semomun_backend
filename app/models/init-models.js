@@ -12,6 +12,7 @@ const _Problems = require('./Problems.js');
 // User - 2
 const _Users = require('./Users.js');
 const _UserInfo = require('./UserInfo.js');
+const _UserBillingKeys = require('./UserBillingKeys.js');
 // Tag - 1
 const _Tags = require('./Tags.js');
 // Relationship Tables - 7
@@ -45,6 +46,7 @@ function initModels(sequelize) {
   const WorkbookGroups = _WorkbookGroups(sequelize, DataTypes);
   const WorkbookGroupHistory = _WorkbookGroupHistory(sequelize, DataTypes);
   const ResultSubmissions = _ResultSubmissions(sequelize, DataTypes);
+  const UserBillingKeys = _UserBillingKeys(sequelize, DataTypes);
 
   ErrorReports.belongsTo(Problems, { as: 'pid_Problem', foreignKey: 'pid' });
   Problems.hasMany(ErrorReports, { as: 'errorReports', foreignKey: 'pid' });
@@ -156,6 +158,7 @@ function initModels(sequelize) {
     WorkbookGroups,
     WorkbookGroupHistory,
     ResultSubmissions,
+    UserBillingKeys,
   };
 }
 module.exports = initModels;
