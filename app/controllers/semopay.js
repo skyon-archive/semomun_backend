@@ -1,23 +1,19 @@
-const { parseIntDefault, parseIntList } = require('../utils.js');
 const { Bootpay } = require('@bootpay/backend-js');
-
-const {
-  selectWorkbookGroups,
-  selectOneWorkbookGroup,
-  selectPurchasedWorkbookGroups,
-} = require('../services/workbookGroups.js');
 const { UserBillingKeys } = require('../models/index.js');
-const { selectUserBillingKeysByUid } = require('../services/semopay.js');
+const {
+  selectUserBillingKeysByUid,
+  selectAnUserBillingKeyByInfo,
+} = require('../services/semopay.js');
 
-exports.createUserBillingKeys = async (req, res) => {
+exports.createUserBillingKey = async (req, res) => {
   const uid = req.uid;
   if (!uid) return res.status(401).json({ message: 'Invalid Token' });
   const { receipt_id } = req.body;
 
   try {
     Bootpay.setConfiguration({
-      application_id: '61d43475e38c30001f7b76c4',
-      private_key: 'Xo+Zi0WZOaSU7LsHxoPGbKnfhT8Y5b5z73T11ojWYJ4=',
+      application_id: process.env.BOOTPAY_APPLICATION_ID,
+      private_key: process.env.BOOTPAY_PRIVATE_KEY,
     });
 
     await Bootpay.getAccessToken();
@@ -38,4 +34,30 @@ exports.getUserBillingKeysByUid = async (req, res) => {
   if (!uid) return res.status(401).json({ message: 'Invalid Token' });
   const userBillingKeys = await selectUserBillingKeysByUid(uid);
   res.status(200).json({ billingKeys: userBillingKeys });
+};
+
+exports.deleteUserBillingKey = async (req, res) => {
+  const uid = req.uid;
+  if (!uid) return res.status(401).json({ message: 'Invalid Token' });
+
+  const { bkid } = req.params;
+  const { billing_key } = req.body;
+  const bkInfo = await selectAnUserBillingKeyByInfo(bkid, uid, billing_key);
+
+  if (!bkInfo) return res.status(404).json({ message: 'Invalid Bk Info.' });
+
+  try {
+    Bootpay.setConfiguration({
+      application_id: process.env.BOOTPAY_APPLICATION_ID,
+      private_key: process.env.BOOTPAY_PRIVATE_KEY,
+    });
+
+    await Bootpay.getAccessToken();
+    await Bootpay.destroyBillingKey(billing_key);
+    await bkInfo.destroy();
+    res.status(204).send();
+  } catch {
+    console.log(e);
+    res.status(400).json({ message: e });
+  }
 };
