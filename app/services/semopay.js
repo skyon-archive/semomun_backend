@@ -1,19 +1,8 @@
-// const { UserBillingKeys, sequelize } = require('../models/index.js');
-// const { Op } = require('sequelize');
+const { UserBillingKeys } = require('../models/index.js');
 
-// // 이건 진짜
-// exports.selectOneWorkbookGroup = async (wgid) => {
-//   const workbookgroup = await WorkbookGroups.findOne({
-//     include: {
-//       association: 'workbooks',
-//       attributes: { exclude: ['type'] },
-//       include: [
-//         { association: 'sections', order: [['index', 'ASC']] },
-//         { association: 'item', attributes: ['price', 'sales'] },
-//         { association: 'WorkbookTags', include: { association: 'tid_Tag' } },
-//       ],
-//     },
-//     where: { wgid },
-//   });
-//   return workbookgroup;
-// };
+exports.selectUserBillingKeysByUid = async (uid) => {
+  return await UserBillingKeys.findAll({
+    attributes: ['bkid', 'billing_key', 'billing_data'],
+    where: { uid },
+  });
+};

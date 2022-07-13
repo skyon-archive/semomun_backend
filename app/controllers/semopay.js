@@ -1,8 +1,17 @@
+const { parseIntDefault, parseIntList } = require('../utils.js');
 const { Bootpay } = require('@bootpay/backend-js');
+
+const {
+  selectWorkbookGroups,
+  selectOneWorkbookGroup,
+  selectPurchasedWorkbookGroups,
+} = require('../services/workbookGroups.js');
 const { UserBillingKeys } = require('../models/index.js');
+const { selectUserBillingKeysByUid } = require('../services/semopay.js');
 
 exports.createUserBillingKeys = async (req, res) => {
   const uid = req.uid;
+  if (!uid) return res.status(401).json({ message: 'Invalid Token' });
   const { receipt_id } = req.body;
 
   try {
@@ -22,4 +31,11 @@ exports.createUserBillingKeys = async (req, res) => {
     console.log(e);
     res.status(400).json({ message: e });
   }
+};
+
+exports.getUserBillingKeysByUid = async (req, res) => {
+  const uid = req.uid;
+  if (!uid) return res.status(401).json({ message: 'Invalid Token' });
+  const userBillingKeys = await selectUserBillingKeysByUid(uid);
+  res.status(200).json({ billingKeys: userBillingKeys });
 };
