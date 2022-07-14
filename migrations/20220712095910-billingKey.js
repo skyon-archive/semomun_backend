@@ -17,7 +17,7 @@ module.exports = {
 
       receipt_id: { type: Sequelize.STRING(50), allowNull: false },
       subscription_id: { type: Sequelize.STRING(50), allowNull: false },
-      gateway_url: { type: Sequelize.STRING(50), allowNull: false },
+      gateway_url: { type: Sequelize.STRING(500), allowNull: false },
       metadata: { type: Sequelize.JSON, allowNull: false },
       pg: { type: Sequelize.STRING(50), allowNull: false },
       method: { type: Sequelize.STRING(50), allowNull: false },
