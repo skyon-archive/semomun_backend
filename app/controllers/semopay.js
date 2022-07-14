@@ -55,10 +55,10 @@ exports.deleteUserBillingKey = async (req, res) => {
     });
 
     await Bootpay.getAccessToken();
-    await Bootpay.destroyBillingKey(billing_key);
+    await Bootpay.destroyBillingKey(bkInfo.billing_key);
     await bkInfo.destroy();
     res.status(204).send();
-  } catch {
+  } catch (e) {
     console.log(e);
     res.status(400).json({ message: e });
   }
