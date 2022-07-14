@@ -7,7 +7,7 @@ const {
 
 exports.createUserBillingKey = async (req, res) => {
   const uid = req.uid;
-  if (!uid) return res.status(401).json({ message: 'Invalid Token' });
+  if (!uid) return res.status(401).json({ message: 'Invalid Token.' });
   const { receipt_id } = req.body;
 
   try {
@@ -31,18 +31,17 @@ exports.createUserBillingKey = async (req, res) => {
 
 exports.getUserBillingKeysByUid = async (req, res) => {
   const uid = req.uid;
-  if (!uid) return res.status(401).json({ message: 'Invalid Token' });
+  if (!uid) return res.status(401).json({ message: 'Invalid Token.' });
   const userBillingKeys = await selectUserBillingKeysByUid(uid);
   res.status(200).json({ billingKeys: userBillingKeys });
 };
 
 exports.deleteUserBillingKey = async (req, res) => {
   const uid = req.uid;
-  if (!uid) return res.status(401).json({ message: 'Invalid Token' });
+  if (!uid) return res.status(401).json({ message: 'Invalid Token.' });
 
   const { bkid } = req.params;
-  const { billing_key } = req.body;
-  const bkInfo = await selectAnUserBillingKeyByInfo(bkid, uid, billing_key);
+  const bkInfo = await selectAnUserBillingKeyByInfo(bkid, uid);
 
   if (!bkInfo) return res.status(404).json({ message: 'Invalid Bk Info.' });
 
