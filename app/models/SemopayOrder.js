@@ -12,7 +12,7 @@ module.exports = function (sequelize, DataTypes) {
       },
       bkid: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
         references: { model: 'UserBillingKeys', key: 'bkid' },
         onDelete: 'SET NULL',
         onUpdate: 'CASCADE',
