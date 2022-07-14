@@ -59,6 +59,7 @@ jobs:
           envkey_REDIS_HOST: ${{ env.REDIS_HOST }}
           envkey_GOOGLE_CLIENT_ID_APP: 688270638151-kgmitk0qq9k734nq7nh9jl6adhd00b57.apps.googleusercontent.com
           envkey_GOOGLE_CLIENT_ID_WEB: 15666773031-sk2p92o3nba4qmisghqj09bho9jqpnqi.apps.googleusercontent.com
+          envkey_GOOGLE_CLIENT_ID_WEB2: 539017112683-q5t493skokbh1mdk7tenmae10l42gpd0.apps.googleusercontent.com
           envkey_APPLE_CLIENT_ID_APP: com.skyon.semomun
           envkey_APPLE_CLIENT_ID_WEB: com.semomun.web
           envkey_HOST: 0.0.0.0
@@ -80,6 +81,8 @@ jobs:
           envkey_AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
           envkey_SLACK_CHANNEL: C03BUV6A4FJ
           envkey_SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+          envkey_BOOTPAY_APPLICATION_ID: ${{ secrets.BOOTPAY_APPLICATION_ID }}
+          envkey_BOOTPAY_PRIVATE_KEY: ${{ secrets.BOOTPAY_PRIVATE_KEY }}
           directory: .deploy/dev
 
       - name: Prepare deployment package
