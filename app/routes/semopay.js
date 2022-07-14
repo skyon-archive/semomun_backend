@@ -2,6 +2,7 @@ const {
   createUserBillingKey,
   getUserBillingKeysByUid,
   deleteUserBillingKey,
+  bootPayWebhook,
 } = require('../controllers/semopay');
 
 module.exports = (app) => {
@@ -12,6 +13,7 @@ module.exports = (app) => {
   router.post('/billing-keys', authJwt, createUserBillingKey);
   router.get('/billing-keys', authJwt, getUserBillingKeysByUid);
   router.delete('/billing-keys/:bkid', authJwt, deleteUserBillingKey);
+  router.post('/webhook', bootPayWebhook);
 
   app.use('/semopay', router);
 };

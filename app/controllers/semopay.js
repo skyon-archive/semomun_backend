@@ -1,5 +1,5 @@
 const { Bootpay } = require('@bootpay/backend-js');
-const { UserBillingKeys } = require('../models/index.js');
+const { UserBillingKeys, BootPayWebhook } = require('../models/index.js');
 const {
   selectUserBillingKeysByUid,
   selectAnUserBillingKeyByInfo,
@@ -8,6 +8,7 @@ const {
 exports.createUserBillingKey = async (req, res) => {
   const uid = req.uid;
   if (!uid) return res.status(401).json({ message: 'Invalid Token.' });
+
   const { receipt_id } = req.body;
 
   try {
@@ -32,12 +33,14 @@ exports.createUserBillingKey = async (req, res) => {
 exports.getUserBillingKeysByUid = async (req, res) => {
   const uid = req.uid;
   if (!uid) return res.status(401).json({ message: 'Invalid Token.' });
+
   const userBillingKeys = await selectUserBillingKeysByUid(uid);
   res.status(200).json({ billingKeys: userBillingKeys });
 };
 
 exports.deleteUserBillingKey = async (req, res) => {
   const uid = req.uid;
+
   if (!uid) return res.status(401).json({ message: 'Invalid Token.' });
 
   const { bkid } = req.params;
@@ -59,4 +62,11 @@ exports.deleteUserBillingKey = async (req, res) => {
     console.log(e);
     res.status(400).json({ message: e });
   }
+};
+
+exports.bootPayWebhook = async (req, res) => {
+  // BootPay에서 주는 Webhook을 받는 API
+  const { body } = req.body;
+  await BootPayWebhook.create(body);
+  res.status(201).json({ success: true });
 };
