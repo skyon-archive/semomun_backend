@@ -8,8 +8,8 @@ exports.selectUserBillingKeysByUid = async (uid) => {
   });
 };
 
-exports.selectAnUserBillingKeyByInfo = async (bkid, uid, billing_key) => {
+exports.selectAnUserBillingKeyByInfo = async (bkid, uid) => {
   return await UserBillingKeys.findOne({
-    where: { bkid, uid, billing_key },
+    where: { bkid, uid },
   });
 };
