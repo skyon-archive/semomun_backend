@@ -4,14 +4,14 @@ module.exports = function (sequelize, DataTypes) {
     {
       soid: { type: DataTypes.INTEGER, allowNull: false, autoIncrement: true, primaryKey: true },
       uid: {
-        type: Sequelize.INTEGER,
+        type: DataTypes.INTEGER,
         allowNull: false,
         references: { model: 'Users', key: 'uid' },
         onDelete: 'NO ACTION',
         onUpdate: 'CASCADE',
       },
       bkid: {
-        type: Sequelize.INTEGER,
+        type: DataTypes.INTEGER,
         allowNull: true,
         references: { model: 'UserBillingKeys', key: 'bkid' },
         onDelete: 'SET NULL',

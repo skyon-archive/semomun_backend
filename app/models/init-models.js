@@ -2,9 +2,9 @@ const DataTypes = require('sequelize').DataTypes;
 
 // Notices - 1
 const _Notices = require('./Notices.js');
-
 // BootPayWebhook - 1
 const _BootPayWebhook = require('./BootPayWebhook.js');
+const _SemopayOrder = require('./SemopayOrder.js');
 // Items - 6
 const _Items = require('./Items.js');
 const _WorkbookGroups = require('./WorkbookGroups.js'); // WorkbookGroups Model
@@ -51,6 +51,7 @@ function initModels(sequelize) {
   const ResultSubmissions = _ResultSubmissions(sequelize, DataTypes);
   const UserBillingKeys = _UserBillingKeys(sequelize, DataTypes);
   const BootPayWebhook = _BootPayWebhook(sequelize, DataTypes);
+  const SemopayOrder = _SemopayOrder(sequelize, DataTypes);
 
   ErrorReports.belongsTo(Problems, { as: 'pid_Problem', foreignKey: 'pid' });
   Problems.hasMany(ErrorReports, { as: 'errorReports', foreignKey: 'pid' });
@@ -164,6 +165,7 @@ function initModels(sequelize) {
     ResultSubmissions,
     UserBillingKeys,
     BootPayWebhook,
+    SemopayOrder,
   };
 }
 module.exports = initModels;
