@@ -28,7 +28,7 @@ module.exports = {
       requested_at: { type: Sequelize.DATE, allowNull: false },
       status_locale: { type: Sequelize.STRING(50), allowNull: false },
       status: { type: Sequelize.INTEGER, allowNull: false },
-      deletedAt: { type: Sequelize.DATE, allowNull: false },
+      deletedAt: { type: Sequelize.DATE, allowNull: true },
       createdAt: { type: Sequelize.DATE, allowNull: false },
       updatedAt: { type: Sequelize.DATE, allowNull: false },
     });
