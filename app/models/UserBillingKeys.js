@@ -28,6 +28,7 @@ module.exports = function (sequelize, DataTypes) {
       status_locale: { type: DataTypes.STRING(50), allowNull: false },
       status: { type: DataTypes.INTEGER, allowNull: false },
       deletedAt: { type: DataTypes.DATE, allowNull: true },
+      isAutoCharged: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
     },
     { sequelize, tableName: 'UserBillingKeys' }
   );

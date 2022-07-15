@@ -14,11 +14,17 @@ module.exports = {
       type: Sequelize.INTEGER,
       allowNull: true,
     });
+    await queryInterface.addColumn('UserBillingKeys', 'isAutoCharged', {
+      type: Sequelize.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    });
   },
 
   down: async (queryInterface, Sequelize) => {
     await queryInterface.removeColumn('Users', 'isAutoCharge');
     await queryInterface.removeColumn('Users', 'lessThenAmount');
     await queryInterface.removeColumn('Users', 'chargeAmount');
+    await queryInterface.removeColumn('UserBillingKeys', 'isAutoCharged');
   },
 };
