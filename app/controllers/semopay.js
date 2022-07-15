@@ -1,9 +1,11 @@
 const { Bootpay } = require('@bootpay/backend-js');
-const { UserBillingKeys, BootPayWebhook, SemopayOrder, Users } = require('../models/index.js');
+const { UserBillingKeys, BootPayWebhook, SemopayOrder } = require('../models/index.js');
 const {
   selectUserBillingKeysByUid,
   selectAnUserBillingKeyByInfo,
   selectPayHistoriesByUid,
+  selectUsersByUid,
+  selectSemopayOrdersByUid,
 } = require('../services/semopay.js');
 
 exports.createUserBillingKey = async (req, res) => {
@@ -41,7 +43,6 @@ exports.getUserBillingKeysByUid = async (req, res) => {
 
 exports.deleteUserBillingKey = async (req, res) => {
   const uid = req.uid;
-
   if (!uid) return res.status(401).json({ message: 'Invalid Token.' });
 
   const { bkid } = req.params;
@@ -76,6 +77,7 @@ exports.bootPayWebhook = async (req, res) => {
 
 exports.createSemopayOrder = async (req, res) => {
   const uid = req.uid;
+  if (!uid) return res.status(401).json({ message: 'Invalid Token.' });
   const { bkid, order_name, price } = req.body;
 
   // Origin Values => billing_key, order_name, order_id, price
@@ -122,4 +124,24 @@ exports.getSemopayOrders = async (req, res) => {
   if (!type || type !== 'charge' || type !== 'order') type = 'all';
   const result = await selectPayHistoriesByUid(uid, type);
   res.status(200).json({ semopayHistories: result });
+};
+
+exports.getSemopay = async (req, res) => {
+  const uid = req.uid;
+  if (!uid) return res.status(401).json({ message: 'Invalid Token.' });
+
+  const userInfo = await selectUsersByUid(uid);
+  if (!userInfo) return res.status(404).json({ message: 'User does not exist.' });
+  if (userInfo.deletedAt) return res.status(403).json({ message: 'Already deleted User.' });
+
+  //   console.log('# ----- User Info ----- #');
+  //   console.log(userInfo);
+  const currentSemopay = userInfo.credit;
+  //   console.log('Current Semopay =', currentSemopay);
+
+  const sumSemopay = await selectSemopayOrdersByUid(uid);
+  const maxChargeSemopay = process.env.MAX_CHARGE_SEMOPAY;
+  const rechargeableSemopay =
+    maxChargeSemopay - (sumSemopay[0].price === null ? 0 : parseInt(sumSemopay[0].price));
+  res.status(200).json({ currentSemopay, rechargeableSemopay });
 };

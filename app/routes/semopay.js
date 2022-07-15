@@ -5,6 +5,7 @@ const {
   bootPayWebhook,
   createSemopayOrder,
   getSemopayOrders,
+  getSemopay,
 } = require('../controllers/semopay.js');
 
 module.exports = (app) => {
@@ -20,6 +21,7 @@ module.exports = (app) => {
   // Payment
   router.post('/orders', authJwt, createSemopayOrder);
   router.get('/orders', authJwt, getSemopayOrders);
+  router.get('/', authJwt, getSemopay)
   router.post('/webhook', bootPayWebhook);
 
   app.use('/semopay', router);

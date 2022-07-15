@@ -14,7 +14,8 @@ const sequelize = new Sequelize(env.DB_DATABASE, env.DB_USERNAME, env.DB_PASSWOR
   retry: {
     match: [Sequelize.ConnectionError]
   },
-  define: { timestamps: true }
+  define: { timestamps: true },
+  timezone: '+09:00'
 })
 
 const db = require('./init-models')(sequelize)
