@@ -24,10 +24,19 @@ exports.fetchWorkbooks = async (page, limit, tids, substring, order) => {
 
   const orderType =
     order === 'recentUpload'
-      ? ['createdAt', 'DESC']
+      ? [
+          [sequelize.literal('MatchTags'), 'DESC'],
+          ['createdAt', 'DESC'],
+        ]
       : order === 'titleDescending'
-      ? ['title', 'DESC']
-      : ['title', 'ASC'];
+      ? [
+          [sequelize.literal('MatchTags'), 'DESC'],
+          ['title', 'DESC'],
+        ]
+      : [
+          [sequelize.literal('MatchTags'), 'DESC'],
+          ['title', 'ASC'],
+        ];
   // console.log('Order =', order);
 
   const { count, rows } = await Workbooks.findAndCountAll({
@@ -46,7 +55,7 @@ exports.fetchWorkbooks = async (page, limit, tids, substring, order) => {
     },
     include: { association: 'WorkbookTags', where: whereTids },
     where,
-    order: [orderType],
+    order: orderType,
     offset: (page - 1) * limit,
     limit,
     // raw: true,
