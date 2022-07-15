@@ -1,8 +1,9 @@
 const { Bootpay } = require('@bootpay/backend-js');
-const { UserBillingKeys, BootPayWebhook, SemopayOrder } = require('../models/index.js');
+const { UserBillingKeys, BootPayWebhook, SemopayOrder, Users } = require('../models/index.js');
 const {
   selectUserBillingKeysByUid,
   selectAnUserBillingKeyByInfo,
+  selectPayHistoriesByUid,
 } = require('../services/semopay.js');
 
 exports.createUserBillingKey = async (req, res) => {
@@ -77,25 +78,17 @@ exports.createSemopayOrder = async (req, res) => {
   const uid = req.uid;
   const { bkid, order_name, price } = req.body;
 
-  /**
-   * 필수값 목록 =>
-   * billing_key
-   * order_name
-   * order_id
-   * price
-   * ------------------------------
-   * 근데 내가 받을건
-   * bkid
-   * order_name,
-   * price
-   * 이렇게 3개,
-   */
+  // Origin Values => billing_key, order_name, order_id, price
+  // Expected Values => bkid, order_name, price
 
+  // Validate UserBillingKeys
   const bkInfo = await selectAnUserBillingKeyByInfo(bkid, uid);
   if (!bkInfo) return res.status(404).json({ message: 'Invalid Bk Info.' });
   if (bkInfo.deletedAt) return res.status(409).json({ message: 'Already deleted Info.' });
-
   const billing_key = bkInfo.billing_key;
+
+  // Validate Users
+  //   Users.findOne({where: {uid}})
 
   try {
     Bootpay.setConfiguration({
@@ -121,4 +114,12 @@ exports.createSemopayOrder = async (req, res) => {
     console.log(e);
     res.status(400).json({ message: e });
   }
+};
+
+exports.getSemopayOrders = async (req, res) => {
+  const uid = req.uid;
+  let { type } = req.query;
+  if (!type || type !== 'charge' || type !== 'order') type = 'all';
+  const result = await selectPayHistoriesByUid(uid, type);
+  res.status(200).json({ semopayHistories: result });
 };

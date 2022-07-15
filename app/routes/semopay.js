@@ -1,10 +1,11 @@
-const { createSemopayOrder } = require('../controllers/semopay');
 const {
   createUserBillingKey,
   getUserBillingKeysByUid,
   deleteUserBillingKey,
   bootPayWebhook,
-} = require('../controllers/semopay');
+  createSemopayOrder,
+  getSemopayOrders,
+} = require('../controllers/semopay.js');
 
 module.exports = (app) => {
   const { authJwt } = require('../middleware/auth');
@@ -17,7 +18,8 @@ module.exports = (app) => {
   router.delete('/billing-keys/:bkid', authJwt, deleteUserBillingKey);
 
   // Payment
-  router.post('/', authJwt, createSemopayOrder)
+  router.post('/orders', authJwt, createSemopayOrder);
+  router.get('/orders', authJwt, getSemopayOrders);
   router.post('/webhook', bootPayWebhook);
 
   app.use('/semopay', router);
