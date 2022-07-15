@@ -22,24 +22,30 @@ exports.selectAnUserBillingKeyByInfo = async (bkid, uid) => {
 };
 
 exports.selectPayHistoriesByUid = async (uid, type) => {
-  //   const filterType =
-  //     type === 'all' ? {} : type === 'charge' ? { type: 'charge' } : { type: { [Op.not]: 'charge' } };
+  const endDate = new Date();
+  const tempMonth = endDate.getMonth() - 5; // 최근 6개월만 조회
+  const tempYear = endDate.getFullYear();
+  const month = tempMonth < 0 ? tempMonth + 12 : tempMonth;
+  const year = tempMonth < 0 ? tempYear - 1 : tempYear;
+  const startDate = new Date(year, month, 1, 0, 0, 0);
+  const createdAt = { [Op.between]: [startDate, endDate] };
+
+  const where =
+    type === 'charge'
+      ? { uid, type: 'charge', createdAt }
+      : type === 'order'
+      ? { uid, type: 'order', createdAt }
+      : { uid, createdAt };
   return await PayHistory.findAll({
     attributes: [
       'phid',
-      //   'uid',
-      //   'id',
       [sequelize.col('`item->workbook`.`title`'), 'title'],
       'amount',
-      //   'balance',
       'type',
       'createdAt',
       'updatedAt',
     ],
-    // attributes: {
-    //   exclude: ['uid', 'balance'],
-    // },
-    where: { uid },
+    where,
     include: {
       association: 'item',
       attributes: [],
@@ -49,6 +55,7 @@ exports.selectPayHistoriesByUid = async (uid, type) => {
       },
     },
     order: [['createdAt', 'DESC']],
+    logging: console.log,
   });
 };
 
@@ -69,7 +76,7 @@ exports.selectSemopayOrdersByUid = async (uid) => {
     // attributes: ['price'],
     // where: { uid },
     where: { uid, createdAt },
-    logging: console.log,
+    // logging: console.log,
     // order: [['createdAt', 'DESC']],
   });
 };
