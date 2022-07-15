@@ -7,9 +7,9 @@ module.exports = function (sequelize, DataTypes) {
       credit: { type: DataTypes.INTEGER, allowNull: false },
       role: { type: DataTypes.STRING(32), allowNull: false },
       deleted: { type: DataTypes.INTEGER, allowNull: false },
-      isAutoCharge: { type: DataTypes.BOOLEAN, allowNull: true },
-      lessThenAmount: { type: DataTypes.INTEGER, allowNull: true },
-      chargeAmount: { type: DataTypes.INTEGER, allowNull: true },
+      isAutoCharged: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+      lessThenAmount: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 10000 },
+      chargeAmount: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 20000 },
     },
     {
       sequelize,
