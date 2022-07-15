@@ -1,11 +1,19 @@
 const updateCredit = async (sequelize, payHistories, transaction) => {
   const balances = {}
-  for (const { uid, amount, balance } of payHistories) {
+  for (const { uid, amount, balance, type } of payHistories) {
+    console.log('Uid =', uid);
+    console.log('amount =', amount);
+    console.log('balance =', balance);
+
     if (balances[uid] === undefined) {
       const user = await sequelize.models.Users.findByPk(uid, { transaction })
       balances[uid] = user.credit
     }
-    balances[uid] -= amount
+    console.log('BUID 111 =', balances[uid]);
+    if (type === 'order') balances[uid] -= amount;
+    else balances[uid] += amount;
+
+    console.log('BUID 222 =', balances[uid]);
     if (balances[uid] !== balance) throw new Error('BALANCE_NOT_MATCH')
   }
   for (const uid in balances) {
@@ -49,6 +57,14 @@ module.exports = function (sequelize, DataTypes) {
       references: {
         model: 'Items',
         key: 'id'
+      }
+    },
+    soid: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'SemopayOrder',
+        key: 'soid',
       }
     },
     amount: {

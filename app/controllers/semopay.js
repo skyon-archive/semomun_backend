@@ -1,5 +1,5 @@
 const { Bootpay } = require('@bootpay/backend-js');
-const { UserBillingKeys, BootPayWebhook, SemopayOrder } = require('../models/index.js');
+const { UserBillingKeys, BootPayWebhook, SemopayOrder, PayHistory } = require('../models/index.js');
 const {
   selectUserBillingKeysByUid,
   selectAnUserBillingKeyByInfo,
@@ -81,6 +81,12 @@ exports.bootPayWebhook = async (req, res) => {
   res.status(201).json({ success: true });
 };
 
+/**
+ * 수동결제 API입니다.
+ * 갖고있는 빌링키를 이용해 결제를 할 때 필요한 값들은 billing_key, order_name, order_id, price 이지만,
+ * 우리가 알아야 할 정보는 order_name, price 그리고 uid 입니다.
+ * uid로 빌링키를 가져올 수 있으며, order_id는 고유한 값으로(new Date())로 처리합니다.
+ */
 exports.createSemopayOrder = async (req, res) => {
   const uid = req.uid;
   if (!uid) return res.status(401).json({ message: 'Invalid Token.' });
@@ -89,10 +95,10 @@ exports.createSemopayOrder = async (req, res) => {
   const userInfo = await selectUsersByUid(uid);
   if (!userInfo) return res.status(404).json({ message: 'User does not exist.' });
   if (userInfo.deletedAt) return res.status(403).json({ message: 'Already deleted User.' });
+  //   const userCredit = userInfo.credit;
 
-  // Origin Values => billing_key, order_name, order_id, price
-  // Expected Values => bkid, order_name, price
   const { bkid, order_name, price } = req.body;
+  const balance = price + userInfo.credit;
 
   // Validate rechargeable Semopay
   const rechargeableSemopay = await rechargeableSemopayController(uid);
@@ -122,7 +128,16 @@ exports.createSemopayOrder = async (req, res) => {
     });
     payResult.uid = uid;
     payResult.bkid = bkid;
-    await SemopayOrder.create(payResult);
+    const soInfo = await SemopayOrder.create(payResult);
+    // console.log('This is SemopayOrder Instance =', soInfo);
+    const soid = soInfo.soid;
+    await PayHistory.create({
+      uid,
+      soid,
+      amount: price,
+      balance,
+      type: 'charge',
+    });
 
     res.status(201).send();
   } catch (e) {
@@ -134,7 +149,9 @@ exports.createSemopayOrder = async (req, res) => {
 exports.getSemopayOrders = async (req, res) => {
   const uid = req.uid;
   let { type } = req.query;
-  if (!type || type !== 'charge' || type !== 'order') type = 'all';
+  console.log('Type =', type);
+  if (!type) type = 'all';
+  console.log('Type =', type);
   const result = await selectPayHistoriesByUid(uid, type);
   res.status(200).json({ semopayHistories: result });
 };
