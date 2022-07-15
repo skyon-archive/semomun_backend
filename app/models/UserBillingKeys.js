@@ -27,6 +27,7 @@ module.exports = function (sequelize, DataTypes) {
       requested_at: { type: DataTypes.DATE, allowNull: false },
       status_locale: { type: DataTypes.STRING(50), allowNull: false },
       status: { type: DataTypes.INTEGER, allowNull: false },
+      deletedAt: { type: DataTypes.DATE, allowNull: true },
     },
     { sequelize, tableName: 'UserBillingKeys' }
   );

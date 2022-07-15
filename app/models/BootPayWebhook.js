@@ -1,0 +1,35 @@
+module.exports = function (sequelize, DataTypes) {
+  return sequelize.define(
+    'BootPayWebhook',
+    {
+      bpwhid: { type: DataTypes.INTEGER, allowNull: false, autoIncrement: true, primaryKey: true },
+      receipt_id: { type: DataTypes.STRING(50), allowNull: false },
+      order_id: { type: DataTypes.STRING(50), allowNull: false },
+      price: { type: DataTypes.INTEGER, allowNull: false },
+      tax_free: { type: DataTypes.INTEGER, allowNull: false },
+      cancelled_price: { type: DataTypes.INTEGER, allowNull: false },
+      cancelled_tax_free: { type: DataTypes.INTEGER, allowNull: false },
+      order_name: { type: DataTypes.STRING(50), allowNull: false },
+      company_name: { type: DataTypes.STRING(50), allowNull: false },
+      gateway_url: { type: DataTypes.STRING(500), allowNull: false },
+      metadata: { type: DataTypes.JSON, allowNull: false },
+      sandbox: { type: DataTypes.BOOLEAN, allowNull: false },
+      pg: { type: DataTypes.STRING(50), allowNull: false },
+      method: { type: DataTypes.STRING(50), allowNull: false },
+      method_symbol: { type: DataTypes.STRING(50), allowNull: false },
+      method_origin: { type: DataTypes.STRING(50), allowNull: false },
+      method_origin_symbol: { type: DataTypes.STRING(50), allowNull: false },
+      purchased_at: { type: DataTypes.DATE, allowNull: false },
+      cancelled_at: { type: DataTypes.DATE, allowNull: false },
+      requested_at: { type: DataTypes.DATE, allowNull: false },
+      receipt_url: { type: DataTypes.STRING(500), allowNull: false },
+      status: { type: DataTypes.INTEGER, allowNull: false },
+      escrow_data: { type: DataTypes.JSON, allowNull: true },
+      card_data: { type: DataTypes.JSON, allowNull: true },
+      phone_data: { type: DataTypes.JSON, allowNull: true },
+      bank_data: { type: DataTypes.JSON, allowNull: true },
+      vbank_data: { type: DataTypes.JSON, allowNull: true },
+    },
+    { sequelize, tableName: 'BootPayWebhook' }
+  );
+};
