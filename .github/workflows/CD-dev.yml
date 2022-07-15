@@ -83,6 +83,7 @@ jobs:
           envkey_SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
           envkey_BOOTPAY_APPLICATION_ID: ${{ secrets.BOOTPAY_APPLICATION_ID }}
           envkey_BOOTPAY_PRIVATE_KEY: ${{ secrets.BOOTPAY_PRIVATE_KEY }}
+          envkey_MAX_CHARGE_SEMOPAY: 100000
           directory: .deploy/dev
 
       - name: Prepare deployment package

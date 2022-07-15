@@ -10,7 +10,7 @@ const {
 
 const rechargeableSemopayController = async (uid) => {
   const sumSemopay = await selectSemopayOrdersByUid(uid);
-  const maxChargeSemopay = process.env.MAX_CHARGE_SEMOPAY;
+  const maxChargeSemopay = parseInt(process.env.MAX_CHARGE_SEMOPAY);
   return maxChargeSemopay - (sumSemopay[0].price === null ? 0 : parseInt(sumSemopay[0].price));
 };
 
