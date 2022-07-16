@@ -6,6 +6,9 @@ const {
   selectPayHistoriesByUid,
   selectUsersByUid,
   selectSemopayOrdersByUid,
+  selectUsingAutoChargeCardNow,
+  selectUsersAnBillingKeyForAutoCharge,
+  selectUsersAllBillingKeysForAutoCharge,
 } = require('../services/semopay.js');
 
 const rechargeableSemopayController = async (uid) => {
@@ -13,6 +16,8 @@ const rechargeableSemopayController = async (uid) => {
   const maxChargeSemopay = parseInt(process.env.MAX_CHARGE_SEMOPAY);
   return maxChargeSemopay - (sumSemopay[0].price === null ? 0 : parseInt(sumSemopay[0].price));
 };
+
+const validateAutoChargeAmount = async (lessThenAmount, chargeAmount) => {};
 
 exports.createUserBillingKey = async (req, res) => {
   const uid = req.uid;
@@ -149,9 +154,9 @@ exports.createSemopayOrder = async (req, res) => {
 exports.getSemopayOrders = async (req, res) => {
   const uid = req.uid;
   let { type } = req.query;
-  console.log('Type =', type);
+  //   console.log('Type =', type);
   if (!type) type = 'all';
-  console.log('Type =', type);
+  //   console.log('Type =', type);
   const result = await selectPayHistoriesByUid(uid, type);
   res.status(200).json({ semopayHistories: result });
 };
@@ -167,4 +172,56 @@ exports.getSemopay = async (req, res) => {
   const currentSemopay = userInfo.credit;
   const rechargeableSemopay = await rechargeableSemopayController(uid);
   res.status(200).json({ currentSemopay, rechargeableSemopay });
+};
+
+exports.getAutoChargeInfo = async (req, res) => {
+  console.log('# ----- 자동 충전 정보 수정 API ----- #');
+  const uid = req.uid;
+  if (!uid) return res.status(401).json({ message: 'Invalid Token.' });
+  const userInfo = await selectUsersByUid(uid);
+  if (!userInfo) return res.status(404).json({ message: 'User does not exist.' });
+  if (userInfo.deletedAt) return res.status(403).json({ message: 'Already deleted User.' });
+  const isAutoCharged = userInfo.isAutoCharged;
+  const lessThenAmount = userInfo.lessThenAmount;
+  const chargeAmount = userInfo.chargeAmount;
+  const bkInfo = await selectUsingAutoChargeCardNow(uid);
+  console.log(bkInfo);
+  const bkid = bkInfo === null ? null : bkInfo?.bkid;
+  res.status(200).json({ isAutoCharged, lessThenAmount, chargeAmount, bkid });
+};
+
+exports.putAutoChargeInfo = async (req, res) => {
+  const uid = req.uid;
+  if (!uid) return res.status(401).json({ message: 'Invalid Token.' });
+  const userInfo = await selectUsersByUid(uid);
+  if (!userInfo) return res.status(404).json({ message: 'User does not exist.' });
+  if (userInfo.deletedAt) return res.status(403).json({ message: 'Already deleted User.' });
+
+  const { isAutoCharged, lessThenAmount, chargeAmount, bkid } = req.body;
+  console.log('isAutoCharged =', isAutoCharged);
+  console.log('lessThenAmount =', lessThenAmount);
+  console.log('chargeAmount =', chargeAmount);
+  console.log('bkid =', bkid);
+
+  try {
+    // Update User Info
+    await userInfo.set({ isAutoCharged, lessThenAmount, chargeAmount }).save();
+
+    await selectUsersAllBillingKeysForAutoCharge(uid);
+    // if (billingKeys.length === 0)
+    //   return res.status(403).json({ message: 'Please register your card first.' });
+    // billingKeys.update({ isAutoCharged: false }).save();
+
+    // const aBillingKey = await selectUsersAnBillingKeyForAutoCharge(uid, bkid);
+    // console.log('aBillingKey =', aBillingKey);
+    // if (!aBillingKey) return res.status(404).json({ message: 'Invalid Bk Info.' });
+
+    // aBillingKey.isAutoCharged = true;
+    // aBillingKey.save();
+
+    res.status(204).send();
+  } catch (err) {
+    console.log('err =', err);
+    res.status(400).json({ message: err });
+  }
 };

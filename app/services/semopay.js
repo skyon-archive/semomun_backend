@@ -80,3 +80,19 @@ exports.selectSemopayOrdersByUid = async (uid) => {
     // order: [['createdAt', 'DESC']],
   });
 };
+
+exports.selectUsingAutoChargeCardNow = async (uid) => {
+  return await UserBillingKeys.findOne({ where: { uid, isAutoCharged: true } });
+};
+
+exports.selectUsersAnBillingKeyForAutoCharge = async (uid, bkid) => {
+  return await UserBillingKeys.findOne({ where: { uid, bkid, deletedAt: { [Op.is]: null } } });
+};
+
+exports.selectUsersAllBillingKeysForAutoCharge = async (uid) => {
+  return await UserBillingKeys.update(
+    { isAutoCharged: false },
+    { where: { uid, deletedAt: { [Op.is]: null } } }
+  );
+  //   return await UserBillingKeys.findAll({ where: { uid, deletedAt: { [Op.is]: null } } });
+};

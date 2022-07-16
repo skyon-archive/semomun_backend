@@ -6,6 +6,8 @@ const {
   createSemopayOrder,
   getSemopayOrders,
   getSemopay,
+  getAutoChargeInfo,
+  putAutoChargeInfo,
 } = require('../controllers/semopay.js');
 
 module.exports = (app) => {
@@ -21,8 +23,12 @@ module.exports = (app) => {
   // Payment
   router.post('/orders', authJwt, createSemopayOrder);
   router.get('/orders', authJwt, getSemopayOrders);
-  router.get('/', authJwt, getSemopay)
+  router.get('/', authJwt, getSemopay);
   router.post('/webhook', bootPayWebhook);
+
+  // AutoCharge
+  router.get('/auto-charge', authJwt, getAutoChargeInfo);
+  router.put('/auto-charge', authJwt, putAutoChargeInfo);
 
   app.use('/semopay', router);
 };
