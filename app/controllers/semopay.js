@@ -1,4 +1,5 @@
 const { Bootpay } = require('@bootpay/backend-js');
+const { Op } = require('sequelize');
 const { UserBillingKeys, BootPayWebhook, SemopayOrder, PayHistory } = require('../models/index.js');
 const {
   selectUserBillingKeysByUid,
@@ -197,10 +198,10 @@ exports.putAutoChargeInfo = async (req, res) => {
   if (userInfo.deletedAt) return res.status(403).json({ message: 'Already deleted User.' });
 
   const { isAutoCharged, lessThenAmount, chargeAmount, bkid } = req.body;
-//   console.log('isAutoCharged =', isAutoCharged);
-//   console.log('lessThenAmount =', lessThenAmount);
-//   console.log('chargeAmount =', chargeAmount);
-//   console.log('bkid =', bkid);
+  //   console.log('isAutoCharged =', isAutoCharged);
+  //   console.log('lessThenAmount =', lessThenAmount);
+  //   console.log('chargeAmount =', chargeAmount);
+  //   console.log('bkid =', bkid);
 
   try {
     // Update User Info
