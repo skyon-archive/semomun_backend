@@ -8,7 +8,6 @@ const {
   selectUsersByUid,
   selectSemopayOrdersByUid,
   selectUsingAutoChargeCardNow,
-  updateAllUserBillingKeysToAutoFalse,
 } = require('../services/semopay.js');
 
 const rechargeableSemopayController = async (uid) => {
