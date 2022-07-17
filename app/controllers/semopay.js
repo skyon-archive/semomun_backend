@@ -7,8 +7,7 @@ const {
   selectUsersByUid,
   selectSemopayOrdersByUid,
   selectUsingAutoChargeCardNow,
-  selectUsersAnBillingKeyForAutoCharge,
-  selectUsersAllBillingKeysForAutoCharge,
+  updateAllUserBillingKeysToAutoFalse,
 } = require('../services/semopay.js');
 
 const rechargeableSemopayController = async (uid) => {
@@ -198,26 +197,26 @@ exports.putAutoChargeInfo = async (req, res) => {
   if (userInfo.deletedAt) return res.status(403).json({ message: 'Already deleted User.' });
 
   const { isAutoCharged, lessThenAmount, chargeAmount, bkid } = req.body;
-  console.log('isAutoCharged =', isAutoCharged);
-  console.log('lessThenAmount =', lessThenAmount);
-  console.log('chargeAmount =', chargeAmount);
-  console.log('bkid =', bkid);
+//   console.log('isAutoCharged =', isAutoCharged);
+//   console.log('lessThenAmount =', lessThenAmount);
+//   console.log('chargeAmount =', chargeAmount);
+//   console.log('bkid =', bkid);
 
   try {
     // Update User Info
     await userInfo.set({ isAutoCharged, lessThenAmount, chargeAmount }).save();
 
-    await selectUsersAllBillingKeysForAutoCharge(uid);
-    // if (billingKeys.length === 0)
-    //   return res.status(403).json({ message: 'Please register your card first.' });
-    // billingKeys.update({ isAutoCharged: false }).save();
+    // 우선 모든 카드를, 자동충전 미사용 카드로 변경.
+    await UserBillingKeys.update(
+      { isAutoCharged: false },
+      { where: { uid, deletedAt: { [Op.is]: null } } }
+    );
 
-    // const aBillingKey = await selectUsersAnBillingKeyForAutoCharge(uid, bkid);
-    // console.log('aBillingKey =', aBillingKey);
-    // if (!aBillingKey) return res.status(404).json({ message: 'Invalid Bk Info.' });
-
-    // aBillingKey.isAutoCharged = true;
-    // aBillingKey.save();
+    // 받은 bkid만 사용 카드로 변경.
+    await UserBillingKeys.update(
+      { isAutoCharged: true },
+      { where: { uid, bkid, deletedAt: { [Op.is]: null } } }
+    );
 
     res.status(204).send();
   } catch (err) {
