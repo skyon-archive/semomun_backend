@@ -48,6 +48,9 @@ exports.fetchWorkbook = async (req, res) => {
     const { wid } = req.params;
 
     const workbook = await Workbooks.findOne({
+      attributes: {
+        include: [[sequelize.literal('`paperbookPrice`'), 'originalPrice']],
+      },
       where: { wid },
       include: {
         association: 'sections',
