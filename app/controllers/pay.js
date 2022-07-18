@@ -1,4 +1,5 @@
 const { BadRequest, NotFound } = require('../errors')
+const { Op } = require('sequelize');
 const { parseIntDefault } = require('../utils')
 const { createOrders, getPayHistory } = require('../services/payHistory')
 const { selectUsersByUid } = require('../services/semopay')
@@ -22,7 +23,7 @@ exports.createOrders = async (req, res) => {
     if (userInfo.deletedAt) return res.status(403).json({ message: 'Already deleted User.' });
     if (userInfo.isAutoCharged && userInfo.lessThenAmount >= balance) {
       // 자동 충전이 완료고, 남은 금액이 설정값보다 작다면,
-      const bkInfo = await UserBillingKeys.findOne({where: {uid, deletedAt: { [Op.null]: true }, isAutoCharged: true }});
+      const bkInfo = await UserBillingKeys.findOne({where: {uid, deletedAt: { [Op.is]: null }, isAutoCharged: true }});
 
       const price = userInfo.chargeAmount;
       const order_name = '세모페이 자동 충전';
