@@ -32,7 +32,7 @@ exports.selectPayHistoriesByUid = async (uid, type) => {
 
   const where =
     type === 'charge'
-      ? { uid, type: 'charge', createdAt }
+      ? { uid, type: { [Op.not]: 'order' }, createdAt }
       : type === 'order'
       ? { uid, type: 'order', createdAt }
       : { uid, createdAt };
