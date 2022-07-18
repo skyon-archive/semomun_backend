@@ -48,12 +48,17 @@ exports.getUserBillingKeysByUid = async (req, res) => {
   if (!uid) return res.status(401).json({ message: 'Invalid Token.' });
 
   const userBillingKeys = await selectUserBillingKeysByUid(uid);
+  console.log('userBillingKeys =', userBillingKeys);
   res.status(200).json({ billingKeys: userBillingKeys });
 };
 
 exports.deleteUserBillingKey = async (req, res) => {
   const uid = req.uid;
   if (!uid) return res.status(401).json({ message: 'Invalid Token.' });
+  // Validate Users
+  const userInfo = await selectUsersByUid(uid);
+  if (!userInfo) return res.status(404).json({ message: 'User does not exist.' });
+  if (userInfo.deletedAt) return res.status(403).json({ message: 'Already deleted User.' });
 
   const { bkid } = req.params;
   const bkInfo = await selectAnUserBillingKeyByInfo(bkid, uid);
@@ -69,8 +74,15 @@ exports.deleteUserBillingKey = async (req, res) => {
 
     await Bootpay.getAccessToken();
     await Bootpay.destroyBillingKey(bkInfo.billing_key);
+
+    if (bkInfo.isAutoCharged === true) {
+      userInfo.isAutoCharged = false;
+      userInfo.save();
+    }
+
     bkInfo.deletedAt = new Date();
     bkInfo.save();
+
     res.status(204).send();
   } catch (e) {
     console.log(e);
@@ -94,13 +106,16 @@ exports.bootPayWebhook = async (req, res) => {
 exports.createSemopayOrder = async (req, res) => {
   const uid = req.uid;
   if (!uid) return res.status(401).json({ message: 'Invalid Token.' });
-
   // Validate Users
   const userInfo = await selectUsersByUid(uid);
   if (!userInfo) return res.status(404).json({ message: 'User does not exist.' });
   if (userInfo.deletedAt) return res.status(403).json({ message: 'Already deleted User.' });
   const { bkid, order_name, price } = req.body;
   const balance = price + userInfo.credit;
+  // console.log('balance =', balance);
+  // console.log('bkid =', bkid);
+  // console.log('order_name =', order_name);
+  // console.log('price =', price);
 
   // 소지 가능한 금액 한도 초과시, 월 충전 가능한 금액 한도 초과시
   const rechargeableSemopay = await rechargeableSemopayController(uid);
@@ -111,18 +126,17 @@ exports.createSemopayOrder = async (req, res) => {
   }
 
   // Validate UserBillingKeys
+  if (!bkid) return res.status(404).json({ message: 'Invalid Bk Info.' });
   const bkInfo = await selectAnUserBillingKeyByInfo(bkid, uid);
   if (!bkInfo) return res.status(404).json({ message: 'Invalid Bk Info.' });
   if (bkInfo.deletedAt) return res.status(409).json({ message: 'Already deleted Info.' });
   const billing_key = bkInfo.billing_key;
-
   try {
     Bootpay.setConfiguration({
       application_id: process.env.BOOTPAY_APPLICATION_ID,
       private_key: process.env.BOOTPAY_PRIVATE_KEY,
     });
     await Bootpay.getAccessToken();
-
     const payResult = await Bootpay.requestSubscribeCardPayment({
       billing_key,
       order_name,
@@ -143,7 +157,6 @@ exports.createSemopayOrder = async (req, res) => {
       balance,
       type: 'charge',
     });
-
     res.status(201).send();
   } catch (e) {
     console.log(e);
