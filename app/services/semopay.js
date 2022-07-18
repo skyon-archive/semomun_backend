@@ -32,7 +32,7 @@ exports.selectPayHistoriesByUid = async (uid, type) => {
 
   const where =
     type === 'charge'
-      ? { uid, type: 'charge', createdAt }
+      ? { uid, type: { [Op.not]: 'order' }, createdAt }
       : type === 'order'
       ? { uid, type: 'order', createdAt }
       : { uid, createdAt };
@@ -65,11 +65,8 @@ exports.selectUsersByUid = async (uid) => {
 
 exports.selectSemopayOrdersByUid = async (uid) => {
   const endDate = new Date();
-  console.log(endDate.getFullYear());
   //   console.log(endDate.getMonth());
   const startDate = new Date(endDate.getFullYear(), endDate.getMonth(), 1, 0, 0, 0);
-  console.log('startDate =', startDate);
-  console.log('endDate =', endDate);
   const createdAt = { [Op.between]: [startDate, endDate] };
   return await SemopayOrder.findAll({
     attributes: [[sequelize.fn('sum', sequelize.col('price')), 'price']],
@@ -79,4 +76,14 @@ exports.selectSemopayOrdersByUid = async (uid) => {
     // logging: console.log,
     // order: [['createdAt', 'DESC']],
   });
+};
+
+exports.selectUsingAutoChargeCardNow = async (uid) => {
+  return await UserBillingKeys.findOne({
+    where: { uid, deletedAt: { [Op.is]: null }, isAutoCharged: true },
+  });
+};
+
+exports.selectUsersAnBillingKeyForAutoCharge = async (uid, bkid) => {
+  return await UserBillingKeys.findOne({ where: { uid, bkid, deletedAt: { [Op.is]: null } } });
 };
