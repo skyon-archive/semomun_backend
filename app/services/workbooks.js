@@ -50,6 +50,7 @@ exports.fetchWorkbooks = async (page, limit, tids, substring, order) => {
           ),
           'matchTags',
         ],
+        [sequelize.literal('`paperbookPrice`'), 'originalPrice']
       ],
       exclude: 'type',
     },
