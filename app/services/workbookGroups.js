@@ -30,12 +30,15 @@ exports.selectWorkbookGroups = async (page, limit, tids, keyword, order) => {
   const { count, rows } = await WorkbookGroups.findAndCountAll({
     include: {
       association: 'workbooks',
-      where: { wid: { [Op.not]: null } , type: ''},
+      attributes: {
+        include: [[sequelize.literal('`paperbookPrice`'), 'originalPrice']],
+      },
+      where: { wid: { [Op.not]: null }, type: '' },
       required: true,
       include: {
         association: 'WorkbookTags',
         where: tidsWhere,
-        required:true
+        required: true,
         // include: { association: 'tid_Tag' },
       },
     },
@@ -43,7 +46,7 @@ exports.selectWorkbookGroups = async (page, limit, tids, keyword, order) => {
     offset: (page - 1) * limit,
     limit,
     order: [orderType],
-    distinct: true
+    distinct: true,
   });
   return { count, workbookGroups: rows };
 };
