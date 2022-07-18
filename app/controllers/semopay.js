@@ -48,7 +48,7 @@ exports.getUserBillingKeysByUid = async (req, res) => {
   if (!uid) return res.status(401).json({ message: 'Invalid Token.' });
 
   const userBillingKeys = await selectUserBillingKeysByUid(uid);
-  console.log('userBillingKeys =', userBillingKeys);
+  // console.log('userBillingKeys =', userBillingKeys);
   res.status(200).json({ billingKeys: userBillingKeys });
 };
 
@@ -198,7 +198,7 @@ exports.getAutoChargeInfo = async (req, res) => {
   const lessThenAmount = userInfo.lessThenAmount;
   const chargeAmount = userInfo.chargeAmount;
   const bkInfo = await selectUsingAutoChargeCardNow(uid);
-  console.log(bkInfo);
+  // console.log(bkInfo);
   const bkid = bkInfo === null ? null : bkInfo?.bkid;
   res.status(200).json({ isAutoCharged, lessThenAmount, chargeAmount, bkid });
 };
