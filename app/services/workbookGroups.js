@@ -56,7 +56,7 @@ exports.selectOneWorkbookGroup = async (wgid) => {
   const workbookgroup = await WorkbookGroups.findOne({
     include: {
       association: 'workbooks',
-      attributes: { exclude: ['type'] },
+      attributes: { exclude: ['type'], include: [[sequelize.literal('`paperbookPrice`'), 'originalPrice']] },
       include: [
         { association: 'sections', order: [['index', 'ASC']] },
         { association: 'item', attributes: ['price', 'sales'] },
