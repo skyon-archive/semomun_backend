@@ -102,16 +102,9 @@ exports.createSemopayOrder = async (req, res) => {
   const { bkid, order_name, price } = req.body;
   const balance = price + userInfo.credit;
 
-  // 소지 가능한 금액 한도 초과시
-  if (balance > process.env.MAX_CHARGE_SEMOPAY) {
-    userInfo.isAutoCharged = false;
-    userInfo.save();
-    return res.status(403).json({ message: 'The chargeable amount has been exceeded.' });
-  }
-
-  // 월 충전 가능한 금액 한도 초과시
+  // 소지 가능한 금액 한도 초과시, 월 충전 가능한 금액 한도 초과시
   const rechargeableSemopay = await rechargeableSemopayController(uid);
-  if (price > rechargeableSemopay) {
+  if (balance > process.env.MAX_CHARGE_SEMOPAY || price > rechargeableSemopay) {
     userInfo.isAutoCharged = false;
     userInfo.save();
     return res.status(403).json({ message: 'The chargeable amount has been exceeded.' });
