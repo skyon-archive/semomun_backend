@@ -99,15 +99,23 @@ exports.createSemopayOrder = async (req, res) => {
   const userInfo = await selectUsersByUid(uid);
   if (!userInfo) return res.status(404).json({ message: 'User does not exist.' });
   if (userInfo.deletedAt) return res.status(403).json({ message: 'Already deleted User.' });
-  //   const userCredit = userInfo.credit;
-
   const { bkid, order_name, price } = req.body;
   const balance = price + userInfo.credit;
 
-  // Validate rechargeable Semopay
-  const rechargeableSemopay = await rechargeableSemopayController(uid);
-  if (price > rechargeableSemopay)
+  // 소지 가능한 금액 한도 초과시
+  if (balance > process.env.MAX_CHARGE_SEMOPAY) {
+    userInfo.isAutoCharged = false;
+    userInfo.save();
     return res.status(403).json({ message: 'The chargeable amount has been exceeded.' });
+  }
+
+  // 월 충전 가능한 금액 한도 초과시
+  const rechargeableSemopay = await rechargeableSemopayController(uid);
+  if (price > rechargeableSemopay) {
+    userInfo.isAutoCharged = false;
+    userInfo.save();
+    return res.status(403).json({ message: 'The chargeable amount has been exceeded.' });
+  }
 
   // Validate UserBillingKeys
   const bkInfo = await selectAnUserBillingKeyByInfo(bkid, uid);
