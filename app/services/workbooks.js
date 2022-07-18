@@ -50,7 +50,7 @@ exports.fetchWorkbooks = async (page, limit, tids, substring, order) => {
           ),
           'matchTags',
         ],
-        [sequelize.literal('`paperbookPrice`'), 'originalPrice']
+        [sequelize.literal('`paperbookPrice`'), 'originalPrice'],
       ],
       exclude: 'type',
     },
@@ -68,7 +68,14 @@ exports.fetchWorkbooks = async (page, limit, tids, substring, order) => {
 };
 
 exports.fetchWorkbooksByWids = async (wids) => {
-  return Promise.all(wids.map((wid) => Workbooks.findOne({ where: { wid } })));
+  return Promise.all(
+    wids.map((wid) =>
+      Workbooks.findOne({
+        attributes: { include: [[sequelize.literal('`paperbookPrice`'), 'originalPrice']] },
+        where: { wid },
+      })
+    )
+  );
 };
 
 exports.getPurchasedWorkbooks = async (uid, orderType) => {
