@@ -4,6 +4,8 @@ const responseTime = require('response-time')
 const cors = require('cors')
 const app = express()
 const morgan = require('morgan')
+const MAX_CHARGE_SEMOPAY = 1000000;
+module.exports = { MAX_CHARGE_SEMOPAY };
 
 const corsOptions = {
   origin: [

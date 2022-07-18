@@ -9,14 +9,16 @@ const {
   selectSemopayOrdersByUid,
   selectUsingAutoChargeCardNow,
 } = require('../services/semopay.js');
+const { MAX_CHARGE_SEMOPAY } = require('../../server.js');
 
 const rechargeableSemopayController = async (uid) => {
+  // console.log('MAX_CHARGE_SEMOPAY =', MAX_CHARGE_SEMOPAY)
   const sumSemopay = await selectSemopayOrdersByUid(uid);
-  const maxChargeSemopay = parseInt(process.env.MAX_CHARGE_SEMOPAY);
+  const maxChargeSemopay = parseInt(MAX_CHARGE_SEMOPAY);
   return maxChargeSemopay - (sumSemopay[0].price === null ? 0 : parseInt(sumSemopay[0].price));
 };
 
-const validateAutoChargeAmount = async (lessThenAmount, chargeAmount) => {};
+// const validateAutoChargeAmount = async (lessThenAmount, chargeAmount) => {};
 
 exports.createUserBillingKey = async (req, res) => {
   const uid = req.uid;
@@ -119,7 +121,7 @@ exports.createSemopayOrder = async (req, res) => {
 
   // 소지 가능한 금액 한도 초과시, 월 충전 가능한 금액 한도 초과시
   const rechargeableSemopay = await rechargeableSemopayController(uid);
-  if (balance > process.env.MAX_CHARGE_SEMOPAY || price > rechargeableSemopay) {
+  if (balance > MAX_CHARGE_SEMOPAY || price > rechargeableSemopay) {
     userInfo.isAutoCharged = false;
     userInfo.save();
     return res.status(403).json({ message: 'The chargeable amount has been exceeded.' });

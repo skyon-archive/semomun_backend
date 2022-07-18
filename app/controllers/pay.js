@@ -5,6 +5,7 @@ const { createOrders, getPayHistory } = require('../services/payHistory');
 const { selectUsersByUid } = require('../services/semopay');
 const { Bootpay } = require('@bootpay/backend-js');
 const { SemopayOrder, PayHistory, UserBillingKeys } = require('../models/index.js');
+const { MAX_CHARGE_SEMOPAY } = require('../../server.js');
 
 exports.createOrders = async (req, res) => {
   try {
@@ -34,10 +35,7 @@ exports.createOrders = async (req, res) => {
       const bkid = bkInfo.bkid;
 
       // 소지 가능한 금액 한도 초과시
-      if (
-        price + balance > process.env.MAX_CHARGE_SEMOPAY ||
-        price > process.env.MAX_CHARGE_SEMOPAY
-      ) {
+      if (price + balance > MAX_CHARGE_SEMOPAY || price > MAX_CHARGE_SEMOPAY) {
         userInfo.isAutoCharged = false;
         userInfo.save();
         return res.status(403).json({ message: 'The chargeable amount has been exceeded.' });
