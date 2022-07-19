@@ -56,6 +56,7 @@ jobs:
         uses: SpicyPizza/create-envfile@v1.3
         with:
           envkey_NODE_ENV: ${{ env.NODE_ENV }}
+          envkey_VERSION: ${{ github.SHA }}
           envkey_DB_HOST: ${{ env.DB_HOST }}
           envkey_DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           envkey_REDIS_HOST: ${{ env.REDIS_HOST }}

@@ -33,6 +33,7 @@ if (env && (env === 'production' || env === 'test')) {
     ],
 
     environment: env,
+    release: 'semomun_backend@' + process.env.VERSION,
 
     // Set tracesSampleRate to 1.0 to capture 100%
     // of transactions for performance monitoring.
