@@ -18,6 +18,7 @@ jobs:
       VERSION: 1
       DB_HOST: aurora-main.db.semomun.com
       REDIS_HOST: redis://redis-main.mxpiww.ng.0001.apn2.cache.amazonaws.com:6379
+      NODE_ENV: production
 
     steps:
       - uses: actions/checkout@v2
@@ -54,6 +55,7 @@ jobs:
       - name: Make .env
         uses: SpicyPizza/create-envfile@v1.3
         with:
+          envkey_NODE_ENV: ${{ env.NODE_ENV }}
           envkey_DB_HOST: ${{ env.DB_HOST }}
           envkey_DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           envkey_REDIS_HOST: ${{ env.REDIS_HOST }}
