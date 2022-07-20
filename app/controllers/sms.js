@@ -8,7 +8,7 @@ exports.sendCode = async (req, res) => {
     if (!verifyPhoneFormat(phone)) {
       return res.status(400).send('PHONE_WRONG_FORMAT')
     }
-g
+
     const count = await redis.incr(`code:count${phone}`)
     if (count > 10) return res.status(429).send('TOO_FREQUENT')
     await redis.expire(`code:count${phone}`, 60 * 60)
