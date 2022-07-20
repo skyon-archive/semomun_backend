@@ -2,9 +2,11 @@ const DataTypes = require('sequelize').DataTypes;
 
 // Notices - 1
 const _Notices = require('./Notices.js');
-// BootPayWebhook - 1
+
+// BootPay - 1
 const _BootPayWebhook = require('./BootPayWebhook.js');
 const _SemopayOrder = require('./SemopayOrder.js');
+
 // Items - 6
 const _Items = require('./Items.js');
 const _WorkbookGroups = require('./WorkbookGroups.js'); // WorkbookGroups Model
@@ -12,12 +14,17 @@ const _Workbooks = require('./Workbooks.js');
 const _Sections = require('./Sections.js');
 const _Views = require('./Views.js');
 const _Problems = require('./Problems.js');
+
 // User - 2
+const _ConsoleUsers = require('./ConsoleUsers.js');
 const _Users = require('./Users.js');
 const _UserInfo = require('./UserInfo.js');
 const _UserBillingKeys = require('./UserBillingKeys.js');
+
 // Tag - 1
+const _Categories = require('./Categories.js');
 const _Tags = require('./Tags.js');
+
 // Relationship Tables - 7
 const _PayHistory = require('./PayHistory.js');
 const _FavoriteTags = require('./FavoriteTags.js');
@@ -52,6 +59,8 @@ function initModels(sequelize) {
   const UserBillingKeys = _UserBillingKeys(sequelize, DataTypes);
   const BootPayWebhook = _BootPayWebhook(sequelize, DataTypes);
   const SemopayOrder = _SemopayOrder(sequelize, DataTypes);
+  const ConsoleUsers = _ConsoleUsers(sequelize, DataTypes);
+  const Categories = _Categories(sequelize, DataTypes);
 
   ErrorReports.belongsTo(Problems, { as: 'pid_Problem', foreignKey: 'pid' });
   Problems.hasMany(ErrorReports, { as: 'errorReports', foreignKey: 'pid' });
@@ -166,6 +175,8 @@ function initModels(sequelize) {
     UserBillingKeys,
     BootPayWebhook,
     SemopayOrder,
+    ConsoleUsers,
+    Categories,
   };
 }
 module.exports = initModels;
