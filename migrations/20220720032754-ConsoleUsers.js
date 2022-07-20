@@ -5,7 +5,13 @@ module.exports = {
     await queryInterface.createTable(
       'ConsoleUsers',
       {
-        cuid: { type: Sequelize.INTEGER, allowNull: false, autoIncrement: true, primaryKey: true, comment: '콘솔 유저 고유 아이디' },
+        cuid: {
+          type: Sequelize.INTEGER,
+          allowNull: false,
+          autoIncrement: true,
+          primaryKey: true,
+          comment: '콘솔 유저 고유 아이디',
+        },
         name: { type: Sequelize.STRING(30), allowNull: false, comment: '이름' },
         account: { type: Sequelize.STRING(50), unique: true, allowNull: false, comment: '아이디' },
         password: { type: Sequelize.STRING(300), allowNull: false, comment: '비밀번호' },
