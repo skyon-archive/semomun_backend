@@ -17,7 +17,7 @@ module.exports = {
         isHidden: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false, comment: '숨김 여부' },
         deletedAt: { type: Sequelize.DATE, allowNull: true, comment: '탈퇴 또는 삭제 시간' },
       },
-      { comment: '콘솔 유저 테이블', charset: 'utf8mb4', collate: 'utf8mb4_unicode_ci' }
+      { comment: '콘솔 유저', charset: 'utf8mb4', collate: 'utf8mb4_unicode_ci' }
     );
   },
 
