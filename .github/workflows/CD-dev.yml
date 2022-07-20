@@ -48,6 +48,7 @@ jobs:
           push: true
           tags: |
             ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:latest
+            ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ github.SHA }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           network: host
@@ -87,6 +88,15 @@ jobs:
           envkey_BOOTPAY_APPLICATION_ID: ${{ secrets.BOOTPAY_APPLICATION_ID }}
           envkey_BOOTPAY_PRIVATE_KEY: ${{ secrets.BOOTPAY_PRIVATE_KEY }}
           directory: .deploy/dev
+
+      - name: Update docker-compose.yaml
+        uses: fjogeleit/yaml-update-action@main
+        with:
+          valueFile: ".deploy/dev/docker-compose.yml"
+          propertyPath: "services.node.image"
+          value: 219222627333.dkr.ecr.ap-northeast-2.amazonaws.com/semomun/backend-dev:${{ github.SHA }}
+          commitChange: false
+          updateFile: true
 
       - name: Prepare deployment package
         run: |
