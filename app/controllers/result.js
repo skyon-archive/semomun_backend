@@ -1,9 +1,5 @@
 const { ResultSubmissions, sequelize } = require('../models/index.js');
-const {
-  selectAllResultByWgid,
-  selectOneResultByWid,
-  selectResultByWidFromAllUser,
-} = require('../services/result.js');
+const { selectAllResultByWgid, selectOneResultByWid, selectResultByWidFromAllUser } = require('../services/result.js');
 
 exports.postScoredData = async (req, res) => {
   const {
@@ -71,6 +67,7 @@ exports.getOneResultByWid = async (req, res) => {
 
   if (type === 'public') {
     const resultsData = await selectResultByWidFromAllUser(wid);
+    if (resultsData.length === 0) return res.status(404).json({ message: 'Not Found Result.' });
     const resultData = resultsData[0].get({ plain: true });
 
     const rank = (
