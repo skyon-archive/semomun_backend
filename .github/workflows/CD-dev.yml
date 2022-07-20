@@ -88,6 +88,15 @@ jobs:
           envkey_BOOTPAY_PRIVATE_KEY: ${{ secrets.BOOTPAY_PRIVATE_KEY }}
           directory: .deploy/dev
 
+      - name: Update docker-compose.yaml
+        uses: fjogeleit/yaml-update-action@main
+        with:
+          valueFile: ".deploy/dev/docker-compose.yml"
+          propertyPath: "services.node.image"
+          value: 219222627333.dkr.ecr.ap-northeast-2.amazonaws.com/semomun/backend-dev:${{ github.SHA }}
+          commitChange: false
+          updateFile: true
+
       - name: Prepare deployment package
         run: |
           cd .deploy/dev && zip -r deploy.zip . && cd ../..
