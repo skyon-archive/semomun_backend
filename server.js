@@ -20,7 +20,7 @@ const corsOptions = {
 }
 
 const env = process.env.NODE_ENV
-console.log(env)
+// console.log(env)
 
 if (env && (env === 'production' || env === 'test')) {
   Sentry.init({

@@ -11,7 +11,7 @@ exports.sendCode = async (req, res) => {
 
     const count = await redis.incr(`code:count${phone}`)
     if (count > 10) return res.status(429).send('TOO_FREQUENT')
-    await redis.expire(`code:count${phone}`, 60 * 60 * 3)
+    await redis.expire(`code:count${phone}`, 60 * 60)
 
     const code = Math.floor(100000 + Math.random() * 900000)
     await redis.set(`code:${phone}`, code, { EX: 60 * 5 })
