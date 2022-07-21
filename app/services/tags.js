@@ -35,8 +35,12 @@ exports.getTagsOrderBy = async (orderBy) => {
 
 exports.getTagsByUid = (uid) => {
   return FavoriteTags.findAll({
+    include: {
+      association: 'tid_Tag',
+      required: true,
+      include: { association: 'category', attributes: ['cid', 'name'] },
+    },
     where: { uid },
-    include: 'tid_Tag',
     order: [['createdAt', 'ASC']],
   });
 };

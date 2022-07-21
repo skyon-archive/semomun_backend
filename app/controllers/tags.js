@@ -20,7 +20,8 @@ exports.getMyTags = async (req, res) => {
     res.json(result.map(({ tid_Tag, createdAt }) => ({
       tid: tid_Tag.tid,
       name: tid_Tag.name,
-      createdAt
+      createdAt,
+      category: tid_Tag.category
     })))
   } catch (err) {
     console.log(err)
