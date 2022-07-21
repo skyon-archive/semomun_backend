@@ -1,6 +1,7 @@
+const { Op } = require('sequelize');
 const { Tags, FavoriteTags, sequelize } = require('../models/index');
 
-exports.getTagsOrderBy = async (orderBy) => {
+exports.getTagsOrderBy = async (orderBy, cidBy) => {
   const order =
     orderBy === 'popularity'
       ? [
@@ -11,6 +12,7 @@ exports.getTagsOrderBy = async (orderBy) => {
       : orderBy === 'name'
       ? [['name', 'ASC']]
       : [['tid', 'ASC']];
+  const where = cidBy === 'all' ? undefined : { cid: cidBy };
   const { count, rows } = await Tags.findAndCountAll({
     attributes: {
       include: [
@@ -28,6 +30,7 @@ exports.getTagsOrderBy = async (orderBy) => {
         ],
       ],
     },
+    include: { association: 'category', attributes: ['cid', 'name'], where },
     order,
   });
   return { count, tags: rows };

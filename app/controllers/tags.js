@@ -5,7 +5,12 @@ const { BadRequest } = require('../errors');
 exports.getTags = async (req, res) => {
   try {
     const { order } = req.query;
-    const result = await getTagsOrderBy(order);
+    let { category } = req.query;
+    if (!category) category = 'all';
+    else if (isNaN(category))
+      return res.status(400).json({ message: 'The category must be of type Integer.' });
+
+    const result = await getTagsOrderBy(order, category);
     res.json(result);
   } catch (err) {
     console.log(err);
