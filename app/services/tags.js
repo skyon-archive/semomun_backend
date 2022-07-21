@@ -1,15 +1,18 @@
-const { Tags, FavoriteTags, sequelize } = require('../models/index')
+const { Op } = require('sequelize');
+const { Tags, FavoriteTags, sequelize } = require('../models/index');
 
-exports.getTagsOrderBy = async (orderBy) => {
-  const order = orderBy === 'popularity'
-    ? [
-        [sequelize.literal('UserCount'), 'DESC'],
-        [sequelize.literal('WorkbookCount'), 'DESC'],
-        ['tid', 'ASC']
-      ]
-    : orderBy === 'name'
+exports.getTagsOrderBy = async (orderBy, cidBy) => {
+  const order =
+    orderBy === 'popularity'
+      ? [
+          [sequelize.literal('UserCount'), 'DESC'],
+          [sequelize.literal('WorkbookCount'), 'DESC'],
+          ['tid', 'ASC'],
+        ]
+      : orderBy === 'name'
       ? [['name', 'ASC']]
-      : [['tid', 'ASC']]
+      : [['tid', 'ASC']];
+  const where = cidBy === 'all' ? undefined : { cid: cidBy };
   const { count, rows } = await Tags.findAndCountAll({
     attributes: {
       include: [
@@ -17,25 +20,30 @@ exports.getTagsOrderBy = async (orderBy) => {
           sequelize.literal(
             '(SELECT COUNT(*) FROM FavoriteTags WHERE FavoriteTags.tid = Tags.tid)'
           ),
-          'UserCount'
+          'UserCount',
         ],
         [
           sequelize.literal(
             '(SELECT COUNT(*) FROM WorkbookTags WHERE WorkbookTags.tid = Tags.tid)'
           ),
-          'WorkbookCount'
-        ]
-      ]
+          'WorkbookCount',
+        ],
+      ],
     },
-    order
-  })
-  return { count, tags: rows }
-}
+    include: { association: 'category', attributes: ['cid', 'name'], where },
+    order,
+  });
+  return { count, tags: rows };
+};
 
 exports.getTagsByUid = (uid) => {
   return FavoriteTags.findAll({
+    include: {
+      association: 'tid_Tag',
+      required: true,
+      include: { association: 'category', attributes: ['cid', 'name'] },
+    },
     where: { uid },
-    include: 'tid_Tag',
-    order: [['createdAt', 'ASC']]
-  })
-}
+    order: [['createdAt', 'ASC']],
+  });
+};
