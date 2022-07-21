@@ -152,6 +152,9 @@ function initModels(sequelize) {
   Workbooks.hasMany(ResultSubmissions, { as: 'resultSubmissions', foreignKey: 'wid' });
   ResultSubmissions.belongsTo(Workbooks, { as: 'workbook', foreignKey: 'wid' });
 
+  Categories.hasMany(Tags, { as: 'tags', foreignKey: 'cid' });
+  Tags.belongsTo(Categories, { as: 'category', foreignKey: 'cid' });
+
   return {
     ErrorReports,
     FavoriteTags,
