@@ -72,9 +72,14 @@ exports.fetchWorkbook = async (req, res) => {
     const workbookTags = await WorkbookTags.findAll({
       where: { wid },
       order: [['createdAt', 'ASC']],
-      include: 'tid_Tag',
-      raw: true,
-      nest: true,
+      include: {
+        association: 'tid_Tag',
+        attributes: ['tid', 'name', 'createdAt', 'updatedAt'],
+        required: true,
+        include: { association: 'category', attributes: ['cid', 'name'] },
+      },
+      // raw: true,
+      // nest: true,
     });
     workbookData.tags = workbookTags.map(({ tid_Tag }) => tid_Tag);
 
