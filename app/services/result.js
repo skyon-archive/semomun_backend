@@ -42,6 +42,7 @@ exports.selectResultByWidFromAllUser = async (wid) => {
         [sequelize.col('`workbook`.`subject`'), 'subject'], // 어디서 가져올까
         [sequelize.col('`workbook`.`area`'), 'area'],
         [sequelize.col('`workbook`.`standardDeviation`'), 'standardDeviation'], // 표준 편차
+        [sequelize.col('`workbook`.`cutoff`'), 'cutoff'], // 컷오프
       ],
     },
     where: { wid },

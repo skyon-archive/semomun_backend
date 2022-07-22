@@ -1,5 +1,9 @@
-const { ResultSubmissions, sequelize } = require('../models/index.js');
-const { selectAllResultByWgid, selectOneResultByWid, selectResultByWidFromAllUser } = require('../services/result.js');
+const { ResultSubmissions } = require('../models/index.js');
+const {
+  selectAllResultByWgid,
+  selectOneResultByWid,
+  selectResultByWidFromAllUser,
+} = require('../services/result.js');
 
 exports.postScoredData = async (req, res) => {
   const {
