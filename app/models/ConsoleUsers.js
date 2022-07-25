@@ -18,7 +18,7 @@ module.exports = function (sequelize, DataTypes) {
         comment: '출판사 참조 아이디',
       },
       name: { type: DataTypes.STRING(30), allowNull: false, comment: '이름' },
-      account: { type: DataTypes.STRING(50), unique: true, allowNull: false, comment: '아이디' },
+      username: { type: DataTypes.STRING(50), unique: true, allowNull: false, comment: '아이디(계정)' },
       password: { type: DataTypes.STRING(300), allowNull: false, comment: '비밀번호' },
       role: {
         type: DataTypes.STRING(20),
