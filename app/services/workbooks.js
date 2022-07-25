@@ -1,13 +1,12 @@
 const { Items, Workbooks, sequelize } = require('../models/index');
 const { Op } = require('sequelize');
 
-exports.fetchWorkbooks = async (page, limit, tids, substring, order) => {
-  // console.log('Offset = ', page);
-  // console.log('Limit =', limit);
-  // console.log('Tids =', tids.length);
-
+exports.fetchWorkbooks = async (page, limit, tids, substring, order, cid) => {
   const whereTids = tids.length === 0 ? {} : { tid: { [Op.in]: tids } };
-  // console.log('Where Tids =', whereTids);
+  const categoryWhere =
+    cid === 'all'
+      ? { association: 'tid_Tag' }
+      : { association: 'tid_Tag', where: { [Op.or]: [{ cid }, whereTids] } };
   const like = `%${substring.replace(/%/, '\\%')}%`;
   const where = substring
     ? {
@@ -37,9 +36,9 @@ exports.fetchWorkbooks = async (page, limit, tids, substring, order) => {
           [sequelize.literal('MatchTags'), 'DESC'],
           ['title', 'ASC'],
         ];
-  // console.log('Order =', order);
+  console.log('cid =', cid);
 
-  const { count, rows } = await Workbooks.findAndCountAll({
+  return await Workbooks.findAll({
     attributes: {
       include: [
         [
@@ -54,7 +53,13 @@ exports.fetchWorkbooks = async (page, limit, tids, substring, order) => {
       ],
       exclude: 'type',
     },
-    include: { association: 'WorkbookTags', where: whereTids },
+    include: {
+      association: 'WorkbookTags',
+      required: false,
+      where: whereTids,
+      include: { ...categoryWhere, required: true },
+    },
+
     where,
     order: orderType,
     offset: (page - 1) * limit,
@@ -62,9 +67,9 @@ exports.fetchWorkbooks = async (page, limit, tids, substring, order) => {
     // raw: true,
     // nest: true,
     distinct: true,
-    // logging: console.log,
+    logging: console.log,
   });
-  return { count, workbooks: rows };
+  // return { count, workbooks: rows };
 };
 
 exports.fetchWorkbooksByWids = async (wids) => {
