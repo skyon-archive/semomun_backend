@@ -7,7 +7,7 @@ module.exports = {
       type: Sequelize.INTEGER,
       allowNull: true,
       references: { model: 'publishCompanies', key: 'pcid' },
-      onDelete: 'set null',
+      onDelete: 'cascade',
       onUpdate: 'cascade',
       comment: '출판사 참조 아이디',
     });
