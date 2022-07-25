@@ -20,7 +20,7 @@ const {
 exports.fetchWorkbooks = async (req, res) => {
   try {
     const { page, limit, tids, keyword } = req.query;
-    let { order } = req.query;
+    let { order, cid } = req.query;
     order =
       order === 'titleDescending'
         ? 'titleDescending'
@@ -28,15 +28,19 @@ exports.fetchWorkbooks = async (req, res) => {
         ? 'titleAscending'
         : 'recentUpload';
 
-    res.json(
-      await fetchWorkbooks(
-        parseIntDefault(page, 1),
-        parseIntDefault(limit, 25),
-        parseIntList(tids ?? []),
-        keyword ?? '',
-        order
-      )
+    if (!cid) cid = 'all';
+    else if (isNaN(cid))
+      return res.status(400).json({ message: 'The cid must be of type Integer.' });
+
+    const result = await fetchWorkbooks(
+      parseIntDefault(page, 1),
+      parseIntDefault(limit, 25),
+      parseIntList(tids ?? []),
+      keyword ?? '',
+      order,
+      cid
     );
+    return res.status(200).json({ count: result.length, workbooks: result });
   } catch (err) {
     console.log(err);
     res.status(500).send();
