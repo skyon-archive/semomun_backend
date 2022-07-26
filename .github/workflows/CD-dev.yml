@@ -62,10 +62,9 @@ jobs:
           envkey_DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           envkey_REDIS_HOST: ${{ env.REDIS_HOST }}
           envkey_GOOGLE_CLIENT_ID_APP: 688270638151-kgmitk0qq9k734nq7nh9jl6adhd00b57.apps.googleusercontent.com
-          envkey_GOOGLE_CLIENT_ID_WEB: 15666773031-sk2p92o3nba4qmisghqj09bho9jqpnqi.apps.googleusercontent.com
-          envkey_GOOGLE_CLIENT_ID_WEB2: 539017112683-q5t493skokbh1mdk7tenmae10l42gpd0.apps.googleusercontent.com
+          envkey_GOOGLE_CLIENT_ID_WEB: 688270638151-bkbvol3r0pqjmbi8tqr64uhg3hgasoqi.apps.googleusercontent.com
           envkey_APPLE_CLIENT_ID_APP: com.skyon.semomun
-          envkey_APPLE_CLIENT_ID_WEB: com.semomun.web
+          envkey_APPLE_CLIENT_ID_WEB: com.skyon.semomun.web
           envkey_HOST: 0.0.0.0
           envkey_PORT: 8080
           envkey_UPLOAD_SOURCE: /tmp
