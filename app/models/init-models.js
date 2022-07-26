@@ -5,7 +5,7 @@ const _Notices = require('./Notices.js');
 
 // BootPay - 1
 const _BootPayWebhook = require('./BootPayWebhook.js');
-const _SemopayOrder = require('./SemopayOrder.js');
+const _BootpayOrders = require('./BootpayOrders.js');
 
 // Items - 6
 const _Items = require('./Items.js');
@@ -58,7 +58,7 @@ function initModels(sequelize) {
   const ResultSubmissions = _ResultSubmissions(sequelize, DataTypes);
   const UserBillingKeys = _UserBillingKeys(sequelize, DataTypes);
   const BootPayWebhook = _BootPayWebhook(sequelize, DataTypes);
-  const SemopayOrder = _SemopayOrder(sequelize, DataTypes);
+  const BootpayOrders = _BootpayOrders(sequelize, DataTypes);
   const ConsoleUsers = _ConsoleUsers(sequelize, DataTypes);
   const Categories = _Categories(sequelize, DataTypes);
 
@@ -177,7 +177,7 @@ function initModels(sequelize) {
     ResultSubmissions,
     UserBillingKeys,
     BootPayWebhook,
-    SemopayOrder,
+    BootpayOrders,
     ConsoleUsers,
     Categories,
   };

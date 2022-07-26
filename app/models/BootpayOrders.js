@@ -1,8 +1,8 @@
 module.exports = function (sequelize, DataTypes) {
   return sequelize.define(
-    'SemopayOrder',
+    'BootpayOrders',
     {
-      soid: { type: DataTypes.INTEGER, allowNull: false, autoIncrement: true, primaryKey: true },
+      boid: { type: DataTypes.INTEGER, allowNull: false, autoIncrement: true, primaryKey: true },
       uid: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -39,6 +39,6 @@ module.exports = function (sequelize, DataTypes) {
       status_locale: { type: DataTypes.STRING(50), allowNull: true },
       status: { type: DataTypes.INTEGER, allowNull: true },
     },
-    { sequelize, tableName: 'SemopayOrder' }
+    { sequelize, tableName: 'BootpayOrders' }
   );
 };

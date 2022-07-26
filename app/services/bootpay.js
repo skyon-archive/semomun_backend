@@ -4,7 +4,7 @@ const {
   PayHistory,
   sequelize,
   Users,
-  SemopayOrder,
+  BootpayOrders,
 } = require('../models/index.js');
 
 exports.selectUserBillingKeysByUid = async (uid) => {
@@ -55,7 +55,7 @@ exports.selectPayHistoriesByUid = async (uid, type) => {
       },
     },
     order: [['createdAt', 'DESC']],
-    logging: console.log,
+    // logging: console.log,
   });
 };
 
@@ -63,12 +63,12 @@ exports.selectUsersByUid = async (uid) => {
   return await Users.findOne({ where: { uid } });
 };
 
-exports.selectSemopayOrdersByUid = async (uid) => {
+exports.selectBootpayOrdersByUid = async (uid) => {
   const endDate = new Date();
   //   console.log(endDate.getMonth());
   const startDate = new Date(endDate.getFullYear(), endDate.getMonth(), 1, 0, 0, 0);
   const createdAt = { [Op.between]: [startDate, endDate] };
-  return await SemopayOrder.findAll({
+  return await BootpayOrders.findAll({
     attributes: [[sequelize.fn('sum', sequelize.col('price')), 'price']],
     // attributes: ['price'],
     // where: { uid },
