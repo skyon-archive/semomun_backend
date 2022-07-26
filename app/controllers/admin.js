@@ -10,8 +10,13 @@ const {
   selectItemByWid,
   selectAConsoleUserByCuid,
   insertConsoleUser,
+  selectAConsoleUserByUsername,
 } = require('../services/admin.js');
-const { createHashedPasswordFromPassword } = require('../services/auth.js');
+const {
+  createHashedPasswordFromPassword,
+  checkPlainAndHashed,
+  createConsoleJwt,
+} = require('../services/auth.js');
 const {
   checkFileExist,
   deleteFile,
@@ -231,27 +236,20 @@ exports.deleteWorkbookByWid = async (req, res) => {
 
 exports.signUpConsoleUser = async (req, res) => {
   try {
-    /**
-     * 추후에 토큰을 이용해 cuid와 role을 가져와야 한다.
-     * const { cuid, role } = req.query;
-     */
-    req.cuid = 2;
-    req.role = 'publishAdmin';
-    return res.status(201).send(); // 추후에 삭제
-
+    const { cuid, role: currentRole } = req;
     const { name, username, password, role, otherNotes } = req.body;
-    if (role !== 'publishAdmin' && role !== 'publishUser')
+    if (currentRole !== 'publishAdmin' && role !== 'publishUser')
       return res.status(400).send('INVALID_ROLE_TYPE');
     const hashedPassword = await createHashedPasswordFromPassword(password);
 
-    if (req.role === 'superUser') {
+    if (currentRole === 'superUser') {
       const { pcid } = req.body;
       insertConsoleUser(pcid, name, username, hashedPassword, role, otherNotes);
 
       return res.status(201).send();
-    } else if (req.role === 'publishAdmin') {
+    } else if (currentRole === 'publishAdmin') {
       if (req.body.pcid) return res.status(403).send('NO_PCID_ON_PUBLISHER_ADMIN');
-      const publishAdminUser = await selectAConsoleUserByCuid(req.cuid);
+      const publishAdminUser = await selectAConsoleUserByCuid(cuid);
       const pcid = publishAdminUser.pcid;
       await insertConsoleUser(pcid, name, username, hashedPassword, role, otherNotes).catch(
         (err) => {
@@ -266,4 +264,21 @@ exports.signUpConsoleUser = async (req, res) => {
     console.log('err =', err);
     res.status(400).json({ message: err.parent.code });
   }
+};
+
+exports.loginConsoleUser = async (req, res) => {
+  const { username, password } = req.body;
+  console.log('username =', username);
+  console.log('password =', password);
+
+  const user = await selectAConsoleUserByUsername(username);
+  if (!user) return res.status(404).send('USER_NOT_EXIST');
+  else if (!(await checkPlainAndHashed(password, user.password)))
+    return res.status(400).send('WRONG_PASSWORD');
+
+  // Create accessToken & refreshToken
+  const { accessToken, refreshToken } = await createConsoleJwt(user.cuid);
+  res.cookie('refreshToken', refreshToken, { httpOnly: true });
+  res.status(200).json({ accessToken });
+  return res.send();
 };
