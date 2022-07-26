@@ -128,3 +128,17 @@ exports.createConsoleJwt = async (cuid) => {
   console.log(redisKey, await redis.get(redisKey));
   return { accessToken, refreshToken };
 };
+
+exports.verifyConsoleJwt = async (token) => {
+  try {
+    const payload = jwt.verify(token, jwtConsoleSecret);
+    return { ok: true, payload, message: 'SUCCESS' };
+  } catch (err) {
+    try {
+      const payload = jwt.verify(token, jwtConsoleSecret, { ignoreExpiration: true });
+      return { ok: false, payload, message: 'EXPIRED_TOKEN' };
+    } catch {
+      return { ok: false, payload: null, message: 'INVALID_TOKEN' };
+    }
+  }
+};

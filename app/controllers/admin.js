@@ -236,27 +236,20 @@ exports.deleteWorkbookByWid = async (req, res) => {
 
 exports.signUpConsoleUser = async (req, res) => {
   try {
-    /**
-     * 추후에 토큰을 이용해 cuid와 role을 가져와야 한다.
-     * const { cuid, role } = req.query;
-     */
-    req.cuid = 2;
-    req.role = 'publishAdmin';
-    return res.status(201).send(); // 추후에 삭제
-
+    const { cuid, role: currentRole } = req;
     const { name, username, password, role, otherNotes } = req.body;
-    if (role !== 'publishAdmin' && role !== 'publishUser')
+    if (currentRole !== 'publishAdmin' && role !== 'publishUser')
       return res.status(400).send('INVALID_ROLE_TYPE');
     const hashedPassword = await createHashedPasswordFromPassword(password);
 
-    if (req.role === 'superUser') {
+    if (currentRole === 'superUser') {
       const { pcid } = req.body;
       insertConsoleUser(pcid, name, username, hashedPassword, role, otherNotes);
 
       return res.status(201).send();
-    } else if (req.role === 'publishAdmin') {
+    } else if (currentRole === 'publishAdmin') {
       if (req.body.pcid) return res.status(403).send('NO_PCID_ON_PUBLISHER_ADMIN');
-      const publishAdminUser = await selectAConsoleUserByCuid(req.cuid);
+      const publishAdminUser = await selectAConsoleUserByCuid(cuid);
       const pcid = publishAdminUser.pcid;
       await insertConsoleUser(pcid, name, username, hashedPassword, role, otherNotes).catch(
         (err) => {

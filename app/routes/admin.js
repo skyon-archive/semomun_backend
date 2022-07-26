@@ -1,4 +1,4 @@
-const { adminAuthJwt } = require('../middleware/auth.js');
+const { adminAuthJwt, consoleAuthJwt } = require('../middleware/auth.js');
 const {
   getWorkbooks,
   getWorkbookByWid,
@@ -23,7 +23,7 @@ module.exports = (app) => {
   router.put('/problems/:pid', adminAuthJwt, putProblemByPid);
   router.delete('/workbooks/:wid', adminAuthJwt, deleteWorkbookByWid);
 
-  router.post('/register', signUpConsoleUser); // 추후에 인증 미들웨어 필요
+  router.post('/register', consoleAuthJwt, signUpConsoleUser); // 추후에 인증 미들웨어 필요
   router.post('/login', loginConsoleUser);
 
   app.use('/admin', router);

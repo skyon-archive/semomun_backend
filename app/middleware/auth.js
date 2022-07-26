@@ -1,4 +1,5 @@
-const { verifyJwt } = require('../services/auth');
+const { selectAConsoleUserByCuid } = require('../services/admin');
+const { verifyJwt, verifyConsoleJwt } = require('../services/auth');
 const { getUserByUid } = require('../services/user');
 
 exports.authJwt = async (req, res, next) => {
@@ -59,16 +60,32 @@ exports.adminAuthJwt = async (req, res, next) => {
     const user = await getUserByUid(result.uid);
     if (!user) return res.status(401).json({ message: 'User does not exist.' });
     else if (user.deleted) return res.status(401).json({ message: 'Deleted user.' });
-    else if (user.role !== 'ADMIN') return res.status(403).json({ message: 'This API is only available to administrators.' });
+    else if (user.role !== 'ADMIN')
+      return res.status(403).json({ message: 'This API is only available to administrators.' });
     else {
       req.uid = user.uid;
       req.role = user.role;
-      console.log('User ID =', req.uid);
-      console.log('User Role =', req.role);
+      // console.log('User ID =', req.uid);
+      // console.log('User Role =', req.role);
     }
   } catch (err) {
     console.log(err);
     return res.status(400).json({ message: err });
   }
+  next();
+};
+
+exports.consoleAuthJwt = async (req, res, next) => {
+  const { authorization } = req.headers;
+  if (!authorization) return res.status(400).send('TOKEN_NOT_EXIST');
+  const accessToken = authorization ? authorization.split('Bearer ')[1] : null;
+
+  const { ok, payload, message } = await verifyConsoleJwt(accessToken);
+  if (!ok) return res.status(401).send(message);
+
+  const consoleUser = await selectAConsoleUserByCuid(payload.cuid);
+  if (!consoleUser) return res.status(404).send('USER_NOT_EXIST');
+  req.cuid = consoleUser.cuid;
+  req.role = consoleUser.role;
   next();
 };
