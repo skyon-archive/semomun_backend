@@ -7,6 +7,7 @@ const {
   putWorkbookByWid,
   putProblemByPid,
   signUpConsoleUser,
+  loginConsoleUser,
 } = require('../controllers/admin.js');
 const { deleteWorkbookByWid } = require('../controllers/admin.js');
 
@@ -23,6 +24,7 @@ module.exports = (app) => {
   router.delete('/workbooks/:wid', adminAuthJwt, deleteWorkbookByWid);
 
   router.post('/register', signUpConsoleUser); // 추후에 인증 미들웨어 필요
+  router.post('/login', loginConsoleUser);
 
   app.use('/admin', router);
 };

@@ -10,8 +10,13 @@ const {
   selectItemByWid,
   selectAConsoleUserByCuid,
   insertConsoleUser,
+  selectAConsoleUserByUsername,
 } = require('../services/admin.js');
-const { createHashedPasswordFromPassword } = require('../services/auth.js');
+const {
+  createHashedPasswordFromPassword,
+  checkPlainAndHashed,
+  createConsoleJwt,
+} = require('../services/auth.js');
 const {
   checkFileExist,
   deleteFile,
@@ -266,4 +271,21 @@ exports.signUpConsoleUser = async (req, res) => {
     console.log('err =', err);
     res.status(400).json({ message: err.parent.code });
   }
+};
+
+exports.loginConsoleUser = async (req, res) => {
+  const { username, password } = req.body;
+  console.log('username =', username);
+  console.log('password =', password);
+
+  const user = await selectAConsoleUserByUsername(username);
+  if (!user) return res.status(404).send('USER_NOT_EXIST');
+  else if (!(await checkPlainAndHashed(password, user.password)))
+    return res.status(400).send('WRONG_PASSWORD');
+
+  // Create accessToken & refreshToken
+  const { accessToken, refreshToken } = await createConsoleJwt(user.cuid);
+  res.cookie('refreshToken', refreshToken, { httpOnly: true });
+  res.status(200).json({ accessToken });
+  return res.send();
 };

@@ -183,3 +183,7 @@ exports.insertConsoleUser = async (pcid, name, username, hashedPassword, role, o
 exports.selectAConsoleUserByCuid = async (cuid) => {
   return await ConsoleUsers.findOne({ where: { cuid } });
 };
+
+exports.selectAConsoleUserByUsername = async (username) => {
+  return await ConsoleUsers.findOne({ where: { username } });
+};
