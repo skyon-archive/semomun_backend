@@ -1,4 +1,5 @@
 const { isBoolean } = require('lodash');
+const { ConsoleUsers } = require('../models/index.js');
 const {
   selectWorkbooks,
   selectWorkbookByWid,
@@ -7,7 +8,10 @@ const {
   selectWorkbookByTitle,
   selectPayHistoryById,
   selectItemByWid,
+  selectAConsoleUserByCuid,
+  insertConsoleUser,
 } = require('../services/admin.js');
+const { createHashedPasswordFromPassword } = require('../services/auth.js');
 const {
   checkFileExist,
   deleteFile,
@@ -179,7 +183,7 @@ exports.deleteWorkbookByWid = async (req, res) => {
   if (!item) return res.status(404).json({ message: 'Workbook does not exist.' });
   // console.log('Item =', item);
   const itemId = item.id;
-  const workbookTitle = item.workbook.title
+  const workbookTitle = item.workbook.title;
 
   // Check PayHistory By Items.id
   const histories = await selectPayHistoryById(itemId);
@@ -222,5 +226,44 @@ exports.deleteWorkbookByWid = async (req, res) => {
 
   // Delete DB
   await item.destroy();
-  res.status(200).json({title: workbookTitle})
+  res.status(200).json({ title: workbookTitle });
+};
+
+exports.signUpConsoleUser = async (req, res) => {
+  try {
+    /**
+     * 추후에 토큰을 이용해 cuid와 role을 가져와야 한다.
+     * const { cuid, role } = req.query;
+     */
+    req.cuid = 2;
+    req.role = 'publishAdmin';
+    return res.status(201).send(); // 추후에 삭제
+
+    const { name, username, password, role, otherNotes } = req.body;
+    if (role !== 'publishAdmin' && role !== 'publishUser')
+      return res.status(400).send('INVALID_ROLE_TYPE');
+    const hashedPassword = await createHashedPasswordFromPassword(password);
+
+    if (req.role === 'superUser') {
+      const { pcid } = req.body;
+      insertConsoleUser(pcid, name, username, hashedPassword, role, otherNotes);
+
+      return res.status(201).send();
+    } else if (req.role === 'publishAdmin') {
+      if (req.body.pcid) return res.status(403).send('NO_PCID_ON_PUBLISHER_ADMIN');
+      const publishAdminUser = await selectAConsoleUserByCuid(req.cuid);
+      const pcid = publishAdminUser.pcid;
+      await insertConsoleUser(pcid, name, username, hashedPassword, role, otherNotes).catch(
+        (err) => {
+          if (err.parent.code === 'ER_DUP_ENTRY') return res.status(409).send('DUPLICATE_USERNAME');
+          return res.status(400).send(err.parent.code);
+        }
+      );
+
+      return res.status(201).send();
+    } else return res.status(403).send('PERMISSIONS_THAT_CANNOT_BE_CREATED');
+  } catch (err) {
+    console.log('err =', err);
+    res.status(400).json({ message: err.parent.code });
+  }
 };
