@@ -1,5 +1,12 @@
 const { Op } = require('sequelize');
-const { Workbooks, sequelize, Problems, PayHistory, Items } = require('../models/index.js');
+const {
+  Workbooks,
+  sequelize,
+  Problems,
+  PayHistory,
+  Items,
+  ConsoleUsers,
+} = require('../models/index.js');
 
 exports.selectWorkbooks = async (offset, limit, keyword, order) => {
   const like = `%${keyword.replace(/%/, '\\%')}%`;
@@ -151,9 +158,28 @@ exports.selectItemByWid = async (wid) => {
           association: 'views',
           attributes: ['vid', 'passage'],
           required: true,
-          include: { association: 'problems', attributes: ['pid', 'content', 'explanation'], required: true },
+          include: {
+            association: 'problems',
+            attributes: ['pid', 'content', 'explanation'],
+            required: true,
+          },
         },
       },
     },
   });
+};
+
+exports.insertConsoleUser = async (pcid, name, username, hashedPassword, role, otherNotes) => {
+  return ConsoleUsers.create({
+    pcid,
+    name,
+    username,
+    password: hashedPassword,
+    role,
+    otherNotes,
+  });
+};
+
+exports.selectAConsoleUserByCuid = async (cuid) => {
+  return await ConsoleUsers.findOne({ where: { cuid } });
 };
