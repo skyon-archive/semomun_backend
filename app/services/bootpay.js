@@ -4,7 +4,7 @@ const {
   PayHistory,
   sequelize,
   Users,
-  BootpayOrder,
+  BootpayOrders,
 } = require('../models/index.js');
 
 exports.selectUserBillingKeysByUid = async (uid) => {
@@ -55,7 +55,7 @@ exports.selectPayHistoriesByUid = async (uid, type) => {
       },
     },
     order: [['createdAt', 'DESC']],
-    logging: console.log,
+    // logging: console.log,
   });
 };
 
