@@ -1,19 +1,24 @@
 const { Bootpay } = require('@bootpay/backend-js');
 const { Op } = require('sequelize');
-const { UserBillingKeys, BootPayWebhook, SemopayOrder, PayHistory } = require('../models/index.js');
+const {
+  UserBillingKeys,
+  BootPayWebhook,
+  PayHistory,
+  BootpayOrders,
+} = require('../models/index.js');
 const {
   selectUserBillingKeysByUid,
   selectAnUserBillingKeyByInfo,
   selectPayHistoriesByUid,
   selectUsersByUid,
-  selectSemopayOrdersByUid,
+  selectBootpayOrdersByUid,
   selectUsingAutoChargeCardNow,
-} = require('../services/semopay.js');
+} = require('../services/bootpay.js');
 const { MAX_CHARGE_SEMOPAY } = require('../../server.js');
 
 const rechargeableSemopayController = async (uid) => {
   // console.log('MAX_CHARGE_SEMOPAY =', MAX_CHARGE_SEMOPAY)
-  const sumSemopay = await selectSemopayOrdersByUid(uid);
+  const sumSemopay = await selectBootpayOrdersByUid(uid);
   const maxChargeSemopay = parseInt(MAX_CHARGE_SEMOPAY);
   return maxChargeSemopay - (sumSemopay[0].price === null ? 0 : parseInt(sumSemopay[0].price));
 };
@@ -105,7 +110,7 @@ exports.bootPayWebhook = async (req, res) => {
  * 우리가 알아야 할 정보는 order_name, price 그리고 uid 입니다.
  * uid로 빌링키를 가져올 수 있으며, order_id는 고유한 값으로(new Date())로 처리합니다.
  */
-exports.createSemopayOrder = async (req, res) => {
+exports.createBootpayOrders = async (req, res) => {
   const uid = req.uid;
   if (!uid) return res.status(401).json({ message: 'Invalid Token.' });
   // Validate Users
@@ -149,8 +154,8 @@ exports.createSemopayOrder = async (req, res) => {
     });
     payResult.uid = uid;
     payResult.bkid = bkid;
-    const soInfo = await SemopayOrder.create(payResult);
-    // console.log('This is SemopayOrder Instance =', soInfo);
+    const soInfo = await BootpayOrders.create(payResult);
+    // console.log('This is BootpayOrders Instance =', soInfo);
     const soid = soInfo.soid;
     await PayHistory.create({
       uid,
@@ -166,7 +171,7 @@ exports.createSemopayOrder = async (req, res) => {
   }
 };
 
-exports.getSemopayOrders = async (req, res) => {
+exports.getBootpayOrders = async (req, res) => {
   const uid = req.uid;
   let { type } = req.query;
   //   console.log('Type =', type);
