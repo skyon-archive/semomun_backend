@@ -25,7 +25,7 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false,
         comment: '권한/역할',
       },
-      lastLoggedInAt: { type: DataTypes.DATE, allowNull: false, comment: '마지막 로그인 시간' },
+      lastLoggedInAt: { type: DataTypes.DATE, allowNull: true, comment: '마지막 로그인 시간' },
       otherNotes: {
         type: DataTypes.STRING(500),
         allowNull: false,
