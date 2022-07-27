@@ -1,0 +1,32 @@
+components:
+  schemas:
+    billingKeyDTO:
+      properties:
+        bkid:
+          type: integer
+          description: 빌링키 PK(부트페이를 통해 받은 빌링키를 등록해 놓은 DB 자체 PK 값)
+          example: 1
+        billing_key:
+          type: string
+          description: 빌링키 고유 값(부트페이를 통해 등록된, 카드의 고유 값)
+          example: This is billing_key value.
+        billing_data:
+          type: object
+          description: 빌링키에 대한 데이터(카드 번호, 카드사, 카드사 코드, 카드 타입, 카트 해쉬값 등)
+          properties:
+            card_no:
+              type: string
+              example: "12341234****1234"
+            card_company:
+              type: string
+              example: "국민"
+            card_company_code:
+              type: string
+              example: "02"
+            card_type:
+              type: integer
+              example: 0
+            card_hash:
+              type: string
+              nullable: true
+              example: null

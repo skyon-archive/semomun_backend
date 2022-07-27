@@ -1,0 +1,36 @@
+components:
+  schemas:
+
+    BadRequest:
+      type: object
+      properties:
+        message:
+          type: string
+
+    UnAuthorized:
+      type: object
+      properties:
+        message:
+          type: string
+
+    Forbidden:
+      type: object
+      properties:
+        message:
+          type: string
+
+    NotFound:
+      type: object
+      properties:
+        message:
+          type: string
+
+    RC_NOT_FOUND:
+      type: object
+      properties:
+        error_code:
+          type: string
+          example: 'RC_NOT_FOUND'
+        message:
+          type: string
+          example: '영수증 정보를 찾지 못했습니다'
