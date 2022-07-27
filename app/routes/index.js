@@ -3,6 +3,12 @@ module.exports = (app) => {
     res.json({ message: 'Semomun API.', latestVersion: '2.0.1' });
   });
   require('./workbookGroups')(app); // 교재 그룹
+  /**
+   * @swagger
+   * tags:
+   *  name: Workbooks
+   *  description: 워크북(도서) 관련 API
+   */
   require('./workbooks')(app); // 교재
   require('./sections')(app); // 페이지?
   require('./upload')(app); // 업로드
