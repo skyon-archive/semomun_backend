@@ -53,7 +53,7 @@ app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ limit: '10mb', extended: true }))
 
 const { swaggerUi, specs } = require('./swagger/swagger.js')
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, {explorer: true}))
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs))
 
 require('./app/models/index')
 require('./app/services/redis')
