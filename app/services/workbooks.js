@@ -36,7 +36,7 @@ exports.fetchWorkbooks = async (page, limit, tids, substring, order, cid) => {
           [sequelize.literal('MatchTags'), 'DESC'],
           ['title', 'ASC'],
         ];
-  console.log('cid =', cid);
+  // console.log('cid =', cid);
 
   return await Workbooks.findAll({
     attributes: {
@@ -67,7 +67,7 @@ exports.fetchWorkbooks = async (page, limit, tids, substring, order, cid) => {
     // raw: true,
     // nest: true,
     distinct: true,
-    logging: console.log,
+    // logging: console.log,
   });
   // return { count, workbooks: rows };
 };

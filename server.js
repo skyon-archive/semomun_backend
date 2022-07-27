@@ -52,9 +52,11 @@ app.use(cors(corsOptions))
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ limit: '10mb', extended: true }))
 
+const { swaggerUi, specs } = require('./swagger/swagger.js')
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs))
+
 require('./app/models/index')
 require('./app/services/redis')
-
 require('./app/routes/index')(app)
 
 // The error handler must be before any other error middleware and after all controllers
