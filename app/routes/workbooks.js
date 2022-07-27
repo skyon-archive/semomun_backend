@@ -22,6 +22,19 @@ module.exports = (app) => {
    *      summary: "워크북(도서) 전체 조회 API입니다.(관상용 입니다!!!)"
    *      description: "**Query Params:** page, limit, tids[], keyword, cid"
    *      tags: [Workbooks]
+   *      parameters:
+   *        - in: query
+   *          name: page
+   *          schema:
+   *            type: integer
+   *            default: 1
+   *          description: Page Number(offset, for pagination)
+   *        - in: query
+   *          name: limit
+   *          schema:
+   *            type: integer
+   *            default: 25
+   *          description: Limit maximum EA(for pagination)
    *      responses:
    *        "200":
    *          description: 성공, 도서 전체 개수와 데이터 반환
