@@ -1,5 +1,4 @@
 const { isBoolean } = require('lodash');
-const { ConsoleUsers } = require('../models/index.js');
 const {
   selectWorkbooks,
   selectWorkbookByWid,
@@ -238,8 +237,9 @@ exports.signUpConsoleUser = async (req, res) => {
   try {
     const { cuid, role: currentRole } = req;
     const { name, username, password, role, otherNotes } = req.body;
-    if (currentRole !== 'publishAdmin' && role !== 'publishUser')
+    if (role !== 'publishAdmin' && role !== 'publishUser')
       return res.status(400).send('INVALID_ROLE_TYPE');
+
     const hashedPassword = await createHashedPasswordFromPassword(password);
 
     if (currentRole === 'superUser') {
