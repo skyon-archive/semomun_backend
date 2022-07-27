@@ -22,6 +22,8 @@ module.exports = (app) => {
    *      summary: "워크북(도서) 전체 조회 API입니다.(관상용 입니다!!!)"
    *      description: "**Query Params:** page, limit, tids[], keyword, cid"
    *      tags: [Workbooks]
+   *      security:
+   *        - {}
    *      parameters:
    *        - in: query
    *          name: page
