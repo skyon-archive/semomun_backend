@@ -35,11 +35,11 @@ module.exports = (app) => {
    *              schema:
    *                type: object
    *                properties:
-   *                  billing_keys1:
+   *                  billing_keys:
    *                    type: array
    *                    items:
    *                      type: object
-   *                      $ref: '#/components/schemas/billingKeyDTO'
+   *                      $ref: '#/components/schemas/BillingKeyResDTO'
    *
    */
   router.get('/billing-keys', authJwt, getUserBillingKeysByUid);
@@ -88,8 +88,8 @@ module.exports = (app) => {
    * paths:
    *  /pay/billing-keys/{bkid}:
    *    delete:
-   *      summary: "카드(빌링키) 전체 목록 조회 API"
-   *      description: "자동결제에 등록된 카드의 전체 목록을 가져옵니다(삭제된 카드 제외)"
+   *      summary: 카드(빌링키) 삭제
+   *      description: 선택된 `{bkid}`의 카드 정보를 삭제합니다.
    *      tags: [Bootpay Card]
    *      parameters:
    *        - in: path
@@ -130,8 +130,84 @@ module.exports = (app) => {
   router.get('/info', authJwt, getSemopay);
   router.post('/webhook', bootPayWebhook);
 
-  // AutoCharge
+  /**
+   * @swagger
+   * paths:
+   *  /pay/auto-charge:
+   *    get:
+   *      summary: 자동충전 정보 조회
+   *      description: 자동충전 유무 및 설정값에 대한 정보를 가져옵니다.
+   *      tags: [Auto Charge]
+   *      responses:
+   *        200:
+   *          description: 성공
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                $ref: '#/components/schemas/AutoChargeResDTO'
+   *        401:
+   *          description: 인증 실패시 `Invalid Token.`
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                $ref: '#/components/schemas/UnAuthorized'
+   *        403:
+   *          description: 삭제된 유저일 때 `Already deleted User.`
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                $ref: '#/components/schemas/Forbidden'
+   *        404:
+   *          description: 없는 유저일 때 `User does not exist.`
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                $ref: '#/components/schemas/NotFound'
+   */
   router.get('/auto-charge', authJwt, getAutoChargeInfo);
+  /**
+   * @swagger
+   * paths:
+   *  /pay/auto-charge:
+   *    put:
+   *      summary: 자동충전 정보 수정
+   *      description: 자동충전 유무 및 설정값에 대한 정보를 수정합니다.
+   *      tags: [Auto Charge]
+   *      requestBody:
+   *        content:
+   *          application/json:
+   *            schema:
+   *              type: object
+   *              $ref: '#/components/schemas/AutoChargePutDTO'
+   *      responses:
+   *        204:
+   *          description: 성공
+   *        401:
+   *          description: 인증 실패시 `Invalid Token.`
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                $ref: '#/components/schemas/UnAuthorized'
+   *        403:
+   *          description: 삭제된 유저일 때 `Already deleted User.`
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                $ref: '#/components/schemas/Forbidden'
+   *        404:
+   *          description: 없는 유저일 때 `User does not exist.`
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                $ref: '#/components/schemas/NotFound'
+   */
   router.put('/auto-charge', authJwt, putAutoChargeInfo);
 
   app.use('/pay', router);

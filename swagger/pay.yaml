@@ -1,6 +1,6 @@
 components:
   schemas:
-    billingKeyDTO:
+    BillingKeyResDTO:
       properties:
         bkid:
           type: integer
@@ -30,3 +30,42 @@ components:
               type: string
               nullable: true
               example: null
+
+    AutoChargePutDTO:
+      properties:
+        bkid:
+          type: integer
+          description: 자동 충전이 적용된 카드의 내부 DB 고유 번호인 bkid
+          example: 1
+        isAutoCharged:
+          type: boolean
+          description: 자동충전 상태 유무
+          example: true
+        lessThenAmount:
+          type: integer
+          description: lessThenAmount 원 이하 일 때, 라는 조건
+          example: 10000
+        chargeAmount:
+          type: integer
+          description: chargeAmount 원을 충전하겠다, 라는 조건
+          example: 20000          
+
+    AutoChargeResDTO:
+      properties:
+        bkid:
+          type: integer
+          nullable: true
+          description: 자동 충전이 적용된 카드 고유 번호(카드등록을 안했거나, 자동 충전에 대한 설정이 없었으면 null)
+          example: null
+        isAutoCharged:
+          type: boolean
+          description: 자동충전 상태 유무
+          example: false
+        lessThenAmount:
+          type: integer
+          description: lessThenAmount 원 이하 일 때, 라는 조건
+          example: 10000
+        chargeAmount:
+          type: integer
+          description: chargeAmount 원을 충전하겠다, 라는 조건
+          example: 20000
