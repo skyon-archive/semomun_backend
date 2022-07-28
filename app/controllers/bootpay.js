@@ -118,6 +118,8 @@ exports.createBootpayOrders = async (req, res) => {
   if (!userInfo) return res.status(404).json({ message: 'User does not exist.' });
   if (userInfo.deletedAt) return res.status(403).json({ message: 'Already deleted User.' });
   const { bkid, order_name, price } = req.body;
+  if (order_name !== '세모페이 수동 충전')
+    return res.status(400).json({ message: 'Invalid order name.' });
   const balance = price + userInfo.credit;
   // console.log('balance =', balance);
   // console.log('bkid =', bkid);
@@ -133,10 +135,11 @@ exports.createBootpayOrders = async (req, res) => {
   }
 
   // Validate UserBillingKeys
-  if (!bkid) return res.status(404).json({ message: 'Invalid Bk Info.' });
+  if (!bkid) return res.status(400).json({ message: 'bkid was not given.' });
+  else if (!order_name) return res.status(400).json({ message: 'order_name was not given.' });
   const bkInfo = await selectAnUserBillingKeyByInfo(bkid, uid);
   if (!bkInfo) return res.status(404).json({ message: 'Invalid Bk Info.' });
-  if (bkInfo.deletedAt) return res.status(409).json({ message: 'Already deleted Info.' });
+  if (bkInfo.deletedAt) return res.status(403).json({ message: 'Already deleted Info.' });
   const billing_key = bkInfo.billing_key;
   try {
     Bootpay.setConfiguration({
@@ -173,6 +176,10 @@ exports.createBootpayOrders = async (req, res) => {
 
 exports.getBootpayOrders = async (req, res) => {
   const uid = req.uid;
+  if (!uid) return res.status(401).json({ message: 'Invalid Token.' });
+  const userInfo = await selectUsersByUid(uid);
+  if (!userInfo) return res.status(404).json({ message: 'User does not exist.' });
+  if (userInfo.deletedAt) return res.status(403).json({ message: 'Already deleted User.' });
   let { type } = req.query;
   //   console.log('Type =', type);
   if (!type) type = 'all';
