@@ -123,10 +123,106 @@ module.exports = (app) => {
    *                $ref: '#/components/schemas/NotFound'
    */
   router.delete('/billing-keys/:bkid', authJwt, deleteUserBillingKey);
-
-  // Payment
-  router.post('/bootpay-orders', authJwt, createBootpayOrders);
+  
+  /**
+   * @swagger
+   * paths:
+   *  /pay/bootpay-orders:
+   *    get:
+   *      summary: 세모페이 결제/사용 내역 조회
+   *      description: "1. **사용자가 충전 또는 사용한 내역을 볼 수 있는 API입니다.**\n\n2. **수동 결제여도 카드가 등록되어 있어야 합니다.**\n\n3. **최근 6개월 까지의 내역만 조회 가능합니다.**"
+   *      tags: [Payment]
+   *      parameters:
+   *        - in: query
+   *          name: type
+   *          schema:
+   *            type: string
+   *            default: "all"
+   *          description: "- `all` : 전체 내역 조회\n\n- `charge` : 충전 내역 조회\n\n- `order` : 사용 내역 조회"
+   *          
+   *      responses:
+   *        200:
+   *          description: 성공
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  semopayHistories:
+   *                    type: array
+   *                    items:
+   *                      type: object
+   *                      $ref: '#/components/schemas/SemopayHistoryResDTO'
+   *        401:
+   *          description: "인증 오류 일 때 `Invalid Token.`"
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                $ref: '#/components/schemas/UnAuthorized'
+   *        403:
+   *          description: "삭제된 유저 일 때 `Already deleted User.`"
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                $ref: '#/components/schemas/Forbidden'
+   *        404:
+   *          description: "없는 유저 일 때 `User does not exist.`"
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                $ref: '#/components/schemas/NotFound'
+   */
   router.get('/bootpay-orders', authJwt, getBootpayOrders);
+  /**
+   * @swagger
+   * paths:
+   *  /pay/bootpay-orders:
+   *    post:
+   *      summary: 수동 결제
+   *      description: "수동으로 사용자가 금액을 입력하여 결제할 수 있는 API 입니다\n\n수동 결제여도 카드가 등록되어 있어야 합니다.\n\n현재는 해당 API에 대하여 프론트에서 `order_name`의 값을 하드하게 `세모페이 수동 충전` 으로 주고 있습니다."
+   *      tags: [Payment]
+   *      requestBody:
+   *        content:
+   *          application/json:
+   *            schema:
+   *              type: object
+   *              $ref: '#/components/schemas/ManualPaymentReqDTO'
+   *      responses:
+   *        201:
+   *          description: 성공
+   *        400:
+   *          description: "- **bkid**가 주어지지 않았을 때 : `bkid was not given.`\n\n- **order_name**의 값이 **세모페이 수동 충전**이 아닐 떄 `Invalid order name.`"
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                $ref: '#/components/schemas/BadRequest'
+   *        401:
+   *          description: "인증 오류 일 때 `Invalid Token.`"
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                $ref: '#/components/schemas/UnAuthorized'
+   *        403:
+   *          description: "삭제된 유저 일 때 `Already deleted User.`\n\n삭제된 카드(등록한) 일 때 `Already deleted Info.`"
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                $ref: '#/components/schemas/Forbidden'
+   *        404:
+   *          description: "없는 유저 일 때 `User does not exist.`\n\n없는 카드 정보 일 때 `Invalid Bk Info.`"
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                $ref: '#/components/schemas/NotFound'
+   */
+  router.post('/bootpay-orders', authJwt, createBootpayOrders);
   router.get('/info', authJwt, getSemopay);
   router.post('/webhook', bootPayWebhook);
 

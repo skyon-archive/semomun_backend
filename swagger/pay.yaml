@@ -69,3 +69,45 @@ components:
           type: integer
           description: chargeAmount 원을 충전하겠다, 라는 조건
           example: 20000
+
+    ManualPaymentReqDTO:
+      properties:
+        bkid:
+          type: integer
+          description: 내부 DB에 등록된 카드의 고유 PK(bkid)
+          example: 1
+        order_name:
+          type: string
+          description: 주문 상품 명(현재로썬, 프론트에서 해당 API 호출시 프론트에서 하드하게 세모페이 수동 충전 이라고 넣어주고 있습니다.)
+          example: 세모페이 수동 충전
+        price:
+          type: integer
+          description: 수동으로 충전할 가격입니다.
+          example: 50000
+      required:
+        - bkid
+        - order_name
+        - price
+
+    SemopayHistoryResDTO:
+      properties:
+        phid:
+          type: integer
+          description: PayHistory의 PK
+          example: 1
+        title:
+          type: string
+          description: "충전 또는 사용에 대한 내역(사용에 대한 이름)"
+          example: 세모페이 수동 충전
+        amount:
+          type: integer
+          description: "충전 또는 사용에 대한 금액"
+          example: 10000
+        createdAt:
+          type: string
+          description: 생성 일자
+          example: "2022-07-18T04:53:37.000Z"
+        updatedAt:
+          type: string
+          description: 수정 일자
+          example: "2022-07-18T04:53:37.000Z"
