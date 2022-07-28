@@ -1,5 +1,6 @@
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
+const DB = process.env.DB_HOST;
 
 const options = {
   swaggerDefinition: {
@@ -26,16 +27,14 @@ const options = {
         // email: ""
       },
     },
-    servers: [
-        // { url: 'http://localhost:8080' },
-        { url: 'https://dev.api.semomun.com' }
-    ],
-    // host: 'localhost:8080',
-    // host: 'https://dev.api.semomun.com',
-    // basePath: '/',
+    // servers: [
+    //   { url: DB === '127.0.0.1' ? 'localhost:8080' : 'https://dev.api.semomun.com' },
+    // ],
+    host: DB === '127.0.0.1' ? 'localhost:8080' : 'https://dev.api.semomun.com',
+    basePath: '/',
     tags: [
       { name: 'Workbooks', description: '워크북(도서) 관련 API' },
-      //   { name: 'Pay', description: '결제 관련' },
+      { name: 'Pay', description: '기존 결제 관련' },
       { name: 'Bootpay Card', description: '부트페이에 등록한 카드 정보' },
       { name: 'Auto Charge', description: '자동충전과 관련된 API' },
     ],
