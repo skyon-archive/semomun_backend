@@ -5,12 +5,12 @@ const { BadRequest } = require('../errors');
 exports.getTags = async (req, res) => {
   try {
     const { order } = req.query;
-    let { category } = req.query;
-    if (!category) category = 'all';
-    else if (isNaN(category))
-      return res.status(400).json({ message: 'The category must be of type Integer.' });
+    let { cid } = req.query;
+    if (!cid) cid = 'all';
+    else if (isNaN(cid))
+      return res.status(400).json({ message: 'The cid must be of type Integer.' });
 
-    const result = await getTagsOrderBy(order, category);
+    const result = await getTagsOrderBy(order, cid);
     res.json(result);
   } catch (err) {
     console.log(err);
