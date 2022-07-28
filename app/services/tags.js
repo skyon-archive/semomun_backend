@@ -14,23 +14,21 @@ exports.getTagsOrderBy = async (orderBy, cidBy) => {
       : [['tid', 'ASC']];
   const where = cidBy === 'all' ? undefined : { cid: cidBy };
   const { count, rows } = await Tags.findAndCountAll({
-    attributes: {
-      include: [
-        [
-          sequelize.literal(
-            '(SELECT COUNT(*) FROM FavoriteTags WHERE FavoriteTags.tid = Tags.tid)'
-          ),
-          'UserCount',
-        ],
-        [
-          sequelize.literal(
-            '(SELECT COUNT(*) FROM WorkbookTags WHERE WorkbookTags.tid = Tags.tid)'
-          ),
-          'WorkbookCount',
-        ],
+    attributes: [
+      'tid',
+      'name',
+      'createdAt',
+      'updatedAt',
+      [
+        sequelize.literal('(SELECT COUNT(*) FROM FavoriteTags WHERE FavoriteTags.tid = Tags.tid)'),
+        'UserCount',
       ],
-    },
-    include: { association: 'category', attributes: ['cid', 'name'], where },
+      [
+        sequelize.literal('(SELECT COUNT(*) FROM WorkbookTags WHERE WorkbookTags.tid = Tags.tid)'),
+        'WorkbookCount',
+      ],
+    ],
+    include: { association: 'category', attributes: ['cid', 'name'], where, required: false },
     order,
   });
   return { count, tags: rows };
