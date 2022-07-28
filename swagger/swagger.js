@@ -26,8 +26,12 @@ const options = {
         // email: ""
       },
     },
-    servers: [{ url: 'http://localhost:8080' }, { url: 'https://dev.api.semomun.com' }],
+    servers: [
+        // { url: 'http://localhost:8080' },
+        { url: 'https://dev.api.semomun.com' }
+    ],
     // host: 'localhost:8080',
+    // host: 'https://dev.api.semomun.com',
     // basePath: '/',
     tags: [
       { name: 'Workbooks', description: '워크북(도서) 관련 API' },
