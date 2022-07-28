@@ -28,7 +28,7 @@ exports.getTagsOrderBy = async (orderBy, cidBy) => {
         'WorkbookCount',
       ],
     ],
-    include: { association: 'category', attributes: ['cid', 'name'], where, required: false },
+    include: { association: 'category', attributes: ['cid', 'name'], where },
     order,
   });
   return { count, tags: rows };
