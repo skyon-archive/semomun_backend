@@ -6,7 +6,7 @@ exports.selectAllCategories = async () => {
       include: [
         [
           sequelize.literal(`(SELECT COUNT(*) FROM Tags WHERE Categories.cid = Tags.cid)`),
-          'TagCount',
+          'tagCount',
         ],
       ],
     },
